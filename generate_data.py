@@ -10,7 +10,7 @@
 # 3. After a timeout, the game resumes with the same possession
 # 4. Support for different types of 2pt shots (e.g., layup, dunk, jump shot, tried for 3pt but step on the line)
 # 5. Support for different types of 3pt shots (e.g., corner three, from the half court like Steph Curry)
-#
+# 6. Add VAR (Video Assistant Referee) support for reviewing close calls. If an event has been canceled or overturned, it should be reflected in the game state.
 
 import random
 import json
@@ -534,7 +534,7 @@ class BasketballReportGenerator:
 if __name__ == "__main__":
     # 1. Generate the comprehensive game data object
     generator = BasketballReportGenerator()
-    game_data = generator.generate_report(num_events=150) # Use num_possessions for clarity
+    game_data = generator.generate_report(num_events=50) # Use num_possessions for clarity
 
     # 2. Extract data for printing to the console
     report = game_data["play_by_play"]
