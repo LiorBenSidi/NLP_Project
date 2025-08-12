@@ -1,18 +1,22 @@
 # generate_data.py
 
+# TODO: Assumptions for simplicity:
+# 1. There is no limit to number of fouls per player.
+# 
+
+# TODO: Need to add:
+# 1. Support for different types of fouls (e.g., shooting foul, technical foul)
+# 2. Call for timeout and after that immediately return to the game
+# 3. After a timeout, the game resumes with the same possession
+# 4. Support for different types of 2pt shots (e.g., layup, dunk, jump shot, tried for 3pt but step on the line)
+# 5. Support for different types of 3pt shots (e.g., corner three, from the half court like Steph Curry)
+#
+
 import random
 import json
+import os
 
 class BasketballReportGenerator:
-
-    # --- NEW COLOR CONSTANTS AND HELPER FUNCTION ---
-    COLORS = {
-        'YELLOW': '\033[93m',    # Bright Yellow
-        'RED': '\033[91m',        # Bright Red
-        'MAGENTA': '\033[95m',    # Bright Magenta
-        'BLUE': '\033[94m',      # Bright Blue
-        'ENDC': '\033[0m'         # Reset
-    }
 
     def __init__(self):
         # Initialize teams with head coach and players
@@ -242,18 +246,27 @@ class BasketballReportGenerator:
     
     def _get_colored_name(self, name, team_name):
         """Returns the name wrapped in ANSI color codes based on team."""
+        COLORS = {
+            'YELLOW': '\033[93m',    # Bright Yellow
+            'RED': '\033[91m',        # Bright Red
+            'MAGENTA': '\033[95m',    # Bright Magenta
+            'BLUE': '\033[94m',      # Bright Blue
+            'ENDC': '\033[0m'         # Reset
+        }
+        return name # Return uncolored
+
         if team_name == "Maccabi Tel Aviv":
-            color = self.COLORS['YELLOW']
+            color = COLORS['YELLOW']
         elif team_name == "Hapoel Tel Aviv":
-            color = self.COLORS['RED']
+            color = COLORS['RED']
         elif team_name == "Hapoel Jerusalem":
-            color = self.COLORS['MAGENTA']
+            color = COLORS['MAGENTA']
         elif team_name == "DDS Dream Team":
-            color = self.COLORS['BLUE']
+            color = COLORS['BLUE']
         else:
             return name # Return uncolored if team is unknown
         
-        return f"{color}{name}{self.COLORS['ENDC']}"
+        return f"{color}{name}{COLORS['ENDC']}"
 
     def _initialize_stats(self):
         """Helper to create the complex nested dictionary for tracking ground truth."""
@@ -298,7 +311,11 @@ class BasketballReportGenerator:
 
             colored_player_in = self._get_colored_name(player_in, team_name)
             colored_player_out = self._get_colored_name(player_out, team_name)
-            play_by_play.append(f"Substitution by {head_coach}: {colored_player_in} comes in for {colored_player_out}.")
+            #play_by_play.append(f"Substitution by {head_coach}: {colored_player_in} comes in for {colored_player_out}.")
+            play_by_play.append({
+                "event_id": len(play_by_play) + 1,
+                "description": f"Substitution by {head_coach}: {colored_player_in} comes in for {colored_player_out}."
+            })
 
     def generate_report(self, num_events=20):
         team_names = random.sample(list(self.teams.keys()), 2)
@@ -321,6 +338,7 @@ class BasketballReportGenerator:
                 'active': full_roster[:5],
                 'bench': full_roster[5:]
             }
+        original_game_lineups = game_lineups.copy()
 
         game_stats = self._initialize_stats()
         game_stats = {team: game_stats[team] for team in team_names}
@@ -363,7 +381,11 @@ class BasketballReportGenerator:
                 event["effect"](game_stats, pA, pB, acting_team)
                 colored_pA = self._get_colored_name(pA, acting_team)
                 colored_pB = self._get_colored_name(pB, acting_team)
-                play_by_play.append(event["template"].format(player_A=colored_pA, player_B=colored_pB))
+                #play_by_play.append(event["template"].format(player_A=colored_pA, player_B=colored_pB))
+                play_by_play.append({
+                    "event_id": len(play_by_play) + 1,
+                    "description": event["template"].format(player_A=colored_pA, player_B=colored_pB)
+                })
                 # --- Update possession ---
                 possession = teamB_name if acting_team == teamA_name else teamA_name
                 head_coach_A = self.teams[teamA_name]["head_coach"]
@@ -378,7 +400,11 @@ class BasketballReportGenerator:
                 pA = random.choice(game_lineups[acting_team]['active'])
                 event["effect"](game_stats, pA, acting_team)
                 colored_pA = self._get_colored_name(pA, acting_team)
-                play_by_play.append(event["template"].format(player_A=colored_pA))
+                #play_by_play.append(event["template"].format(player_A=colored_pA))
+                play_by_play.append({
+                    "event_id": len(play_by_play) + 1,
+                    "description": event["template"].format(player_A=colored_pA)
+                })
                 if "miss" in event_type:
                     shooting_team = acting_team
                 else: # Turnover
@@ -403,7 +429,11 @@ class BasketballReportGenerator:
                     event["effect"](game_stats, pA, pB, teamB, teamA)
                     colored_pA = self._get_colored_name(pA, teamB)
                     colored_pB = self._get_colored_name(pB, teamA)
-                    play_by_play.append(event["template"].format(player_A=colored_pA, player_B=colored_pB))
+                    #play_by_play.append(event["template"].format(player_A=colored_pA, player_B=colored_pB))
+                    play_by_play.append({
+                        "event_id": len(play_by_play) + 1,
+                        "description": event["template"].format(player_A=colored_pA, player_B=colored_pB)
+                    })
                     possession = teamB # Stealing team gets possession
                 else: # Foul or Block
                     if "block" in event_type:
@@ -413,7 +443,11 @@ class BasketballReportGenerator:
                         event["effect"](game_stats, blocker, shooter, teamB, teamA)
                         colored_blocker = self._get_colored_name(blocker, teamB)
                         colored_shooter = self._get_colored_name(shooter, teamA)
-                        play_by_play.append(event["template"].format(player_A=colored_blocker, player_B=colored_shooter))
+                        #play_by_play.append(event["template"].format(player_A=colored_blocker, player_B=colored_shooter))
+                        play_by_play.append({
+                            "event_id": len(play_by_play) + 1,
+                            "description": event["template"].format(player_A=colored_blocker, player_B=colored_shooter)
+                        })
                         shooting_team = teamA # The team that shot the ball
                     else: # Foul
                         # For a foul, pA is the shooter (offensive), pB is the defender
@@ -422,7 +456,11 @@ class BasketballReportGenerator:
                         event["effect"](game_stats, shooter, defender, teamA, teamB)
                         colored_shooter = self._get_colored_name(shooter, teamA)
                         colored_defender = self._get_colored_name(defender, teamB)
-                        play_by_play.append(event["template"].format(player_A=colored_shooter, player_B=colored_defender))
+                        #play_by_play.append(event["template"].format(player_A=colored_shooter, player_B=colored_defender))
+                        play_by_play.append({
+                            "event_id": len(play_by_play) + 1,
+                            "description": event["template"].format(player_A=colored_shooter, player_B=colored_defender)
+                        })
                         shooting_team = teamA # The team that shot the ball
 
                         # Handle substitutions AFTER the foul is recorded
@@ -454,8 +492,11 @@ class BasketballReportGenerator:
 
                 rebound_event["effect"](game_stats, rebounder, rebound_team_name)
                 colored_rebounder = self._get_colored_name(rebounder, rebound_team_name)
-                play_by_play.append(rebound_event["template"].format(player_A=colored_rebounder))
-                
+                #play_by_play.append(rebound_event["template"].format(player_A=colored_rebounder))
+                play_by_play.append({
+                    "event_id": len(play_by_play) + 1,
+                    "description": rebound_event["template"].format(player_A=colored_rebounder)
+                })
                 # --- MINIMAL CHANGE 5: Update possession based on rebound ---
                 possession = rebound_team_name
 
@@ -466,16 +507,89 @@ class BasketballReportGenerator:
                                           "shooting_foul_for_3pt_and_score_0_of_3", "shooting_foul_for_3pt_and_score_1_of_3", "shooting_foul_for_3pt_and_score_2_of_3"]:
                          possession = teamB_name if shooting_team == teamA_name else teamA_name
 
-        return play_by_play, game_stats
+        #return play_by_play, game_stats
+        # --- Create a comprehensive game object to return ---
+        game_summary = {
+            "matchup": f"{teamA_name} vs {teamB_name}",
+            "teams": {
+                teamA_name: {
+                    "coach": self.teams[teamA_name]["head_coach"],
+                    "roster": self.teams[teamA_name]["players"],
+                    "starting_lineup": original_game_lineups[teamA_name]['active'],
+                    "bench": original_game_lineups[teamA_name]['bench']
+                },
+                teamB_name: {
+                    "coach": self.teams[teamB_name]["head_coach"],
+                    "roster": self.teams[teamB_name]["players"],
+                    "starting_lineup": original_game_lineups[teamB_name]['active'],
+                    "bench": original_game_lineups[teamB_name]['bench']
+                }
+            },
+            "play_by_play": play_by_play,
+            "final_stats": game_stats
+        }
 
-# Example of how to run the generator
+        return game_summary
+
 if __name__ == "__main__":
+    # 1. Generate the comprehensive game data object
     generator = BasketballReportGenerator()
-    report, final_stats = generator.generate_report(num_events=5)
+    game_data = generator.generate_report(num_events=150) # Use num_possessions for clarity
 
-    print("--- PLAY-BY-PLAY REPORT ---")
-    for i, play in enumerate(report):
-        print(f"{i+1}. {play}")
+    # 2. Extract data for printing to the console
+    report = game_data["play_by_play"]
+    final_stats = game_data["final_stats"]
+    
+    print(f"\n--- MATCHUP: {game_data['matchup']} ---")
+
+    print("\n--- PLAY-BY-PLAY REPORT ---")
+    for event in report:
+        print(f"{event['event_id']}. {event['description']}")
 
     print("\n\n--- FINAL BOX SCORE ---")
     print(json.dumps(final_stats, indent=4))
+
+    # 3. Save the data to JSON files
+    output_dir = "data"
+    os.makedirs(output_dir, exist_ok=True)
+
+    examples_path = os.path.join(output_dir, "examples.json")
+    true_report_path = os.path.join(output_dir, "true_report.json")
+
+    # Create the object to be saved in examples.json
+    examples_data = {
+        "matchup": game_data["matchup"],
+        "teams": game_data["teams"],
+        "play_by_play": game_data["play_by_play"]
+    }
+    
+    # Create the object to be saved in true_report.json
+    team_names = list(game_data["final_stats"].keys())
+    teamA_name = team_names[0]
+    teamB_name = team_names[1]
+    
+    score_A = game_data["final_stats"][teamA_name]["stats"]["score"]
+    score_B = game_data["final_stats"][teamB_name]["stats"]["score"]
+
+    true_report_data = {
+        "matchup": game_data["matchup"],
+        "final_score": f"{teamA_name}: {score_A}, {teamB_name}: {score_B}",
+        "teams": game_data["teams"],
+        "final_stats": game_data["final_stats"]
+    }
+
+    # Save the examples file
+    try:
+        with open(examples_path, 'w', encoding='utf-8') as f:
+            json.dump(examples_data, f, indent=4, ensure_ascii=False)
+        print(f"\nSuccessfully saved play-by-play and rosters to {examples_path}")
+    except Exception as e:
+        print(f"Error saving to {examples_path}: {e}")
+
+    # Save the true report (stats) file
+    try:
+        with open(true_report_path, 'w', encoding='utf-8') as f:
+            json.dump(true_report_data, f, indent=4, ensure_ascii=False)
+        print(f"Successfully saved final stats and rosters to {true_report_path}")
+    except Exception as e:
+        print(f"Error saving to {true_report_path}: {e}")

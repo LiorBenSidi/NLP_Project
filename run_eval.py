@@ -1,6 +1,8 @@
 # run_eval.py
-# TODO: Implement the evaluation logic according to "generated_data.py"
-
+# TODO:
+# 1. Implement the evaluation logic according to "generated_data.py"
+# 2. Ask the tutor for clarification on the way that they will contact the LLM using the API
+#
 
 import json
 import re
