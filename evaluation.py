@@ -3,6 +3,9 @@
 # The `evaluate_reports` function calculates the success rate by comparing
 # the LLM's generated report against the ground truth report.
 
+# TODO:
+# 1. Consider use weights of failures, or, distance from the ground truth
+
 def evaluate_reports(llm_report, ground_truth_report):
     """
     Compares the LLM's generated report against the ground truth and calculates accuracy.

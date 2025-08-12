@@ -1,7 +1,8 @@
 # run_eval.py
 # TODO:
 # 1. Ask the tutor for clarification on the way that they will contact the LLM using the API
-#
+# 2. Improve the instruction to be more clear and unambiguous
+# 3. Provide examples of the expected inputs (events) and output formats (effects)
 
 import json
 import re
@@ -109,8 +110,7 @@ SYSTEM_INSTRUCTIONS_PROMPT = """You are an automated sports data analyst.
                                 }
                                 ```
                             """
-MODEL_ACKNOWLEDGEMENT = "Understood. I am ready to process the game log." \
-                        "I will adhere to all instructions and provide the final report as a single, valid JSON object."
+MODEL_ACKNOWLEDGEMENT = "Understood. I am ready to process the game log. I will adhere to all instructions and provide the final report as a single, valid JSON object."
 
 # --- Part 2: Core Functions ---
 
@@ -136,8 +136,28 @@ def construct_prompt(game_data):
     narrative_events = [ansi_escape.sub('', event['description']) for event in game_data['play_by_play']]
     narrative_log = "\n".join([f"{event['event_id']}. {text}" for event, text in zip(game_data['play_by_play'], narrative_events)])
     
-    full_prompt = SYSTEM_INSTRUCTIONS_PROMPT + "\n\n" + roster_info + "\n### GAME LOG ###\n" + narrative_log
+    full_prompt = SYSTEM_INSTRUCTIONS_PROMPT + "\n\n" + roster_info + "\n### GAME LOG ###\n" + narrative_log + "\n\nNow, generate the complete JSON object for the game described above. Your response must begin with `{` and end with `}`."
+    #full_prompt = SYSTEM_INSTRUCTIONS_PROMPT + "\n\n" + roster_info + "\n### GAME LOG ###\n" + narrative_log
     return full_prompt
+
+def is_report_all_zeros(llm_report):
+    """
+    Checks if all key statistics in the LLM report are zero.
+    This is a sign that the LLM has failed to process the data.
+    """
+    try:
+        for team_data in llm_report.get("final_stats", {}).values():
+            if team_data.get("stats", {}).get("score", 0) != 0:
+                return False # Found a non-zero score, report is likely valid
+            for player_stats in team_data.get("players", {}).values():
+                if player_stats.get("points", 0) != 0:
+                    return False # Found a player with points, report is likely valid
+    except (TypeError, AttributeError):
+        # The report is malformed, so we can't check it. Treat as not all zeros.
+        return False
+    
+    # If we get through the whole loop without finding a non-zero score or points, it's an all-zero report.
+    return True
 
 def get_gemini_response(prompt_text):
     """Calls the Google Gemini API and returns the response content."""
@@ -263,7 +283,7 @@ def repair_json_output(json_string):
     return repaired
 
 # --- Part 3: Main Execution ---
-# --- handle multiple games ---
+# --- handle failed attempts (got all-zeors stats) ---
 
 if __name__ == "__main__":
     load_dotenv(override=True)
@@ -285,61 +305,84 @@ if __name__ == "__main__":
             with open(true_report_path, 'r', encoding='utf-8') as f:
                 all_true_reports_data = json.load(f)
             
-            # --- NEW: Create specific directories for text and json results ---
             text_results_dir = os.path.join(data_dir, "llm_response_text")
             json_results_dir = os.path.join(data_dir, "llm_response_json")
             os.makedirs(text_results_dir, exist_ok=True)
             os.makedirs(json_results_dir, exist_ok=True)
 
-
             all_accuracies = []
             all_discrepancies = {}
+            successful_games = 0
+            failed_games = 0
             
             # Loop through each game in the dataset
             for game_key, game_narrative_data in all_examples_data.items():
                 print(f"\n{'='*20} PROCESSING {game_key.upper()} {'='*20}")
                 ground_truth_data = all_true_reports_data[game_key]
 
-                prompt = construct_prompt(game_narrative_data)
-                llm_response_str = get_gemini_response(prompt)
+                # --- Retry Logic ---
+                max_retries = 2
+                llm_report = None
+                llm_response_str = ""
                 
-                if llm_response_str:
-                    # --- MODIFIED: Save the raw response to the 'text' folder ---
-                    raw_output_path = os.path.join(text_results_dir, f"{game_key}.txt")
-                    with open(raw_output_path, 'w', encoding='utf-8') as f:
-                        f.write(llm_response_str)
-                    print(f"Saved raw response to: {raw_output_path}")
+                for attempt in range(max_retries):
+                    prompt = construct_prompt(game_narrative_data)
+                    current_response_str = get_gemini_response(prompt)
+                    
+                    if not current_response_str:
+                        print(f"--- ERROR on attempt {attempt + 1}: No response from API. Retrying... ---")
+                        continue
 
+                    # Always save the latest raw attempt
+                    llm_response_str = current_response_str
                     repaired_llm_str = repair_json_output(llm_response_str)
+                    
                     try:
-                        llm_report = json.loads(repaired_llm_str)
-
-                        # --- MODIFIED: Save the parsed JSON to the 'json' folder ---
-                        json_output_path = os.path.join(json_results_dir, f"{game_key}.json")
-                        with open(json_output_path, 'w', encoding='utf-8') as f:
-                            json.dump(llm_report, f, indent=4, ensure_ascii=False)
-                        print(f"Saved parsed report to: {json_output_path}")
-
-                        # Evaluate this specific game
-                        accuracy, discrepancies = evaluate_reports(llm_report, ground_truth_data)
-                        all_accuracies.append(accuracy)
-                        if discrepancies:
-                            all_discrepancies[game_key] = discrepancies
+                        llm_report_candidate = json.loads(repaired_llm_str)
                         
-                        print(f"--- RESULT for {game_key}: Accuracy = {accuracy:.2f}% ---")
-
+                        if not is_report_all_zeros(llm_report_candidate):
+                            print(f"--- SUCCESS on attempt {attempt + 1}: LLM provided a valid, non-empty report. ---")
+                            llm_report = llm_report_candidate
+                            break
+                        else:
+                            print(f"--- WARNING on attempt {attempt + 1}: LLM returned an all-zeros report. Retrying... ---")
+                            llm_report = None
                     except json.JSONDecodeError:
-                        print(f"--- ERROR for {game_key}: Could not parse JSON response. Skipping evaluation. ---")
-                        all_discrepancies[game_key] = ["Failed to parse JSON response."]
-
-            # Final summary after the loop
-            if all_accuracies:
-                average_accuracy = sum(all_accuracies) / len(all_accuracies)
+                        print(f"--- ERROR on attempt {attempt + 1}: Could not parse JSON. Retrying... ---")
+                        llm_report = None
                 
-                # Create and save a final summary report
+                # --- Process the final result of the retries ---
+                raw_output_path = os.path.join(text_results_dir, f"{game_key}.txt")
+                with open(raw_output_path, 'w', encoding='utf-8') as f:
+                    f.write(llm_response_str)
+                print(f"Saved final raw response to: {raw_output_path}")
+
+                if llm_report:
+                    successful_games += 1
+                    json_output_path = os.path.join(json_results_dir, f"{game_key}.json")
+                    with open(json_output_path, 'w', encoding='utf-8') as f:
+                        json.dump(llm_report, f, indent=4, ensure_ascii=False)
+                    print(f"Saved parsed report to: {json_output_path}")
+
+                    accuracy, discrepancies = evaluate_reports(llm_report, ground_truth_data)
+                    all_accuracies.append(accuracy)
+                    if discrepancies:
+                        all_discrepancies[game_key] = discrepancies
+                    
+                    print(f"--- RESULT for {game_key}: Accuracy = {accuracy:.2f}% ---")
+                else:
+                    failed_games += 1
+                    print(f"--- FAILURE for {game_key}: Could not get a valid report after {max_retries} attempts. SKIPPING. ---")
+                    all_discrepancies[game_key] = [f"Failed to get a valid, non-empty JSON response from the LLM after {max_retries} retries."]
+
+            # --- Final Summary ---
+            if successful_games > 0:
+                average_accuracy = sum(all_accuracies) / len(all_accuracies)
                 summary_data = {
-                    "total_games_processed": len(all_accuracies),
-                    "average_accuracy": f"{average_accuracy:.2f}%",
+                    "total_games_attempted": len(all_examples_data),
+                    "successful_games": successful_games,
+                    "failed_games": failed_games,
+                    "average_accuracy_on_success": f"{average_accuracy:.2f}%",
                     "discrepancies_by_game": all_discrepancies
                 }
                 summary_path = os.path.join(data_dir, "summary.json")
@@ -347,11 +390,104 @@ if __name__ == "__main__":
                     json.dump(summary_data, f, indent=4, ensure_ascii=False)
                 
                 print(f"\n\n{'='*20} FINAL SUMMARY {'='*20}")
-                print(f"Processed {len(all_accuracies)} games.")
-                print(f"Average Accuracy: {average_accuracy:.2f}%")
+                print(f"Total Games Processed: {successful_games + failed_games}")
+                print(f"Successful Games: {successful_games}")
+                print(f"Failed Games: {failed_games}")
+                print(f"Average Accuracy (on successful games): {average_accuracy:.2f}%")
                 print(f"Full summary saved to: {summary_path}")
             else:
-                print("\nNo games were processed successfully.")
+                print(f"\nNo games were processed successfully.")
+
+# --- Part 3: Main Execution ---
+# --- handle multiple games ---
+
+# if __name__ == "__main__":
+#     load_dotenv(override=True)
+#     api_key = os.getenv("GEMINI_API_KEY")
+#     if not api_key:
+#         print("Error: GEMINI_API_KEY is missing.")
+#     else:
+#         genai.configure(api_key=api_key) #type: ignore
+
+#         data_dir = "data"
+#         examples_path = os.path.join(data_dir, "examples.json")
+#         true_report_path = os.path.join(data_dir, "true_report.json")
+
+#         if not os.path.exists(examples_path) or not os.path.exists(true_report_path):
+#             print("Error: Data files not found. Please run 'generate_data.py' first.")
+#         else:
+#             with open(examples_path, 'r', encoding='utf-8') as f:
+#                 all_examples_data = json.load(f)
+#             with open(true_report_path, 'r', encoding='utf-8') as f:
+#                 all_true_reports_data = json.load(f)
+            
+#             # --- NEW: Create specific directories for text and json results ---
+#             text_results_dir = os.path.join(data_dir, "llm_response_text")
+#             json_results_dir = os.path.join(data_dir, "llm_response_json")
+#             os.makedirs(text_results_dir, exist_ok=True)
+#             os.makedirs(json_results_dir, exist_ok=True)
+
+
+#             all_accuracies = []
+#             all_discrepancies = {}
+            
+#             # Loop through each game in the dataset
+#             for game_key, game_narrative_data in all_examples_data.items():
+#                 print(f"\n{'='*20} PROCESSING {game_key.upper()} {'='*20}")
+#                 ground_truth_data = all_true_reports_data[game_key]
+
+#                 prompt = construct_prompt(game_narrative_data)
+#                 llm_response_str = get_gemini_response(prompt)
+                
+#                 if llm_response_str:
+#                     # --- MODIFIED: Save the raw response to the 'text' folder ---
+#                     raw_output_path = os.path.join(text_results_dir, f"{game_key}.txt")
+#                     with open(raw_output_path, 'w', encoding='utf-8') as f:
+#                         f.write(llm_response_str)
+#                     print(f"Saved raw response to: {raw_output_path}")
+
+#                     repaired_llm_str = repair_json_output(llm_response_str)
+#                     try:
+#                         llm_report = json.loads(repaired_llm_str)
+
+#                         # --- MODIFIED: Save the parsed JSON to the 'json' folder ---
+#                         json_output_path = os.path.join(json_results_dir, f"{game_key}.json")
+#                         with open(json_output_path, 'w', encoding='utf-8') as f:
+#                             json.dump(llm_report, f, indent=4, ensure_ascii=False)
+#                         print(f"Saved parsed report to: {json_output_path}")
+
+#                         # Evaluate this specific game
+#                         accuracy, discrepancies = evaluate_reports(llm_report, ground_truth_data)
+#                         all_accuracies.append(accuracy)
+#                         if discrepancies:
+#                             all_discrepancies[game_key] = discrepancies
+                        
+#                         print(f"--- RESULT for {game_key}: Accuracy = {accuracy:.2f}% ---")
+
+#                     except json.JSONDecodeError:
+#                         print(f"--- ERROR for {game_key}: Could not parse JSON response. Skipping evaluation. ---")
+#                         all_discrepancies[game_key] = ["Failed to parse JSON response."]
+
+#             # Final summary after the loop
+#             if all_accuracies:
+#                 average_accuracy = sum(all_accuracies) / len(all_accuracies)
+                
+#                 # Create and save a final summary report
+#                 summary_data = {
+#                     "total_games_processed": len(all_accuracies),
+#                     "average_accuracy": f"{average_accuracy:.2f}%",
+#                     "discrepancies_by_game": all_discrepancies
+#                 }
+#                 summary_path = os.path.join(data_dir, "summary.json")
+#                 with open(summary_path, 'w', encoding='utf-8') as f:
+#                     json.dump(summary_data, f, indent=4, ensure_ascii=False)
+                
+#                 print(f"\n\n{'='*20} FINAL SUMMARY {'='*20}")
+#                 print(f"Processed {len(all_accuracies)} games.")
+#                 print(f"Average Accuracy: {average_accuracy:.2f}%")
+#                 print(f"Full summary saved to: {summary_path}")
+#             else:
+#                 print("\nNo games were processed successfully.")
 
 # --- Part 3: Main Execution ---
 # --- one iteration ---

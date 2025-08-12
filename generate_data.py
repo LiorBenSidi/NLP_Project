@@ -10,7 +10,10 @@
 # 3. After a timeout, the game resumes with the same possession
 # 4. Support for different types of 2pt shots (e.g., layup, dunk, jump shot, tried for 3pt but step on the line)
 # 5. Support for different types of 3pt shots (e.g., corner three, from the half court like Steph Curry)
-# 6. Add VAR (Video Assistant Referee) support for reviewing close calls. If an event has been canceled or overturned, it should be reflected in the game state.
+# 6. Add difficulty levels (e.g., easy, medium, hard)
+# 6.1 Basic difficulty:
+# 6.2 Medium difficulty:
+# 6.3 Hard difficulty:
 
 import random
 import json
@@ -96,103 +99,185 @@ class BasketballReportGenerator:
                 )
             },
             
-            # --- VAR ---
-            # "VAR-The_referee_Cancels_the_last_shot": {
-            #     "template": "The referee is reviewing the play for a potential violation. He cancels the last shot."
-            # },
+            # --- VAR Events ---
+            "var_overturn_2pt": {
+                "template": "After a VAR review, the previous basket by {player_B} is overturned due to an offensive foul committed by {player_B} before the shot.",
+                "effect": lambda state, pA, pB, team: (
+                    # 1. Update Team Stats: reverse score/assist, add foul/turnover
+                    state[team]['stats'].update({
+                        'score': state[team]['stats']['score'] - 2,
+                        'assists': state[team]['stats']['assists'] - 1,
+                        'fouls': state[team]['stats']['fouls'] + 1,
+                        'turnovers': state[team]['stats']['turnovers'] + 1
+                    }),
+                    # 2. Update Passer (pA): just reverse the assist
+                    state[team]['players'][pA].update({
+                        'assists': state[team]['players'][pA]['assists'] - 1
+                    }),
+                    # 3. Update Shooter (pB): reverse the shot, add the foul and turnover
+                    state[team]['players'][pB].update({
+                        'points': state[team]['players'][pB]['points'] - 2,
+                        '2pt_shots_made': state[team]['players'][pB]['2pt_shots_made'] - 1,
+                        '2pt_shots_attempted': state[team]['players'][pB]['2pt_shots_attempted'] - 1,
+                        'fouls': state[team]['players'][pB]['fouls'] + 1,
+                        'turnovers': state[team]['players'][pB]['turnovers'] + 1
+                    })
+                )
+            },
+            "var_overturn_3pt": {
+                "template": "The referees go to the monitor. After review, the 3-point shot by {player_B} is waved off due to a shot clock violation.",
+                "effect": lambda state, pA, pB, team: (
+                     # 1. Update Team Stats: reverse score/assist, add turnover
+                    state[team]['stats'].update({
+                        'score': state[team]['stats']['score'] - 3,
+                        'assists': state[team]['stats']['assists'] - 1,
+                        'turnovers': state[team]['stats']['turnovers'] + 1
+                    }),
+                    # 2. Update Passer (pA): just reverse the assist
+                    state[team]['players'][pA].update({
+                        'assists': state[team]['players'][pA]['assists'] - 1
+                    }),
+                    # 3. Update Shooter (pB): reverse the shot, add the turnover
+                    state[team]['players'][pB].update({
+                        'points': state[team]['players'][pB]['points'] - 3,
+                        '3pt_shots_made': state[team]['players'][pB]['3pt_shots_made'] - 1,
+                        '3pt_shots_attempted': state[team]['players'][pB]['3pt_shots_attempted'] - 1,
+                        'turnovers': state[team]['players'][pB]['turnovers'] + 1
+                    })
+                )
+            },
 
-            # --- Foul Events ---
-            "shooting_foul_for_2pt_and_score_0_of_2": {
-                "template": "{player_A} is fouled by {player_B} while attempting a 2pt shot. {player_A} makes 0 of 2 free throws.",
+            # --- Shooting Foul and Free Throw Events ---
+            "shooting_foul_2pt": {
+                "template": "{player_A} is fouled by {player_B} on a 2-point attempt and will go to the line for two shots.",
                 "effect": lambda state, pA, pB, teamA, teamB: (
-                    state[teamA]['stats'].update({'score': state[teamA]['stats']['score'] + 0}),
-                    state[teamA]['players'][pA].update({
-                        'points': state[teamA]['players'][pA]['points'] + 0,
-                        'ft_made': state[teamA]['players'][pA]['ft_made'] + 0,
-                        'ft_attempted': state[teamA]['players'][pA]['ft_attempted'] + 2,
-                    }),
+                    # This event only records the foul and the shot attempt. No points or FTs yet.
+                    state[teamA]['players'][pA].update({'2pt_shots_attempted': state[teamA]['players'][pA]['2pt_shots_attempted'] + 1}),
                     state[teamB]['stats'].update({'fouls': state[teamB]['stats']['fouls'] + 1}),
                     state[teamB]['players'][pB].update({'fouls': state[teamB]['players'][pB]['fouls'] + 1})
                 )
             },
-            "shooting_foul_for_2pt_and_score_1_of_2": {
-                "template": "{player_A} is fouled by {player_B} while attempting a 2pt shot. {player_A} makes 1 of 2 free throws.",
+            "shooting_foul_3pt": {
+                "template": "{player_A} is fouled by {player_B} on a 3-point attempt and will shoot three.",
                 "effect": lambda state, pA, pB, teamA, teamB: (
-                    state[teamA]['stats'].update({'score': state[teamA]['stats']['score'] + 1}),
-                    state[teamA]['players'][pA].update({
-                        'points': state[teamA]['players'][pA]['points'] + 1,
-                        'ft_made': state[teamA]['players'][pA]['ft_made'] + 1,
-                        'ft_attempted': state[teamA]['players'][pA]['ft_attempted'] + 2,
-                    }),
+                    # This event only records the foul and the shot attempt. No points or FTs yet.
+                    state[teamA]['players'][pA].update({'3pt_shots_attempted': state[teamA]['players'][pA]['3pt_shots_attempted'] + 1}),
                     state[teamB]['stats'].update({'fouls': state[teamB]['stats']['fouls'] + 1}),
                     state[teamB]['players'][pB].update({'fouls': state[teamB]['players'][pB]['fouls'] + 1})
                 )
             },
-            "shooting_foul_for_2pt_and_score_2_of_2": {
-                "template": "{player_A} is fouled by {player_B} while attempting a 2pt shot. {player_A} makes 2 of 2 free throws.",
-                "effect": lambda state, pA, pB, teamA, teamB: (
-                    state[teamA]['stats'].update({'score': state[teamA]['stats']['score'] + 2}),
-                    state[teamA]['players'][pA].update({
-                        'points': state[teamA]['players'][pA]['points'] + 2,
-                        'ft_made': state[teamA]['players'][pA]['ft_made'] + 2,
-                        'ft_attempted': state[teamA]['players'][pA]['ft_attempted'] + 2,
-                    }),
-                    state[teamB]['stats'].update({'fouls': state[teamB]['stats']['fouls'] + 1}),
-                    state[teamB]['players'][pB].update({'fouls': state[teamB]['players'][pB]['fouls'] + 1})
+            "ft_made": {
+                "template": "{player_A} makes the {shot_ordinal} free throw.",
+                "effect": lambda state, pA, team: (
+                    state[team]['stats'].update({'score': state[team]['stats']['score'] + 1}),
+                    state[team]['players'][pA].update({
+                        'points': state[team]['players'][pA]['points'] + 1,
+                        'ft_made': state[team]['players'][pA]['ft_made'] + 1,
+                        'ft_attempted': state[team]['players'][pA]['ft_attempted'] + 1
+                    })
                 )
             },
-            "shooting_foul_for_3pt_and_score_0_of_3": {
-                "template": "{player_A} is fouled by {player_B} while attempting a 3pt shot. {player_A} makes 0 of 3 free throws.",
-                "effect": lambda state, pA, pB, teamA, teamB: (
-                    state[teamA]['stats'].update({'score': state[teamA]['stats']['score'] + 0}),
-                    state[teamA]['players'][pA].update({
-                        'points': state[teamA]['players'][pA]['points'] + 0,
-                        'ft_made': state[teamA]['players'][pA]['ft_made'] + 0,
-                        'ft_attempted': state[teamA]['players'][pA]['ft_attempted'] + 3,
-                    }),
-                    state[teamB]['stats'].update({'fouls': state[teamB]['stats']['fouls'] + 1}),
-                    state[teamB]['players'][pB].update({'fouls': state[teamB]['players'][pB]['fouls'] + 1})
+            "ft_missed": {
+                "template": "{player_A} misses the {shot_ordinal} free throw.",
+                "effect": lambda state, pA, team: (
+                    state[team]['players'][pA].update({
+                        'ft_attempted': state[team]['players'][pA]['ft_attempted'] + 1
+                    })
                 )
             },
-            "shooting_foul_for_3pt_and_score_1_of_3": {
-                "template": "{player_A} is fouled by {player_B} while attempting a 3pt shot. {player_A} makes 1 of 3 free throws.",
-                "effect": lambda state, pA, pB, teamA, teamB: (
-                    state[teamA]['stats'].update({'score': state[teamA]['stats']['score'] + 1}),
-                    state[teamA]['players'][pA].update({
-                        'points': state[teamA]['players'][pA]['points'] + 1,
-                        'ft_made': state[teamA]['players'][pA]['ft_made'] + 1,
-                        'ft_attempted': state[teamA]['players'][pA]['ft_attempted'] + 3,
-                    }),
-                    state[teamB]['stats'].update({'fouls': state[teamB]['stats']['fouls'] + 1}),
-                    state[teamB]['players'][pB].update({'fouls': state[teamB]['players'][pB]['fouls'] + 1})
-                )
-            },
-            "shooting_foul_for_3pt_and_score_2_of_3": {
-                "template": "{player_A} is fouled by {player_B} while attempting a 3pt shot. {player_A} makes 2 of 3 free throws.",
-                "effect": lambda state, pA, pB, teamA, teamB: (
-                    state[teamA]['stats'].update({'score': state[teamA]['stats']['score'] + 2}),
-                    state[teamA]['players'][pA].update({
-                        'points': state[teamA]['players'][pA]['points'] + 2,
-                        'ft_made': state[teamA]['players'][pA]['ft_made'] + 2,
-                        'ft_attempted': state[teamA]['players'][pA]['ft_attempted'] + 3,
-                    }),
-                    state[teamB]['stats'].update({'fouls': state[teamB]['stats']['fouls'] + 1}),
-                    state[teamB]['players'][pB].update({'fouls': state[teamB]['players'][pB]['fouls'] + 1})
-                )
-            },
-            "shooting_foul_for_3pt_and_score_3_of_3": {
-                "template": "{player_A} is fouled by {player_B} while attempting a 3pt shot. {player_A} makes 3 of 3 free throws.",
-                "effect": lambda state, pA, pB, teamA, teamB: (
-                    state[teamA]['stats'].update({'score': state[teamA]['stats']['score'] + 3}),
-                    state[teamA]['players'][pA].update({
-                        'points': state[teamA]['players'][pA]['points'] + 3,
-                        'ft_made': state[teamA]['players'][pA]['ft_made'] + 3,
-                        'ft_attempted': state[teamA]['players'][pA]['ft_attempted'] + 3,
-                    }),
-                    state[teamB]['stats'].update({'fouls': state[teamB]['stats']['fouls'] + 1}),
-                    state[teamB]['players'][pB].update({'fouls': state[teamB]['players'][pB]['fouls'] + 1})
-                )
-            },
+
+            # # --- Foul Events-Old ---
+            # "shooting_foul_for_2pt_and_score_0_of_2": {
+            #     "template": "{player_A} is fouled by {player_B} while attempting a 2pt shot. {player_A} makes 0 of 2 free throws.",
+            #     "effect": lambda state, pA, pB, teamA, teamB: (
+            #         state[teamA]['stats'].update({'score': state[teamA]['stats']['score'] + 0}),
+            #         state[teamA]['players'][pA].update({
+            #             'points': state[teamA]['players'][pA]['points'] + 0,
+            #             'ft_made': state[teamA]['players'][pA]['ft_made'] + 0,
+            #             'ft_attempted': state[teamA]['players'][pA]['ft_attempted'] + 2,
+            #         }),
+            #         state[teamB]['stats'].update({'fouls': state[teamB]['stats']['fouls'] + 1}),
+            #         state[teamB]['players'][pB].update({'fouls': state[teamB]['players'][pB]['fouls'] + 1})
+            #     )
+            # },
+            # "shooting_foul_for_2pt_and_score_1_of_2": {
+            #     "template": "{player_A} is fouled by {player_B} while attempting a 2pt shot. {player_A} makes 1 of 2 free throws.",
+            #     "effect": lambda state, pA, pB, teamA, teamB: (
+            #         state[teamA]['stats'].update({'score': state[teamA]['stats']['score'] + 1}),
+            #         state[teamA]['players'][pA].update({
+            #             'points': state[teamA]['players'][pA]['points'] + 1,
+            #             'ft_made': state[teamA]['players'][pA]['ft_made'] + 1,
+            #             'ft_attempted': state[teamA]['players'][pA]['ft_attempted'] + 2,
+            #         }),
+            #         state[teamB]['stats'].update({'fouls': state[teamB]['stats']['fouls'] + 1}),
+            #         state[teamB]['players'][pB].update({'fouls': state[teamB]['players'][pB]['fouls'] + 1})
+            #     )
+            # },
+            # "shooting_foul_for_2pt_and_score_2_of_2": {
+            #     "template": "{player_A} is fouled by {player_B} while attempting a 2pt shot. {player_A} makes 2 of 2 free throws.",
+            #     "effect": lambda state, pA, pB, teamA, teamB: (
+            #         state[teamA]['stats'].update({'score': state[teamA]['stats']['score'] + 2}),
+            #         state[teamA]['players'][pA].update({
+            #             'points': state[teamA]['players'][pA]['points'] + 2,
+            #             'ft_made': state[teamA]['players'][pA]['ft_made'] + 2,
+            #             'ft_attempted': state[teamA]['players'][pA]['ft_attempted'] + 2,
+            #         }),
+            #         state[teamB]['stats'].update({'fouls': state[teamB]['stats']['fouls'] + 1}),
+            #         state[teamB]['players'][pB].update({'fouls': state[teamB]['players'][pB]['fouls'] + 1})
+            #     )
+            # },
+            # "shooting_foul_for_3pt_and_score_0_of_3": {
+            #     "template": "{player_A} is fouled by {player_B} while attempting a 3pt shot. {player_A} makes 0 of 3 free throws.",
+            #     "effect": lambda state, pA, pB, teamA, teamB: (
+            #         state[teamA]['stats'].update({'score': state[teamA]['stats']['score'] + 0}),
+            #         state[teamA]['players'][pA].update({
+            #             'points': state[teamA]['players'][pA]['points'] + 0,
+            #             'ft_made': state[teamA]['players'][pA]['ft_made'] + 0,
+            #             'ft_attempted': state[teamA]['players'][pA]['ft_attempted'] + 3,
+            #         }),
+            #         state[teamB]['stats'].update({'fouls': state[teamB]['stats']['fouls'] + 1}),
+            #         state[teamB]['players'][pB].update({'fouls': state[teamB]['players'][pB]['fouls'] + 1})
+            #     )
+            # },
+            # "shooting_foul_for_3pt_and_score_1_of_3": {
+            #     "template": "{player_A} is fouled by {player_B} while attempting a 3pt shot. {player_A} makes 1 of 3 free throws.",
+            #     "effect": lambda state, pA, pB, teamA, teamB: (
+            #         state[teamA]['stats'].update({'score': state[teamA]['stats']['score'] + 1}),
+            #         state[teamA]['players'][pA].update({
+            #             'points': state[teamA]['players'][pA]['points'] + 1,
+            #             'ft_made': state[teamA]['players'][pA]['ft_made'] + 1,
+            #             'ft_attempted': state[teamA]['players'][pA]['ft_attempted'] + 3,
+            #         }),
+            #         state[teamB]['stats'].update({'fouls': state[teamB]['stats']['fouls'] + 1}),
+            #         state[teamB]['players'][pB].update({'fouls': state[teamB]['players'][pB]['fouls'] + 1})
+            #     )
+            # },
+            # "shooting_foul_for_3pt_and_score_2_of_3": {
+            #     "template": "{player_A} is fouled by {player_B} while attempting a 3pt shot. {player_A} makes 2 of 3 free throws.",
+            #     "effect": lambda state, pA, pB, teamA, teamB: (
+            #         state[teamA]['stats'].update({'score': state[teamA]['stats']['score'] + 2}),
+            #         state[teamA]['players'][pA].update({
+            #             'points': state[teamA]['players'][pA]['points'] + 2,
+            #             'ft_made': state[teamA]['players'][pA]['ft_made'] + 2,
+            #             'ft_attempted': state[teamA]['players'][pA]['ft_attempted'] + 3,
+            #         }),
+            #         state[teamB]['stats'].update({'fouls': state[teamB]['stats']['fouls'] + 1}),
+            #         state[teamB]['players'][pB].update({'fouls': state[teamB]['players'][pB]['fouls'] + 1})
+            #     )
+            # },
+            # "shooting_foul_for_3pt_and_score_3_of_3": {
+            #     "template": "{player_A} is fouled by {player_B} while attempting a 3pt shot. {player_A} makes 3 of 3 free throws.",
+            #     "effect": lambda state, pA, pB, teamA, teamB: (
+            #         state[teamA]['stats'].update({'score': state[teamA]['stats']['score'] + 3}),
+            #         state[teamA]['players'][pA].update({
+            #             'points': state[teamA]['players'][pA]['points'] + 3,
+            #             'ft_made': state[teamA]['players'][pA]['ft_made'] + 3,
+            #             'ft_attempted': state[teamA]['players'][pA]['ft_attempted'] + 3,
+            #         }),
+            #         state[teamB]['stats'].update({'fouls': state[teamB]['stats']['fouls'] + 1}),
+            #         state[teamB]['players'][pB].update({'fouls': state[teamB]['players'][pB]['fouls'] + 1})
+            #     )
+            # },
 
             # --- Defensive Events ---
             "steal": {
@@ -343,29 +428,42 @@ class BasketballReportGenerator:
                 'active': full_roster[:5],
                 'bench': full_roster[5:]
             }
-        original_game_lineups = game_lineups.copy()
+        
+        #original_game_lineups = game_lineups.copy()
+        initial_lineups = {
+            team_name: {
+                'starting_lineup': list(lineups['active']),
+                'bench': list(lineups['bench'])
+            } for team_name, lineups in game_lineups.items()
+        }
 
         game_stats = self._initialize_stats()
         game_stats = {team: game_stats[team] for team in team_names}
 
         play_by_play = []
+        last_score_event_details = None
 
         # --- Initialize possession ---
         possession = random.choice(team_names)
 
-        REBOUND_EVENTS = ["miss_2pt", "miss_3pt", "block_on_2pt_shot", "block_on_3pt_shot",
-                          "shooting_foul_for_2pt_and_score_0_of_2", "shooting_foul_for_2pt_and_score_1_of_2",
-                          "shooting_foul_for_3pt_and_score_0_of_3", "shooting_foul_for_3pt_and_score_1_of_3", "shooting_foul_for_3pt_and_score_2_of_3"]
+        # REBOUND_EVENTS = ["miss_2pt", "miss_3pt", "block_on_2pt_shot", "block_on_3pt_shot",
+        #                   "shooting_foul_for_2pt_and_score_0_of_2", "shooting_foul_for_2pt_and_score_1_of_2",
+        #                   "shooting_foul_for_3pt_and_score_0_of_3", "shooting_foul_for_3pt_and_score_1_of_3", "shooting_foul_for_3pt_and_score_2_of_3"]
 
-        # To avoid infinite loops of non-possession-changing events, we'll categorize them.
         OFFENSIVE_EVENTS = [
             "assist_and_score_2pt", "assist_and_score_3pt", "miss_2pt", "miss_3pt",
             "turnover_by_bad_pass", "block_on_2pt_shot", "block_on_3pt_shot", "steal",
-            "shooting_foul_for_2pt_and_score_0_of_2", "shooting_foul_for_2pt_and_score_1_of_2",
-            "shooting_foul_for_2pt_and_score_2_of_2",
-            "shooting_foul_for_3pt_and_score_0_of_3", "shooting_foul_for_3pt_and_score_1_of_3", "shooting_foul_for_3pt_and_score_2_of_3",
-            "shooting_foul_for_3pt_and_score_3_of_3"
+            "shooting_foul_2pt", "shooting_foul_3pt"
         ]
+        
+        # OFFENSIVE_EVENTS = [
+        #     "assist_and_score_2pt", "assist_and_score_3pt", "miss_2pt", "miss_3pt",
+        #     "turnover_by_bad_pass", "block_on_2pt_shot", "block_on_3pt_shot", "steal",
+        #     "shooting_foul_for_2pt_and_score_0_of_2", "shooting_foul_for_2pt_and_score_1_of_2",
+        #     "shooting_foul_for_2pt_and_score_2_of_2",
+        #     "shooting_foul_for_3pt_and_score_0_of_3", "shooting_foul_for_3pt_and_score_1_of_3", "shooting_foul_for_3pt_and_score_2_of_3",
+        #     "shooting_foul_for_3pt_and_score_3_of_3"
+        # ]
 
         for _ in range(num_events):
             # --- MINIMAL CHANGE 2: Choose an offensive event, not any event ---
@@ -378,25 +476,83 @@ class BasketballReportGenerator:
 
             # Category 1: Two players, same team (e.g., assist)
             if event_type in ["assist_and_score_2pt", "assist_and_score_3pt"]:
-                # --- MINIMAL CHANGE 3: Use possession, don't randomize team ---
                 acting_team = possession
                 active_players = game_lineups[acting_team]['active']
                 if len(active_players) < 2: continue
                 pA, pB = random.sample(active_players, 2)
+                
+                # Store details in case of a VAR review
+                last_score_event_details = {'type': event_type, 'pA': pA, 'pB': pB, 'team': acting_team}
+                
+                # Apply initial stats for the score
                 event["effect"](game_stats, pA, pB, acting_team)
+                
                 colored_pA = self._get_colored_name(pA, acting_team)
                 colored_pB = self._get_colored_name(pB, acting_team)
-                #play_by_play.append(event["template"].format(player_A=colored_pA, player_B=colored_pB))
+                
                 play_by_play.append({
                     "event_id": len(play_by_play) + 1,
                     "description": event["template"].format(player_A=colored_pA, player_B=colored_pB)
                 })
-                # --- Update possession ---
-                possession = teamB_name if acting_team == teamA_name else teamA_name
+                
+                # --- PASTED VAR LOGIC ---
+                if last_score_event_details and random.random() < 0.5:
+                    #print(f"--- VAR REVIEW INITIATED for {last_score_event_details['team']} ---")
+                    
+                    original_event_type = last_score_event_details['type']
+                    var_event_type = "var_overturn_2pt" if original_event_type == "assist_and_score_2pt" else "var_overturn_3pt"
+                    var_event = self.event_templates[var_event_type]
+                    
+                    pA_var, pB_var, team_var = last_score_event_details['pA'], last_score_event_details['pB'], last_score_event_details['team']
+                    
+                    # Apply the reversing statistical effect
+                    var_event["effect"](game_stats, pA_var, pB_var, team_var)
+                    
+                    # Add the VAR description to the play-by-play
+                    colored_pA_var = self._get_colored_name(pA_var, team_var)
+                    colored_pB_var = self._get_colored_name(pB_var, team_var)
+                    play_by_play.append({
+                        "event_id": len(play_by_play) + 1,
+                        "description": var_event["template"].format(player_A=colored_pA_var, player_B=colored_pB_var)
+                    })
+
+                    # An overturned basket results in a turnover, so possession flips
+                    possession = teamB_name if team_var == teamA_name else teamA_name
+                else:
+                    # If there was no VAR review, possession changes normally
+                    possession = teamB_name if acting_team == teamA_name else teamA_name
+
+                # --- Handle substitutions AFTER score and potential VAR ---
                 head_coach_A = self.teams[teamA_name]["head_coach"]
                 head_coach_B = self.teams[teamB_name]["head_coach"]
                 self._handle_substitution(head_coach_A, teamA_name, game_lineups, play_by_play)
                 self._handle_substitution(head_coach_B, teamB_name, game_lineups, play_by_play)
+
+                # Finally, reset the memory
+                last_score_event_details = None
+
+            # --- Category 1: Two players, one team (e.g., score) without VAR ---
+            # if event_type in ["assist_and_score_2pt", "assist_and_score_3pt"]:
+            #     # --- MINIMAL CHANGE 3: Use possession, don't randomize team ---
+            #     acting_team = possession
+            #     active_players = game_lineups[acting_team]['active']
+            #     if len(active_players) < 2: continue
+            #     pA, pB = random.sample(active_players, 2)
+            #     last_score_event_details = {'type': event_type, 'pA': pA, 'pB': pB, 'team': acting_team}
+            #     event["effect"](game_stats, pA, pB, acting_team)
+            #     colored_pA = self._get_colored_name(pA, acting_team)
+            #     colored_pB = self._get_colored_name(pB, acting_team)
+            #     #play_by_play.append(event["template"].format(player_A=colored_pA, player_B=colored_pB))
+            #     play_by_play.append({
+            #         "event_id": len(play_by_play) + 1,
+            #         "description": event["template"].format(player_A=colored_pA, player_B=colored_pB)
+            #     })
+            #     # --- Update possession ---
+            #     possession = teamB_name if acting_team == teamA_name else teamA_name
+            #     head_coach_A = self.teams[teamA_name]["head_coach"]
+            #     head_coach_B = self.teams[teamB_name]["head_coach"]
+            #     self._handle_substitution(head_coach_A, teamA_name, game_lineups, play_by_play)
+            #     self._handle_substitution(head_coach_B, teamB_name, game_lineups, play_by_play)
 
             # Category 2: One player, one team (e.g., miss, turnover)
             elif event_type in ["miss_2pt", "miss_3pt", "turnover_by_bad_pass"]:
@@ -419,98 +575,225 @@ class BasketballReportGenerator:
                     head_coach_B = self.teams[teamB_name]["head_coach"]
                     head_coach_acting_team = head_coach_A if acting_team == teamA_name else head_coach_B
                     self._handle_substitution(head_coach_acting_team, acting_team, game_lineups, play_by_play)
+                last_score_event_details = None
 
-
-            # Category 3: Two players, two teams (e.g., foul, block, steal)
-            elif "foul" in event_type or "block" in event_type or "steal" in event_type:
-                # Use possession to define offensive (teamA) and defensive (teamB) teams
+            # Category 3: Two players, two teams (e.g., block, steal, or start of a foul sequence)
+            elif event_type in ["block_on_2pt_shot", "block_on_3pt_shot", "steal", "shooting_foul_2pt", "shooting_foul_3pt"]:
                 teamA = possession # Offensive team
                 teamB = teamB_name if teamA == teamA_name else teamA_name # Defensive team
                 
                 if "steal" in event_type:
-                    # pA is the stealer (defensive), pB has the turnover (offensive)
                     pA = random.choice(game_lineups[teamB]['active'])
                     pB = random.choice(game_lineups[teamA]['active'])
                     event["effect"](game_stats, pA, pB, teamB, teamA)
                     colored_pA = self._get_colored_name(pA, teamB)
                     colored_pB = self._get_colored_name(pB, teamA)
-                    #play_by_play.append(event["template"].format(player_A=colored_pA, player_B=colored_pB))
                     play_by_play.append({
                         "event_id": len(play_by_play) + 1,
                         "description": event["template"].format(player_A=colored_pA, player_B=colored_pB)
+                        })
+                    possession = teamB
+                
+                elif "block" in event_type:
+                    blocker = random.choice(game_lineups[teamB]['active'])
+                    shooter = random.choice(game_lineups[teamA]['active'])
+                    event["effect"](game_stats, blocker, shooter, teamB, teamA)
+                    
+                    colored_blocker = self._get_colored_name(blocker, teamB)
+                    colored_shooter = self._get_colored_name(shooter, teamA)
+                    play_by_play.append({
+                        "event_id": len(play_by_play) + 1,
+                        "description": event["template"].format(player_A=colored_blocker, player_B=colored_shooter)
                     })
-                    possession = teamB # Stealing team gets possession
-                else: # Foul or Block
-                    if "block" in event_type:
-                        # For a block, pA is the blocker (from defensive team), pB is the shooter (from offensive team)
-                        blocker = random.choice(game_lineups[teamB]['active']) # pA in template
-                        shooter = random.choice(game_lineups[teamA]['active']) # pB in template
-                        event["effect"](game_stats, blocker, shooter, teamB, teamA)
-                        colored_blocker = self._get_colored_name(blocker, teamB)
-                        colored_shooter = self._get_colored_name(shooter, teamA)
-                        #play_by_play.append(event["template"].format(player_A=colored_blocker, player_B=colored_shooter))
-                        play_by_play.append({
-                            "event_id": len(play_by_play) + 1,
-                            "description": event["template"].format(player_A=colored_blocker, player_B=colored_shooter)
+                    
+                    # --- IMMEDIATE REBOUND AFTER BLOCK ---
+                    rebound_type = random.choices(["offensive", "defensive"], weights=[0.2, 0.8], k=1)[0]
+                    rebound_team = teamA if rebound_type == "offensive" else teamB
+                    rebounder = random.choice(game_lineups[rebound_team]['active'])
+                    rebound_event = self.event_templates[f"rebound_{rebound_type}"]
+                    rebound_event["effect"](game_stats, rebounder, rebound_team)
+                    colored_rebounder = self._get_colored_name(rebounder, rebound_team)
+                    play_by_play.append({
+                        "event_id": len(play_by_play) + 1,
+                        "description": rebound_event["template"].format(player_A=colored_rebounder)
+                    })
+                    possession = rebound_team
+
+                # --- NEW: Multi-Step Foul and Free Throw Sequence ---
+                elif "shooting_foul" in event_type:
+                    shooter = random.choice(game_lineups[teamA]['active'])
+                    defender = random.choice(game_lineups[teamB]['active'])
+                    
+                    # 1. Announce the foul
+                    event["effect"](game_stats, shooter, defender, teamA, teamB)
+                    colored_shooter = self._get_colored_name(shooter, teamA)
+                    colored_defender = self._get_colored_name(defender, teamB)
+                    play_by_play.append({
+                        "event_id": len(play_by_play) + 1,
+                        "description": event["template"].format(player_A=colored_shooter, player_B=colored_defender)
                         })
-                        shooting_team = teamA # The team that shot the ball
-                    else: # Foul
-                        # For a foul, pA is the shooter (offensive), pB is the defender
-                        shooter = random.choice(game_lineups[teamA]['active']) # pA in template
-                        defender = random.choice(game_lineups[teamB]['active']) # pB in template
-                        event["effect"](game_stats, shooter, defender, teamA, teamB)
-                        colored_shooter = self._get_colored_name(shooter, teamA)
-                        colored_defender = self._get_colored_name(defender, teamB)
-                        #play_by_play.append(event["template"].format(player_A=colored_shooter, player_B=colored_defender))
-                        play_by_play.append({
-                            "event_id": len(play_by_play) + 1,
-                            "description": event["template"].format(player_A=colored_shooter, player_B=colored_defender)
-                        })
-                        shooting_team = teamA # The team that shot the ball
+                    
+                    # --- Free Throw Simulation ---
+                    ft_made_event = self.event_templates['ft_made']
+                    ft_missed_event = self.event_templates['ft_missed']
+                    FT_PERCENTAGE = random.uniform(0.50, 1.00)  # Simulate a realistic free throw percentage
+                    num_shots = 3 if event_type == "shooting_foul_3pt" else 2
+                    ordinals = ["first", "second", "third"]
 
-                        # Handle substitutions AFTER the foul is recorded
-                        head_coach_A = self.teams[teamA]["head_coach"]
-                        head_coach_B = self.teams[teamB]["head_coach"]
-                        self._handle_substitution(head_coach_A, teamA, game_lineups, play_by_play, cant_sub_player=shooter)
-                        self._handle_substitution(head_coach_B, teamB, game_lineups, play_by_play)
+                    for i in range(num_shots):
+                        shot_ordinal_str = ordinals[i]
+                        is_last_shot = (i + 1) == num_shots
 
-                        if event_type in ["shooting_foul_for_2pt_and_score_2_of_2", "shooting_foul_for_3pt_and_score_3_of_3"]:
-                            # Last shot was MADE, possession changes
-                            possession = teamB
-                        else:
-                            # Last shot was MISSED, a rebound will determine possession.
-                            # The 'shooting_team' variable is already set to teamA, so the rebound logic will work.
-                            pass
+                        # Process the free throw
+                        if random.random() < FT_PERCENTAGE:
+                            ft_made_event['effect'](game_stats, shooter, teamA)
+                            desc = ft_made_event['template'].format(player_A=colored_shooter, shot_ordinal=shot_ordinal_str)
+                            play_by_play.append({"event_id": len(play_by_play) + 1, "description": desc})
+                            if is_last_shot:
+                                possession = teamB
+                        else: # Missed FT
+                            ft_missed_event['effect'](game_stats, shooter, teamA)
+                            desc = ft_missed_event['template'].format(player_A=colored_shooter, shot_ordinal=shot_ordinal_str)
+                            play_by_play.append({"event_id": len(play_by_play) + 1, "description": desc})
+                            if is_last_shot:
+                                # --- NEW: IMMEDIATE REBOUND LOGIC ---
+                                rebound_type = random.choices(["offensive", "defensive"], weights=[0.2, 0.8], k=1)[0]
+                                rebound_team = teamA if rebound_type == "offensive" else teamB
+                                rebounder = random.choice(game_lineups[rebound_team]['active'])
+                                
+                                # Get the correct rebound event and apply its effect
+                                rebound_event = self.event_templates[f"rebound_{rebound_type}"]
+                                rebound_event["effect"](game_stats, rebounder, rebound_team)
+                                
+                                # Add the rebound to the play-by-play
+                                colored_rebounder = self._get_colored_name(rebounder, rebound_team)
+                                rebound_desc = rebound_event["template"].format(player_A=colored_rebounder)
+                                play_by_play.append({"event_id": len(play_by_play) + 1, "description": rebound_desc})
+                                
+                                # The rebound determines the next possession
+                                possession = rebound_team
+                        
+                        # Substitution window is between free throws
+                        if not is_last_shot:
+                            head_coach_A = self.teams[teamA]["head_coach"]
+                            head_coach_B = self.teams[teamB]["head_coach"]
+                            self._handle_substitution(head_coach_A, teamA, game_lineups, play_by_play, cant_sub_player=shooter)
+                            self._handle_substitution(head_coach_B, teamB, game_lineups, play_by_play)
+                
+                # After any of these non-scoring possessions, reset the VAR memory
+                last_score_event_details = None
+            
+            # Category 3: Two players, two teams (e.g., foul, block, steal)
+            # elif "foul" in event_type or "block" in event_type or "steal" in event_type:
+            #     # Use possession to define offensive (teamA) and defensive (teamB) teams
+            #     teamA = possession # Offensive team
+            #     teamB = teamB_name if teamA == teamA_name else teamA_name # Defensive team
+                
+            #     if "steal" in event_type:
+            #         # pA is the stealer (defensive), pB has the turnover (offensive)
+            #         pA = random.choice(game_lineups[teamB]['active'])
+            #         pB = random.choice(game_lineups[teamA]['active'])
+            #         event["effect"](game_stats, pA, pB, teamB, teamA)
+            #         colored_pA = self._get_colored_name(pA, teamB)
+            #         colored_pB = self._get_colored_name(pB, teamA)
+            #         #play_by_play.append(event["template"].format(player_A=colored_pA, player_B=colored_pB))
+            #         play_by_play.append({
+            #             "event_id": len(play_by_play) + 1,
+            #             "description": event["template"].format(player_A=colored_pA, player_B=colored_pB)
+            #         })
+            #         possession = teamB # Stealing team gets possession
+            #     else: # Foul or Block
+            #         if "block" in event_type:
+            #             # For a block, pA is the blocker (from defensive team), pB is the shooter (from offensive team)
+            #             blocker = random.choice(game_lineups[teamB]['active']) # pA in template
+            #             shooter = random.choice(game_lineups[teamA]['active']) # pB in template
+            #             event["effect"](game_stats, blocker, shooter, teamB, teamA)
+            #             colored_blocker = self._get_colored_name(blocker, teamB)
+            #             colored_shooter = self._get_colored_name(shooter, teamA)
+            #             #play_by_play.append(event["template"].format(player_A=colored_blocker, player_B=colored_shooter))
+            #             play_by_play.append({
+            #                 "event_id": len(play_by_play) + 1,
+            #                 "description": event["template"].format(player_A=colored_blocker, player_B=colored_shooter)
+            #             })
+            #             shooting_team = teamA # The team that shot the ball
+            #         else: # Foul
+            #             # For a foul, pA is the shooter (offensive), pB is the defender
+            #             shooter = random.choice(game_lineups[teamA]['active']) # pA in template
+            #             defender = random.choice(game_lineups[teamB]['active']) # pB in template
+            #             event["effect"](game_stats, shooter, defender, teamA, teamB)
+            #             colored_shooter = self._get_colored_name(shooter, teamA)
+            #             colored_defender = self._get_colored_name(defender, teamB)
+            #             #play_by_play.append(event["template"].format(player_A=colored_shooter, player_B=colored_defender))
+            #             play_by_play.append({
+            #                 "event_id": len(play_by_play) + 1,
+            #                 "description": event["template"].format(player_A=colored_shooter, player_B=colored_defender)
+            #             })
+            #             shooting_team = teamA # The team that shot the ball
 
-            # --- Rebound Logic (This part was mostly correct) ---
-            if shooting_team and event_type in REBOUND_EVENTS:
+            #             # Handle substitutions AFTER the foul is recorded
+            #             head_coach_A = self.teams[teamA]["head_coach"]
+            #             head_coach_B = self.teams[teamB]["head_coach"]
+            #             self._handle_substitution(head_coach_A, teamA, game_lineups, play_by_play, cant_sub_player=shooter)
+            #             self._handle_substitution(head_coach_B, teamB, game_lineups, play_by_play)
+
+            #             if event_type in ["shooting_foul_for_2pt_and_score_2_of_2", "shooting_foul_for_3pt_and_score_3_of_3"]:
+            #                 # Last shot was MADE, possession changes
+            #                 possession = teamB
+            #             else:
+            #                 # Last shot was MISSED, a rebound will determine possession.
+            #                 # The 'shooting_team' variable is already set to teamA, so the rebound logic will work.
+            #                 pass
+            #     last_score_event_details = None
+
+            # --- Rebound Logic for REGULAR Missed Shots ---
+            if shooting_team and event_type in ["miss_2pt", "miss_3pt"]:
                 rebound_type = random.choices(["offensive", "defensive"], weights=[0.2, 0.8], k=1)[0]
-
-                if rebound_type == "offensive":
-                    rebound_team_name = shooting_team
-                else: # defensive
-                    rebound_team_name = teamB_name if shooting_team == teamA_name else teamA_name
-
+                rebound_team_name = shooting_team if rebound_type == "offensive" else (teamB_name if shooting_team == teamA_name else teamA_name)
+                
                 rebounder = random.choice(game_lineups[rebound_team_name]['active'])
-                rebound_event_key = "rebound_" + rebound_type
-                rebound_event = self.event_templates[rebound_event_key]
-
+                rebound_event = self.event_templates[f"rebound_{rebound_type}"]
                 rebound_event["effect"](game_stats, rebounder, rebound_team_name)
+                
                 colored_rebounder = self._get_colored_name(rebounder, rebound_team_name)
-                #play_by_play.append(rebound_event["template"].format(player_A=colored_rebounder))
                 play_by_play.append({
                     "event_id": len(play_by_play) + 1,
                     "description": rebound_event["template"].format(player_A=colored_rebounder)
                 })
-                # --- MINIMAL CHANGE 5: Update possession based on rebound ---
                 possession = rebound_team_name
 
-                # After a foul, possession is determined by rebound or made FT
-                if "foul" in event_type:
-                    # Made last FT
-                    if event_type not in ["shooting_foul_for_2pt_and_score_0_of_2", "shooting_foul_for_2pt_and_score_1_of_2",
-                                          "shooting_foul_for_3pt_and_score_0_of_3", "shooting_foul_for_3pt_and_score_1_of_3", "shooting_foul_for_3pt_and_score_2_of_3"]:
-                         possession = teamB_name if shooting_team == teamA_name else teamA_name
+            # --- Reset shooting_team at the end of every loop ---
+            shooting_team = None
+            
+            # # --- Rebound Logic ---
+            # if shooting_team and event_type in REBOUND_EVENTS:
+            #     rebound_type = random.choices(["offensive", "defensive"], weights=[0.2, 0.8], k=1)[0]
+
+            #     if rebound_type == "offensive":
+            #         rebound_team_name = shooting_team
+            #     else: # defensive
+            #         rebound_team_name = teamB_name if shooting_team == teamA_name else teamA_name
+
+            #     rebounder = random.choice(game_lineups[rebound_team_name]['active'])
+            #     rebound_event_key = "rebound_" + rebound_type
+            #     rebound_event = self.event_templates[rebound_event_key]
+
+            #     rebound_event["effect"](game_stats, rebounder, rebound_team_name)
+            #     colored_rebounder = self._get_colored_name(rebounder, rebound_team_name)
+            #     #play_by_play.append(rebound_event["template"].format(player_A=colored_rebounder))
+            #     play_by_play.append({
+            #         "event_id": len(play_by_play) + 1,
+            #         "description": rebound_event["template"].format(player_A=colored_rebounder)
+            #     })
+            #     # --- MINIMAL CHANGE 5: Update possession based on rebound ---
+            #     possession = rebound_team_name
+            #     shooting_team = None
+
+            #     # # After a foul, possession is determined by rebound or made FT
+            #     # if "foul" in event_type:
+            #     #     # Made last FT
+            #     #     if event_type not in ["shooting_foul_for_2pt_and_score_0_of_2", "shooting_foul_for_2pt_and_score_1_of_2",
+            #     #                           "shooting_foul_for_3pt_and_score_0_of_3", "shooting_foul_for_3pt_and_score_1_of_3", "shooting_foul_for_3pt_and_score_2_of_3"]:
+            #     #          possession = teamB_name if shooting_team == teamA_name else teamA_name
 
         #return play_by_play, game_stats
         # --- Create a comprehensive game object to return ---
@@ -520,14 +803,14 @@ class BasketballReportGenerator:
                 teamA_name: {
                     "coach": self.teams[teamA_name]["head_coach"],
                     "roster": self.teams[teamA_name]["players"],
-                    "starting_lineup": original_game_lineups[teamA_name]['active'],
-                    "bench": original_game_lineups[teamA_name]['bench']
+                    "starting_lineup": initial_lineups[teamA_name]['starting_lineup'],
+                    "bench": initial_lineups[teamA_name]['bench']
                 },
                 teamB_name: {
                     "coach": self.teams[teamB_name]["head_coach"],
                     "roster": self.teams[teamB_name]["players"],
-                    "starting_lineup": original_game_lineups[teamB_name]['active'],
-                    "bench": original_game_lineups[teamB_name]['bench']
+                    "starting_lineup": initial_lineups[teamB_name]['starting_lineup'],
+                    "bench": initial_lineups[teamB_name]['bench']
                 }
             },
             "play_by_play": play_by_play,
@@ -538,7 +821,7 @@ class BasketballReportGenerator:
 
 if __name__ == "__main__":
     # Define the number of games to generate
-    NUM_GAMES_TO_GENERATE = 5
+    NUM_GAMES_TO_GENERATE = 10
     
     # 1. Initialize the generator once
     generator = BasketballReportGenerator()
@@ -555,7 +838,7 @@ if __name__ == "__main__":
         print(f"Generating game {game_index}/{NUM_GAMES_TO_GENERATE}...")
         
         # A. Generate the comprehensive data for a single game
-        game_data = generator.generate_report(num_events=10)
+        game_data = generator.generate_report(num_events=25)
         
         # B. Create a unique key for this game
         game_key = f"game_{game_index}"
