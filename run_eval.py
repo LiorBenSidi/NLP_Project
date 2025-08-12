@@ -60,15 +60,15 @@ SYSTEM_INSTRUCTIONS_PROMPT = """You are an automated sports data analyst.
                                         "coach": "CoachNameA",
                                         "roster": ["PlayerName1-A", "PlayerName2-A", "PlayerName3-A", ...],
                                         "starting_lineup": ["PlayerName1-A", "PlayerName2-A", "PlayerName3-A", ...],
-                                        "bench": ["PlayerName6-A", "PlayerName7-A", ...],
+                                        "bench": ["PlayerName6-A", "PlayerName7-A", ...]
                                     },
                                     "TeamNameB": {
                                         "coach": "CoachNameB",
                                         "roster": ["PlayerName1-B", "PlayerName2-B", "PlayerName3-B", ...],
                                         "starting_lineup": ["PlayerName1-B", "PlayerName2-B", "PlayerName3-B", ...],
-                                        "bench": ["PlayerName6-B", "PlayerName7-B", ...],
+                                        "bench": ["PlayerName6-B", "PlayerName7-B", ...]
                                     }
-                                  }
+                                  },
                                   "final_stats": {
                                     "TeamNameA": {
                                         "stats": {
@@ -79,7 +79,7 @@ SYSTEM_INSTRUCTIONS_PROMPT = """You are an automated sports data analyst.
                                             "steals": 3,
                                             "blocks": 9,
                                             "turnovers": 8
-                                        }
+                                        },
                                         "players": {
                                             "PlayerName1-A": {
                                                 "points": 6,
@@ -105,6 +105,7 @@ SYSTEM_INSTRUCTIONS_PROMPT = """You are an automated sports data analyst.
                                     "TeamNameB": {
                                         ...
                                     }
+                                  }
                                 }
                                 ```
                             """
@@ -142,9 +143,9 @@ def get_gemini_response(prompt_text):
     """Calls the Google Gemini API and returns the response content."""
     try:
         # UPDATED: Using 'gemini-1.5-flash' as requested
-        model = genai.GenerativeModel('gemini-1.5-flash')
+        model = genai.GenerativeModel('gemini-1.5-flash') #type: ignore
 
-        generation_config = genai.types.GenerationConfig(
+        generation_config = genai.types.GenerationConfig(  #type: ignore
             temperature=0.0,
             max_output_tokens=4096,
             response_mime_type="application/json",
@@ -262,13 +263,15 @@ def repair_json_output(json_string):
     return repaired
 
 # --- Part 3: Main Execution ---
+# --- handle multiple games ---
+
 if __name__ == "__main__":
     load_dotenv(override=True)
     api_key = os.getenv("GEMINI_API_KEY")
     if not api_key:
         print("Error: GEMINI_API_KEY is missing.")
     else:
-        genai.configure(api_key=api_key)
+        genai.configure(api_key=api_key) #type: ignore
 
         data_dir = "data"
         examples_path = os.path.join(data_dir, "examples.json")
@@ -278,45 +281,136 @@ if __name__ == "__main__":
             print("Error: Data files not found. Please run 'generate_data.py' first.")
         else:
             with open(examples_path, 'r', encoding='utf-8') as f:
-                game_narrative_data = json.load(f)
+                all_examples_data = json.load(f)
             with open(true_report_path, 'r', encoding='utf-8') as f:
-                ground_truth_data = json.load(f)
-
-            prompt = construct_prompt(game_narrative_data)
-            llm_response_str = get_gemini_response(prompt)
+                all_true_reports_data = json.load(f)
             
-            if llm_response_str:
-                raw_output_path = os.path.join(data_dir, "llm_response.txt")
-                with open(raw_output_path, 'w', encoding='utf-8') as f:
-                    f.write(llm_response_str)
-                print(f"\nSuccessfully saved LLM's raw text response to: {raw_output_path}")
+            # --- NEW: Create specific directories for text and json results ---
+            text_results_dir = os.path.join(data_dir, "llm_response_text")
+            json_results_dir = os.path.join(data_dir, "llm_response_json")
+            os.makedirs(text_results_dir, exist_ok=True)
+            os.makedirs(json_results_dir, exist_ok=True)
 
-                repaired_llm_str = repair_json_output(llm_response_str)
-                try:
-                    llm_report = json.loads(repaired_llm_str)
-                    print("\n--- GEMINI RESPONSE (Parsed JSON) ---")
-                    print(json.dumps(llm_report, indent=2))
+
+            all_accuracies = []
+            all_discrepancies = {}
+            
+            # Loop through each game in the dataset
+            for game_key, game_narrative_data in all_examples_data.items():
+                print(f"\n{'='*20} PROCESSING {game_key.upper()} {'='*20}")
+                ground_truth_data = all_true_reports_data[game_key]
+
+                prompt = construct_prompt(game_narrative_data)
+                llm_response_str = get_gemini_response(prompt)
+                
+                if llm_response_str:
+                    # --- MODIFIED: Save the raw response to the 'text' folder ---
+                    raw_output_path = os.path.join(text_results_dir, f"{game_key}.txt")
+                    with open(raw_output_path, 'w', encoding='utf-8') as f:
+                        f.write(llm_response_str)
+                    print(f"Saved raw response to: {raw_output_path}")
+
+                    repaired_llm_str = repair_json_output(llm_response_str)
+                    try:
+                        llm_report = json.loads(repaired_llm_str)
+
+                        # --- MODIFIED: Save the parsed JSON to the 'json' folder ---
+                        json_output_path = os.path.join(json_results_dir, f"{game_key}.json")
+                        with open(json_output_path, 'w', encoding='utf-8') as f:
+                            json.dump(llm_report, f, indent=4, ensure_ascii=False)
+                        print(f"Saved parsed report to: {json_output_path}")
+
+                        # Evaluate this specific game
+                        accuracy, discrepancies = evaluate_reports(llm_report, ground_truth_data)
+                        all_accuracies.append(accuracy)
+                        if discrepancies:
+                            all_discrepancies[game_key] = discrepancies
+                        
+                        print(f"--- RESULT for {game_key}: Accuracy = {accuracy:.2f}% ---")
+
+                    except json.JSONDecodeError:
+                        print(f"--- ERROR for {game_key}: Could not parse JSON response. Skipping evaluation. ---")
+                        all_discrepancies[game_key] = ["Failed to parse JSON response."]
+
+            # Final summary after the loop
+            if all_accuracies:
+                average_accuracy = sum(all_accuracies) / len(all_accuracies)
+                
+                # Create and save a final summary report
+                summary_data = {
+                    "total_games_processed": len(all_accuracies),
+                    "average_accuracy": f"{average_accuracy:.2f}%",
+                    "discrepancies_by_game": all_discrepancies
+                }
+                summary_path = os.path.join(data_dir, "summary.json")
+                with open(summary_path, 'w', encoding='utf-8') as f:
+                    json.dump(summary_data, f, indent=4, ensure_ascii=False)
+                
+                print(f"\n\n{'='*20} FINAL SUMMARY {'='*20}")
+                print(f"Processed {len(all_accuracies)} games.")
+                print(f"Average Accuracy: {average_accuracy:.2f}%")
+                print(f"Full summary saved to: {summary_path}")
+            else:
+                print("\nNo games were processed successfully.")
+
+# --- Part 3: Main Execution ---
+# --- one iteration ---
+
+# if __name__ == "__main__":
+#     load_dotenv(override=True)
+#     api_key = os.getenv("GEMINI_API_KEY")
+#     if not api_key:
+#         print("Error: GEMINI_API_KEY is missing.")
+#     else:
+#         genai.configure(api_key=api_key)
+
+#         data_dir = "data"
+#         examples_path = os.path.join(data_dir, "examples.json")
+#         true_report_path = os.path.join(data_dir, "true_report.json")
+
+#         if not os.path.exists(examples_path) or not os.path.exists(true_report_path):
+#             print("Error: Data files not found. Please run 'generate_data.py' first.")
+#         else:
+#             with open(examples_path, 'r', encoding='utf-8') as f:
+#                 game_narrative_data = json.load(f)
+#             with open(true_report_path, 'r', encoding='utf-8') as f:
+#                 ground_truth_data = json.load(f)
+
+#             prompt = construct_prompt(game_narrative_data)
+#             llm_response_str = get_gemini_response(prompt)
+            
+#             if llm_response_str:
+#                 raw_output_path = os.path.join(data_dir, "llm_response.txt")
+#                 with open(raw_output_path, 'w', encoding='utf-8') as f:
+#                     f.write(llm_response_str)
+#                 print(f"\nSuccessfully saved LLM's raw text response to: {raw_output_path}")
+
+#                 repaired_llm_str = repair_json_output(llm_response_str)
+#                 try:
+#                     llm_report = json.loads(repaired_llm_str)
+#                     print("\n--- GEMINI RESPONSE (Parsed JSON) ---")
+#                     print(json.dumps(llm_report, indent=2))
                     
-                    json_output_path = os.path.join(data_dir, "llm_report.json")
-                    with open(json_output_path, 'w', encoding='utf-8') as f:
-                        json.dump(llm_report, f, indent=4, ensure_ascii=False)
-                    print(f"Successfully saved valid JSON report to: {json_output_path}")
+#                     json_output_path = os.path.join(data_dir, "llm_report.json")
+#                     with open(json_output_path, 'w', encoding='utf-8') as f:
+#                         json.dump(llm_report, f, indent=4, ensure_ascii=False)
+#                     print(f"Successfully saved valid JSON report to: {json_output_path}")
 
-                    # The call to the imported function
-                    accuracy, discrepancies = evaluate_reports(llm_report, ground_truth_data)
+#                     # The call to the imported function
+#                     accuracy, discrepancies = evaluate_reports(llm_report, ground_truth_data)
                     
-                    print("\n--- EVALUATION RESULTS ---")
-                    print(f"Overall Accuracy: {accuracy:.2f}%")
-                    if discrepancies:
-                        print(f"\nFound {len(discrepancies)} discrepancies:")
-                        for d in discrepancies:
-                            print(f"- {d}")
-                    else:
-                        print("\nNo discrepancies found. The Gemini report perfectly matches the ground truth!")
+#                     print("\n--- EVALUATION RESULTS ---")
+#                     print(f"Overall Accuracy: {accuracy:.2f}%")
+#                     if discrepancies:
+#                         print(f"\nFound {len(discrepancies)} discrepancies:")
+#                         for d in discrepancies:
+#                             print(f"- {d}")
+#                     else:
+#                         print("\nNo discrepancies found. The Gemini report perfectly matches the ground truth!")
 
-                except json.JSONDecodeError:
-                    print("\nError: The Gemini response was not valid JSON, even after attempting to repair it.")
-                    print("The raw response was saved to llm_response.txt for inspection.")
+#                 except json.JSONDecodeError:
+#                     print("\nError: The Gemini response was not valid JSON, even after attempting to repair it.")
+#                     print("The raw response was saved to llm_response.txt for inspection.")
 
 # --- use evaluate_reports locally ---
 

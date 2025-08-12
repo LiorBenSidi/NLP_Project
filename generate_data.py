@@ -95,6 +95,11 @@ class BasketballReportGenerator:
                     })
                 )
             },
+            
+            # --- VAR ---
+            # "VAR-The_referee_Cancels_the_last_shot": {
+            #     "template": "The referee is reviewing the play for a potential violation. He cancels the last shot."
+            # },
 
             # --- Foul Events ---
             "shooting_foul_for_2pt_and_score_0_of_2": {
@@ -532,64 +537,139 @@ class BasketballReportGenerator:
         return game_summary
 
 if __name__ == "__main__":
-    # 1. Generate the comprehensive game data object
-    generator = BasketballReportGenerator()
-    game_data = generator.generate_report(num_events=50) # Use num_possessions for clarity
-
-    # 2. Extract data for printing to the console
-    report = game_data["play_by_play"]
-    final_stats = game_data["final_stats"]
+    # Define the number of games to generate
+    NUM_GAMES_TO_GENERATE = 5
     
-    print(f"\n--- MATCHUP: {game_data['matchup']} ---")
+    # 1. Initialize the generator once
+    generator = BasketballReportGenerator()
+    
+    # Create dictionaries to hold all the game data
+    all_examples_data = {}
+    all_true_reports_data = {}
 
-    print("\n--- PLAY-BY-PLAY REPORT ---")
-    for event in report:
-        print(f"{event['event_id']}. {event['description']}")
+    print(f"--- Starting generation of {NUM_GAMES_TO_GENERATE} games ---")
 
-    print("\n\n--- FINAL BOX SCORE ---")
-    print(json.dumps(final_stats, indent=4))
+    # 2. Loop to generate each game
+    for i in range(NUM_GAMES_TO_GENERATE):
+        game_index = i + 1
+        print(f"Generating game {game_index}/{NUM_GAMES_TO_GENERATE}...")
+        
+        # A. Generate the comprehensive data for a single game
+        game_data = generator.generate_report(num_events=10)
+        
+        # B. Create a unique key for this game
+        game_key = f"game_{game_index}"
 
-    # 3. Save the data to JSON files
+        # C. Construct the data for examples.json for this single game
+        examples_data = {
+            "matchup": game_data["matchup"],
+            "teams": game_data["teams"],
+            "play_by_play": game_data["play_by_play"]
+        }
+        
+        # D. Construct the data for true_report.json for this single game
+        team_names = list(game_data["final_stats"].keys())
+        teamA_name = team_names[0]
+        teamB_name = team_names[1]
+        score_A = game_data["final_stats"][teamA_name]["stats"]["score"]
+        score_B = game_data["final_stats"][teamB_name]["stats"]["score"]
+        true_report_data = {
+            "matchup": game_data["matchup"],
+            "final_score": f"{teamA_name}: {score_A}, {teamB_name}: {score_B}",
+            "teams": game_data["teams"],
+            "final_stats": game_data["final_stats"]
+        }
+
+        # E. Add the data for this game to the main dictionaries
+        all_examples_data[game_key] = examples_data
+        all_true_reports_data[game_key] = true_report_data
+
+    print(f"--- Finished generating {NUM_GAMES_TO_GENERATE} games ---\n")
+
+    # 3. Save the complete dictionaries to JSON files (outside the loop)
     output_dir = "data"
     os.makedirs(output_dir, exist_ok=True)
 
     examples_path = os.path.join(output_dir, "examples.json")
     true_report_path = os.path.join(output_dir, "true_report.json")
 
-    # Create the object to be saved in examples.json
-    examples_data = {
-        "matchup": game_data["matchup"],
-        "teams": game_data["teams"],
-        "play_by_play": game_data["play_by_play"]
-    }
-    
-    # Create the object to be saved in true_report.json
-    team_names = list(game_data["final_stats"].keys())
-    teamA_name = team_names[0]
-    teamB_name = team_names[1]
-    
-    score_A = game_data["final_stats"][teamA_name]["stats"]["score"]
-    score_B = game_data["final_stats"][teamB_name]["stats"]["score"]
-
-    true_report_data = {
-        "matchup": game_data["matchup"],
-        "final_score": f"{teamA_name}: {score_A}, {teamB_name}: {score_B}",
-        "teams": game_data["teams"],
-        "final_stats": game_data["final_stats"]
-    }
-
-    # Save the examples file
+    # Save the examples file containing all 50 games
     try:
         with open(examples_path, 'w', encoding='utf-8') as f:
-            json.dump(examples_data, f, indent=4, ensure_ascii=False)
-        print(f"\nSuccessfully saved play-by-play and rosters to {examples_path}")
+            json.dump(all_examples_data, f, indent=4, ensure_ascii=False)
+        print(f"Successfully saved {NUM_GAMES_TO_GENERATE} game examples to {examples_path}")
     except Exception as e:
         print(f"Error saving to {examples_path}: {e}")
 
-    # Save the true report (stats) file
+    # Save the true report file containing all 50 games
     try:
         with open(true_report_path, 'w', encoding='utf-8') as f:
-            json.dump(true_report_data, f, indent=4, ensure_ascii=False)
-        print(f"Successfully saved final stats and rosters to {true_report_path}")
+            json.dump(all_true_reports_data, f, indent=4, ensure_ascii=False)
+        print(f"Successfully saved {NUM_GAMES_TO_GENERATE} game stats to {true_report_path}")
     except Exception as e:
         print(f"Error saving to {true_report_path}: {e}")
+
+# --- one iteration ---
+
+# if __name__ == "__main__":
+#     # 1. Generate the comprehensive game data object
+#     generator = BasketballReportGenerator()
+#     game_data = generator.generate_report(num_events=50) # Use num_possessions for clarity
+
+#     # 2. Extract data for printing to the console
+#     report = game_data["play_by_play"]
+#     final_stats = game_data["final_stats"]
+    
+#     print(f"\n--- MATCHUP: {game_data['matchup']} ---")
+
+#     print("\n--- PLAY-BY-PLAY REPORT ---")
+#     for event in report:
+#         print(f"{event['event_id']}. {event['description']}")
+
+#     print("\n\n--- FINAL BOX SCORE ---")
+#     print(json.dumps(final_stats, indent=4))
+
+#     # 3. Save the data to JSON files
+#     output_dir = "data"
+#     os.makedirs(output_dir, exist_ok=True)
+
+#     examples_path = os.path.join(output_dir, "examples.json")
+#     true_report_path = os.path.join(output_dir, "true_report.json")
+
+#     # Create the object to be saved in examples.json
+#     examples_data = {
+#         "matchup": game_data["matchup"],
+#         "teams": game_data["teams"],
+#         "play_by_play": game_data["play_by_play"]
+#     }
+    
+#     # Create the object to be saved in true_report.json
+#     team_names = list(game_data["final_stats"].keys())
+#     teamA_name = team_names[0]
+#     teamB_name = team_names[1]
+    
+#     score_A = game_data["final_stats"][teamA_name]["stats"]["score"]
+#     score_B = game_data["final_stats"][teamB_name]["stats"]["score"]
+
+#     true_report_data = {
+#         "matchup": game_data["matchup"],
+#         "final_score": f"{teamA_name}: {score_A}, {teamB_name}: {score_B}",
+#         "teams": game_data["teams"],
+#         "final_stats": game_data["final_stats"]
+#     }
+
+#     # Save the examples file
+#     try:
+#         with open(examples_path, 'w', encoding='utf-8') as f:
+#             json.dump(examples_data, f, indent=4, ensure_ascii=False)
+#         print(f"\nSuccessfully saved play-by-play and rosters to {examples_path}")
+#     except Exception as e:
+#         print(f"Error saving to {examples_path}: {e}")
+
+#     # Save the true report (stats) file
+#     try:
+#         with open(true_report_path, 'w', encoding='utf-8') as f:
+#             json.dump(true_report_data, f, indent=4, ensure_ascii=False)
+#         print(f"Successfully saved final stats and rosters to {true_report_path}")
+#     except Exception as e:
+#         print(f"Error saving to {true_report_path}: {e}")
