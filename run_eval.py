@@ -3,13 +3,15 @@
 # 1. Ask the tutor for clarification on the way that they will contact the LLM using the API
 # 2. Improve the instruction to be more clear and unambiguous
 # 3. Provide examples of the expected inputs (events) and output formats (effects)
+# 4. Ask the tutor for clarification regarding to the advanced LLM settings.
+# 5. Ask the tutor if there will be different scores for students who are using different LLM models.
 
 import json
 import re
 import os
 import google.generativeai as genai
 from dotenv import load_dotenv
-from evaluation import evaluate_reports  # <-- NEW: Importing the function
+from evaluation import evaluate_reports
 
 # --- Part 1: Prompt Templates and Static Data ---
 SYSTEM_INSTRUCTIONS_PROMPT = """You are an automated sports data analyst.
@@ -21,11 +23,81 @@ SYSTEM_INSTRUCTIONS_PROMPT = """You are an automated sports data analyst.
                                 even if they did not play (in which case their stats should be 0).
                                 Synthesize this information into a single, complete JSON object that represents the final box score of the game.
 
+                                ### HOW TO HANDLE EACH EVENT ###
+                                You must follow these rules precisely for each event type:
+                                - **"{player_A1} delivers a sharp pass to {player_A2}, who finishes with a 2-point layup."**:
+                                  - Add 2 points and 1 assists to scoring team_A.
+                                  - Add 1 assist to player_A1.
+                                  - Add 2 points, 1 `2pt_shots_made`, and 1 `2pt_shots_attempted` to player_A2.
+                                - **"{player_A1} finds {player_A2} open on the perimeter for a successful 3-point shot."**:
+                                  - Add 3 points and 1 assists to scoring team_A.
+                                  - Add 1 assist to player_A1.
+                                  - Add 3 points, 1 `3pt_shots_made`, and 1 `3pt_shots_attempted` to player_A2.
+                                - **"{player_A} attempts a 2-point shot but misses."**:
+                                  - Add 1 `2pt_shots_attempted` to player_A.
+                                - **"{player_A} attempts a 3-point shot but misses."**:
+                                  - Add 1 `3pt_shots_attempted` to player_A.
+                                - **"{player_A} is fouled by {player_B} on a 2-point attempt and will go to the line for two shots."**:
+                                  - Add 1 `2pt_shots_attempted` to player_A.
+                                  - Add 1 foul to team_B.
+                                  - Add 1 foul to player_B.
+                                - **"{player_A} is fouled by {player_B} on a 3-point attempt and will go to the line for three shots."**:
+                                  - Add 1 `3pt_shots_attempted` to player_A.
+                                  - Add 1 foul to team_B.
+                                  - Add 1 foul to player_B.
+                                - **"{player_A} makes the {shot_ordinal} free throw."**:
+                                  - Add 1 point to team_A.
+                                  - Add 1 point, 1 `ft_made`, 1 `ft_attempted` to player_A.
+                                - **"{player_A} misses the {shot_ordinal} free throw."**:
+                                  - Add 1 `ft_attempted` to player_A.
+                                - **"{player_A} steals the ball from {player_B}!"**:
+                                  - Add 1 steal to team_A.
+                                  - Add 1 turnover to team_B.
+                                  - Add 1 steal to player_A.
+                                  - Add 1 turnover to player_B.
+                                - **"{player_A} blocks the 2pt shot from {player_B}!"**:
+                                  - Add 1 block to team_A.
+                                  - Add 1 block to player_A.
+                                  - Add 1 `2pt_shots_attempted` to player_B.
+                                - **"{player_A} blocks the 3pt shot from {player_B}!"**:
+                                  - Add 1 block to team_A.
+                                  - Add 1 block to player_A.
+                                  - Add 1 `3pt_shots_attempted` to player_B.
+                                - **"A bad pass from {player_A} results in a turnover."**:
+                                  - Add 1 turnover to team_A.
+                                  - Add 1 turnover to player_A.
+                                - **"Defensive rebound by {player_A}."**:
+                                  - Add 1 rebound to team_A.
+                                  - Add 1 rebound to player_A.
+                                - **"Offensive rebound by {player_A}."**:
+                                  - Add 1 rebound to team_A.
+                                  - Add 1 rebound to player_A.
+                                - **"After a VAR review, the previous basket by {player_B} is overturned due to an offensive foul committed by {player_B} before the shot."**:
+                                  - This is a correction. You must REVERSE the stats from the previous scoring play.
+                                  - Subtract 2 points, 1 assist from team_B.
+                                  - Add 1 foul, 1 turnover to team_B.
+                                  - Subtract 1 assist from player_A (the passer).
+                                  - Subtract 2 points, 1 made shot, and 1 attempted shot from player_B.
+                                  - Add 1 foul, 1 turnover to player_B.
+                                - **"The referees go to the monitor. After review, the 3-point shot by {player_B} is waved off due to a shot clock violation."**:
+                                  - This is a correction. You must REVERSE the stats from the previous scoring play.
+                                  - Subtract 3 points, 1 assist from team_B.
+                                  - Add 1 turnover to team_B.
+                                  - Subtract 1 assist from player_A (the passer).
+                                  - Subtract 3 points, 1 made 3pt shot, 1 attempted 3pt shot from player_B.
+                                  - Add 1 turnover to player_B.
+                                - **""Substitution by {head_coach}: {player_in} comes in for {player_out}.""**:
+                                  - This event does not affect player or team statistics. Use it only to track who is on the court.
+                                  - player_in is being active and can contribute to the game now, till he may be substituted out.
+                                  - player_out is temporarily inactive, but may return later by being substituted in.
+                                  - the statistics for both players should be tracked.
+
                                 ### OUTPUT FORMAT ###
                                 - Your entire response MUST be a single, valid JSON object.
                                 - Your response MUST NOT include any introductory text, explanations, or conversational markdown (like ```json ...```).
                                 - Your response MUST begin with the character `{` and end with the character `}`.
-                                - The response must conform to the JSON object format I will specify in the prompt.
+                                - **CRITICAL STRUCTURE RULE:** Inside the "final_stats" object, the two team objects (e.g., "TeamNameA" and "TeamNameB") MUST be siblings at the same level. Do NOT nest one team's stats inside the other's.
+                                - The response must match the JSON object format that I will specify in the prompt.
 
                                 ### REQUIRED STATS ###
                                 For each team, you must track and include the following:
@@ -258,38 +330,90 @@ def get_gemini_response(prompt_text):
 #     accuracy = (correct_fields / total_fields) * 100 if total_fields > 0 else 0
 #     return accuracy, discrepancies
 
-def repair_json_output(json_string):
+def repair_json_output(json_string, team_names):
     """
-    Attempts to fix common JSON errors, like missing closing braces, by counting them.
+    Attempts to fix JSON errors by first fixing truncation, then using the
+    number of added braces to diagnose and fix the specific team nesting error.
     """
-    # Trim whitespace and remove common markdown artifacts
     repaired = json_string.strip()
     if repaired.startswith("```json"):
         repaired = repaired.strip("```json")
     if repaired.endswith("```"):
         repaired = repaired.strip("```")
-    repaired = repaired.strip() # Strip again just in case
+    repaired = repaired.strip()
 
-    # This is the new, more robust check: count the braces
+    # --- Step 1: Fix truncation by balancing the braces ---
     open_braces = repaired.count('{')   
     close_braces = repaired.count('}')
     
+    missing_braces_at_end = 0
     if repaired.startswith('{') and open_braces > close_braces:
-        # Add the exact number of missing braces
-        missing_count = open_braces - close_braces
-        print(f"Attempting to fix JSON by adding {missing_count} closing brace(s) '}}'.")
-        repaired += '}' * missing_count
-    
+        missing_braces_at_end = open_braces - close_braces
+        print(f"Step 1: Fixing truncation by adding {missing_braces_at_end} closing brace(s).")
+        repaired += '}' * missing_braces_at_end
+
+    # --- Step 2: Use the number of missing braces as a clue to diagnose the nesting error ---
+    # According to your insight, if we were missing exactly 2 braces, it's highly likely
+    # the nesting error occurred, because the LLM forgot to close the 'players' and 'team' objects.
+    if missing_braces_at_end >= 2 and len(team_names) == 2:
+        team_a, team_b = team_names[0], team_names[1]
+        
+        # Define the error pattern: a closing player block followed immediately by the other team's key.
+        # This is syntactically invalid JSON.
+        error_pattern_1 = f'}}}}, "{team_b}"'
+        # The correction replace '}},' at the end of last player of 'TeamA', with "}}}," making the structure valid.
+        correct_pattern_1 = f'}}}}}}, "{team_b}"' 
+        
+        error_pattern_2 = f'}}}}, "{team_a}"'
+        correct_pattern_2 = f'}}}}}}, "{team_a}"'
+
+        # Check if this specific error exists in the string
+        if error_pattern_1 in repaired:
+            print(f"Step 2: Detected and fixing incorrect nesting of team '{team_b}'.")
+            # Perform the replacement
+            repaired = repaired.replace(error_pattern_1, correct_pattern_1, 1)
+            # CRITICAL: As you said, since our replacement added 2 braces, we must now
+            # remove 1 of the braces we added at the very end to avoid having too many.
+            repaired = repaired[:-1]  # Remove the last brace we added in Step 1
+        elif error_pattern_2 in repaired:
+            print(f"Step 2: Detected and fixing incorrect nesting of team '{team_a}'.")
+            repaired = repaired.replace(error_pattern_2, correct_pattern_2, 1)
+            repaired = repaired[:-1]
+            
     return repaired
 
+# def repair_json_output(json_string):
+#     """
+#     Attempts to fix common JSON errors, like missing closing braces, by counting them.
+#     """
+#     # Trim whitespace and remove common markdown artifacts
+#     repaired = json_string.strip()
+#     if repaired.startswith("```json"):
+#         repaired = repaired.strip("```json")
+#     if repaired.endswith("```"):
+#         repaired = repaired.strip("```")
+#     repaired = repaired.strip() # Strip again just in case
+
+#     # This is the new, more robust check: count the braces
+#     open_braces = repaired.count('{')   
+#     close_braces = repaired.count('}')
+    
+#     if repaired.startswith('{') and open_braces > close_braces:
+#         # Add the exact number of missing braces
+#         missing_count = open_braces - close_braces
+#         print(f"Attempting to fix JSON by adding {missing_count} closing brace(s) '}}'.")
+#         repaired += '}' * missing_count
+    
+#     return repaired
+
 # --- Part 3: Main Execution ---
-# --- handle failed attempts (got all-zeors stats) ---
+# --- Support multi difficulty levels ---
 
 if __name__ == "__main__":
     load_dotenv(override=True)
     api_key = os.getenv("GEMINI_API_KEY")
     if not api_key:
-        print("Error: GEMINI_API_KEY is missing.")
+        print("Error: GEMINI_API_KEY is missing. Please create a .env file and add your key.")
     else:
         genai.configure(api_key=api_key) #type: ignore
 
@@ -305,23 +429,29 @@ if __name__ == "__main__":
             with open(true_report_path, 'r', encoding='utf-8') as f:
                 all_true_reports_data = json.load(f)
             
-            text_results_dir = os.path.join(data_dir, "llm_response_text")
-            json_results_dir = os.path.join(data_dir, "llm_response_json")
-            os.makedirs(text_results_dir, exist_ok=True)
-            os.makedirs(json_results_dir, exist_ok=True)
+            results_base_dir = os.path.join(data_dir, "llm_responses")
+            for difficulty_level in ["basic", "medium", "hard"]:
+                os.makedirs(os.path.join(results_base_dir, difficulty_level, "text"), exist_ok=True)
+                os.makedirs(os.path.join(results_base_dir, difficulty_level, "json"), exist_ok=True)
 
-            all_accuracies = []
-            all_discrepancies = {}
-            successful_games = 0
-            failed_games = 0
+            # --- Structures to hold results grouped by difficulty ---
+            results_by_difficulty = {
+                "basic": {"accuracies": [], "discrepancies": {}},
+                "medium": {"accuracies": [], "discrepancies": {}},
+                "hard": {"accuracies": [], "discrepancies": {}}
+            }
+            total_successful_games = 0
+            total_failed_games = 0
             
             # Loop through each game in the dataset
             for game_key, game_narrative_data in all_examples_data.items():
                 print(f"\n{'='*20} PROCESSING {game_key.upper()} {'='*20}")
                 ground_truth_data = all_true_reports_data[game_key]
+                team_names = list(ground_truth_data.get("teams", {}).keys())
+                difficulty = ground_truth_data.get("difficulty", "unknown")
 
                 # --- Retry Logic ---
-                max_retries = 2
+                max_retries = 3
                 llm_report = None
                 llm_response_str = ""
                 
@@ -333,70 +463,209 @@ if __name__ == "__main__":
                         print(f"--- ERROR on attempt {attempt + 1}: No response from API. Retrying... ---")
                         continue
 
-                    # Always save the latest raw attempt
                     llm_response_str = current_response_str
-                    repaired_llm_str = repair_json_output(llm_response_str)
+                    repaired_llm_str = repair_json_output(llm_response_str, team_names)
                     
                     try:
                         llm_report_candidate = json.loads(repaired_llm_str)
-                        
                         if not is_report_all_zeros(llm_report_candidate):
                             print(f"--- SUCCESS on attempt {attempt + 1}: LLM provided a valid, non-empty report. ---")
                             llm_report = llm_report_candidate
                             break
                         else:
-                            print(f"--- WARNING on attempt {attempt + 1}: LLM returned an all-zeros report. Retrying... ---")
+                            print(f"--- WARNING on attempt {attempt + 1}: All-zeros report. Retrying... ---")
                             llm_report = None
                     except json.JSONDecodeError:
                         print(f"--- ERROR on attempt {attempt + 1}: Could not parse JSON. Retrying... ---")
                         llm_report = None
                 
                 # --- Process the final result of the retries ---
-                raw_output_path = os.path.join(text_results_dir, f"{game_key}.txt")
+                raw_output_path = os.path.join(results_base_dir, difficulty, "text", f"{game_key}.txt")
                 with open(raw_output_path, 'w', encoding='utf-8') as f:
                     f.write(llm_response_str)
-                print(f"Saved final raw response to: {raw_output_path}")
-
+                
                 if llm_report:
-                    successful_games += 1
-                    json_output_path = os.path.join(json_results_dir, f"{game_key}.json")
+                    total_successful_games += 1
+                    json_output_path = os.path.join(results_base_dir, difficulty, "json", f"{game_key}.json")
                     with open(json_output_path, 'w', encoding='utf-8') as f:
                         json.dump(llm_report, f, indent=4, ensure_ascii=False)
                     print(f"Saved parsed report to: {json_output_path}")
 
                     accuracy, discrepancies = evaluate_reports(llm_report, ground_truth_data)
-                    all_accuracies.append(accuracy)
-                    if discrepancies:
-                        all_discrepancies[game_key] = discrepancies
+                    
+                    # Add results to the correct difficulty group
+                    if difficulty in results_by_difficulty:
+                        results_by_difficulty[difficulty]["accuracies"].append(accuracy)
+                        if discrepancies:
+                            results_by_difficulty[difficulty]["discrepancies"][game_key] = discrepancies
                     
                     print(f"--- RESULT for {game_key}: Accuracy = {accuracy:.2f}% ---")
                 else:
-                    failed_games += 1
+                    total_failed_games += 1
                     print(f"--- FAILURE for {game_key}: Could not get a valid report after {max_retries} attempts. SKIPPING. ---")
-                    all_discrepancies[game_key] = [f"Failed to get a valid, non-empty JSON response from the LLM after {max_retries} retries."]
+                    if difficulty in results_by_difficulty:
+                         results_by_difficulty[difficulty]["discrepancies"][game_key] = [f"Failed after {max_retries} retries."]
 
             # --- Final Summary ---
-            if successful_games > 0:
-                average_accuracy = sum(all_accuracies) / len(all_accuracies)
-                summary_data = {
-                    "total_games_attempted": len(all_examples_data),
-                    "successful_games": successful_games,
-                    "failed_games": failed_games,
-                    "average_accuracy_on_success": f"{average_accuracy:.2f}%",
-                    "discrepancies_by_game": all_discrepancies
-                }
-                summary_path = os.path.join(data_dir, "summary.json")
-                with open(summary_path, 'w', encoding='utf-8') as f:
-                    json.dump(summary_data, f, indent=4, ensure_ascii=False)
+            print(f"\n\n{'='*20} FINAL SUMMARY {'='*20}")
+            
+            final_summary = {
+                "total_games_attempted": len(all_examples_data),
+                "successful_games": total_successful_games,
+                "failed_games": total_failed_games,
+                "overall_average_accuracy": "N/A",
+                "results_by_difficulty": {}
+            }
+
+            print(f"Total Games Attempted: {total_successful_games + total_failed_games}")
+            print(f"Successful Games: {total_successful_games}")
+            print(f"Failed Games: {total_failed_games}")
+            
+            all_successful_accuracies = []
+            for difficulty, results in results_by_difficulty.items():
+                num_games_succeeded = len(results["accuracies"])
+                if num_games_succeeded > 0:
+                    avg_acc = sum(results["accuracies"]) / num_games_succeeded
+                    all_successful_accuracies.extend(results["accuracies"])
+                    
+                    print(f"\n--- Difficulty: {difficulty.upper()} ---")
+                    print(f"  Games Succeeded: {num_games_succeeded}")
+                    print(f"  Average Accuracy: {avg_acc:.2f}%")
+                    
+                    final_summary["results_by_difficulty"][difficulty] = {
+                        "average_accuracy": f"{avg_acc:.2f}%",
+                        "games_succeeded": num_games_succeeded,
+                        "discrepancies": results["discrepancies"]
+                    }
+            
+            # Calculate and print the overall average accuracy
+            if all_successful_accuracies:
+                overall_average = sum(all_successful_accuracies) / len(all_successful_accuracies)
+                print(f"\n-------------------------------------")
+                print(f"OVERALL AVERAGE ACCURACY (on {len(all_successful_accuracies)} successful games): {overall_average:.2f}%")
+                final_summary["overall_average_accuracy"] = f"{overall_average:.2f}%"
+
+            summary_path = os.path.join(data_dir, "summary.json")
+            with open(summary_path, 'w', encoding='utf-8') as f:
+                json.dump(final_summary, f, indent=4, ensure_ascii=False)
+            print(f"\nFull summary saved to: {summary_path}")
+
+
+# # --- Part 3: Main Execution ---
+# # --- handle failed attempts (got all-zeors stats) ---
+
+# if __name__ == "__main__":
+#     load_dotenv(override=True)
+#     api_key = os.getenv("GEMINI_API_KEY")
+#     if not api_key:
+#         print("Error: GEMINI_API_KEY is missing.")
+#     else:
+#         genai.configure(api_key=api_key) #type: ignore
+
+#         data_dir = "data"
+#         examples_path = os.path.join(data_dir, "examples.json")
+#         true_report_path = os.path.join(data_dir, "true_report.json")
+
+#         if not os.path.exists(examples_path) or not os.path.exists(true_report_path):
+#             print("Error: Data files not found. Please run 'generate_data.py' first.")
+#         else:
+#             with open(examples_path, 'r', encoding='utf-8') as f:
+#                 all_examples_data = json.load(f)
+#             with open(true_report_path, 'r', encoding='utf-8') as f:
+#                 all_true_reports_data = json.load(f)
+            
+#             text_results_dir = os.path.join(data_dir, "llm_response_text")
+#             json_results_dir = os.path.join(data_dir, "llm_response_json")
+#             os.makedirs(text_results_dir, exist_ok=True)
+#             os.makedirs(json_results_dir, exist_ok=True)
+
+#             all_accuracies = []
+#             all_discrepancies = {}
+#             successful_games = 0
+#             failed_games = 0
+            
+#             # Loop through each game in the dataset
+#             for game_key, game_narrative_data in all_examples_data.items():
+#                 print(f"\n{'='*20} PROCESSING {game_key.upper()} {'='*20}")
+#                 ground_truth_data = all_true_reports_data[game_key]
+
+#                 # --- Retry Logic ---
+#                 max_retries = 2
+#                 llm_report = None
+#                 llm_response_str = ""
                 
-                print(f"\n\n{'='*20} FINAL SUMMARY {'='*20}")
-                print(f"Total Games Processed: {successful_games + failed_games}")
-                print(f"Successful Games: {successful_games}")
-                print(f"Failed Games: {failed_games}")
-                print(f"Average Accuracy (on successful games): {average_accuracy:.2f}%")
-                print(f"Full summary saved to: {summary_path}")
-            else:
-                print(f"\nNo games were processed successfully.")
+#                 for attempt in range(max_retries):
+#                     prompt = construct_prompt(game_narrative_data)
+#                     current_response_str = get_gemini_response(prompt)
+                    
+#                     if not current_response_str:
+#                         print(f"--- ERROR on attempt {attempt + 1}: No response from API. Retrying... ---")
+#                         continue
+
+#                     # Always save the latest raw attempt
+#                     llm_response_str = current_response_str
+#                     repaired_llm_str = repair_json_output(llm_response_str)
+                    
+#                     try:
+#                         llm_report_candidate = json.loads(repaired_llm_str)
+                        
+#                         if not is_report_all_zeros(llm_report_candidate):
+#                             print(f"--- SUCCESS on attempt {attempt + 1}: LLM provided a valid, non-empty report. ---")
+#                             llm_report = llm_report_candidate
+#                             break
+#                         else:
+#                             print(f"--- WARNING on attempt {attempt + 1}: LLM returned an all-zeros report. Retrying... ---")
+#                             llm_report = None
+#                     except json.JSONDecodeError:
+#                         print(f"--- ERROR on attempt {attempt + 1}: Could not parse JSON. Retrying... ---")
+#                         llm_report = None
+                
+#                 # --- Process the final result of the retries ---
+#                 raw_output_path = os.path.join(text_results_dir, f"{game_key}.txt")
+#                 with open(raw_output_path, 'w', encoding='utf-8') as f:
+#                     f.write(llm_response_str)
+#                 print(f"Saved final raw response to: {raw_output_path}")
+
+#                 if llm_report:
+#                     successful_games += 1
+#                     json_output_path = os.path.join(json_results_dir, f"{game_key}.json")
+#                     with open(json_output_path, 'w', encoding='utf-8') as f:
+#                         json.dump(llm_report, f, indent=4, ensure_ascii=False)
+#                     print(f"Saved parsed report to: {json_output_path}")
+
+#                     accuracy, discrepancies = evaluate_reports(llm_report, ground_truth_data)
+#                     all_accuracies.append(accuracy)
+#                     if discrepancies:
+#                         all_discrepancies[game_key] = discrepancies
+                    
+#                     print(f"--- RESULT for {game_key}: Accuracy = {accuracy:.2f}% ---")
+#                 else:
+#                     failed_games += 1
+#                     print(f"--- FAILURE for {game_key}: Could not get a valid report after {max_retries} attempts. SKIPPING. ---")
+#                     all_discrepancies[game_key] = [f"Failed to get a valid, non-empty JSON response from the LLM after {max_retries} retries."]
+
+#             # --- Final Summary ---
+#             if successful_games > 0:
+#                 average_accuracy = sum(all_accuracies) / len(all_accuracies)
+#                 summary_data = {
+#                     "total_games_attempted": len(all_examples_data),
+#                     "successful_games": successful_games,
+#                     "failed_games": failed_games,
+#                     "average_accuracy_on_success": f"{average_accuracy:.2f}%",
+#                     "discrepancies_by_game": all_discrepancies
+#                 }
+#                 summary_path = os.path.join(data_dir, "summary.json")
+#                 with open(summary_path, 'w', encoding='utf-8') as f:
+#                     json.dump(summary_data, f, indent=4, ensure_ascii=False)
+                
+#                 print(f"\n\n{'='*20} FINAL SUMMARY {'='*20}")
+#                 print(f"Total Games Processed: {successful_games + failed_games}")
+#                 print(f"Successful Games: {successful_games}")
+#                 print(f"Failed Games: {failed_games}")
+#                 print(f"Average Accuracy (on successful games): {average_accuracy:.2f}%")
+#                 print(f"Full summary saved to: {summary_path}")
+#             else:
+#                 print(f"\nNo games were processed successfully.")
 
 # --- Part 3: Main Execution ---
 # --- handle multiple games ---

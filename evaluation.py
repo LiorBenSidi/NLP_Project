@@ -1,10 +1,10 @@
 # evaluation.py
 # This file contains the core evaluation logic for the project.
-# The `evaluate_reports` function calculates the success rate by comparing
-# the LLM's generated report against the ground truth report.
+# The `evaluate_reports` function calculates the success rate by comparing the LLM's generated report against the ground truth report.
 
 # TODO:
-# 1. Consider use weights of failures, or, distance from the ground truth
+# 1. Consider use weights of failures, or, distance from the ground truth.
+# 2. Ask the tutor for clarification on the right approach to evaluate the reports.
 
 def evaluate_reports(llm_report, ground_truth_report):
     """

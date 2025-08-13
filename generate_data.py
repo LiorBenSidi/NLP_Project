@@ -10,10 +10,10 @@
 # 3. After a timeout, the game resumes with the same possession
 # 4. Support for different types of 2pt shots (e.g., layup, dunk, jump shot, tried for 3pt but step on the line)
 # 5. Support for different types of 3pt shots (e.g., corner three, from the half court like Steph Curry)
-# 6. Add difficulty levels (e.g., easy, medium, hard)
-# 6.1 Basic difficulty:
-# 6.2 Medium difficulty:
-# 6.3 Hard difficulty:
+# 6. Add difficulty levels
+# 6.1 Basic difficulty:  No substitutions allowed, No VAR checks, limited number of events(20)
+# 6.2 Medium difficulty: Substitutions allowed, No VAR checks, limited number of events(60)
+# 6.3 Hard difficulty:   Substitutions allowed, VAR checks allowed, unlimited number of events(100)
 
 import random
 import json
@@ -158,7 +158,7 @@ class BasketballReportGenerator:
                 )
             },
             "shooting_foul_3pt": {
-                "template": "{player_A} is fouled by {player_B} on a 3-point attempt and will shoot three.",
+                "template": "{player_A} is fouled by {player_B} on a 3-point attempt and will go to the line for three shots.",
                 "effect": lambda state, pA, pB, teamA, teamB: (
                     # This event only records the foul and the shot attempt. No points or FTs yet.
                     state[teamA]['players'][pA].update({'3pt_shots_attempted': state[teamA]['players'][pA]['3pt_shots_attempted'] + 1}),
@@ -379,8 +379,8 @@ class BasketballReportGenerator:
 
     def _handle_substitution(self, head_coach, team_name, game_lineups, play_by_play, cant_sub_player=None):
         """Randomly performs a substitution for a team if conditions are met."""
-        # 50% chance of a substitution at any given opportunity
-        if random.random() < 0.50:
+        # 10% chance of a substitution at any given opportunity
+        if random.random() < 0.10:
             active_players = game_lineups[team_name]['active']
             bench_players = game_lineups[team_name]['bench']
 
@@ -407,7 +407,21 @@ class BasketballReportGenerator:
                 "description": f"Substitution by {head_coach}: {colored_player_in} comes in for {colored_player_out}."
             })
 
-    def generate_report(self, num_events=20):
+    #def generate_report(self, num_events=20):
+    def generate_report(self, difficulty="medium"):
+        # --- Difficulty Level Configuration ---
+        if difficulty == "basic":
+            num_events = 50
+            allow_substitutions = False
+            allow_var = False
+        elif difficulty == "medium":
+            num_events = 150
+            allow_substitutions = True
+            allow_var = False
+        else: # hard
+            num_events = 200
+            allow_substitutions = True
+            allow_var = True
         team_names = random.sample(list(self.teams.keys()), 2)
         teamA_name, teamB_name = team_names[0], team_names[1]
         colored_teamA = self._get_colored_name(teamA_name, teamA_name)
@@ -465,7 +479,11 @@ class BasketballReportGenerator:
         #     "shooting_foul_for_3pt_and_score_3_of_3"
         # ]
 
-        for _ in range(num_events):
+        #for _ in range(num_events):
+        while len(play_by_play) < num_events:
+            # The final number of events might be slightly more than the target (e.g., 103 instead of 100).
+            # This is perfectly fine and expected, because a single possession can add multiple events and push the count a little bit over the limit.
+            
             # --- MINIMAL CHANGE 2: Choose an offensive event, not any event ---
             event_type = random.choice(OFFENSIVE_EVENTS)
             event = self.event_templates[event_type]
@@ -495,8 +513,8 @@ class BasketballReportGenerator:
                     "description": event["template"].format(player_A=colored_pA, player_B=colored_pB)
                 })
                 
-                # --- PASTED VAR LOGIC ---
-                if last_score_event_details and random.random() < 0.5:
+                # --- VAR LOGIC ---
+                if allow_var and last_score_event_details and random.random() < 0.10: # 10% chance for VAR review
                     #print(f"--- VAR REVIEW INITIATED for {last_score_event_details['team']} ---")
                     
                     original_event_type = last_score_event_details['type']
@@ -523,10 +541,11 @@ class BasketballReportGenerator:
                     possession = teamB_name if acting_team == teamA_name else teamA_name
 
                 # --- Handle substitutions AFTER score and potential VAR ---
-                head_coach_A = self.teams[teamA_name]["head_coach"]
-                head_coach_B = self.teams[teamB_name]["head_coach"]
-                self._handle_substitution(head_coach_A, teamA_name, game_lineups, play_by_play)
-                self._handle_substitution(head_coach_B, teamB_name, game_lineups, play_by_play)
+                if allow_substitutions:
+                    head_coach_A = self.teams[teamA_name]["head_coach"]
+                    head_coach_B = self.teams[teamB_name]["head_coach"]
+                    self._handle_substitution(head_coach_A, teamA_name, game_lineups, play_by_play)
+                    self._handle_substitution(head_coach_B, teamB_name, game_lineups, play_by_play)
 
                 # Finally, reset the memory
                 last_score_event_details = None
@@ -571,10 +590,11 @@ class BasketballReportGenerator:
                 else: # Turnover
                     possession = teamB_name if acting_team == teamA_name else teamA_name
                     # Substitution for the team that committed the turnover
-                    head_coach_A = self.teams[teamA_name]["head_coach"]
-                    head_coach_B = self.teams[teamB_name]["head_coach"]
-                    head_coach_acting_team = head_coach_A if acting_team == teamA_name else head_coach_B
-                    self._handle_substitution(head_coach_acting_team, acting_team, game_lineups, play_by_play)
+                    if allow_substitutions:
+                        head_coach_A = self.teams[teamA_name]["head_coach"]
+                        head_coach_B = self.teams[teamB_name]["head_coach"]
+                        head_coach_acting_team = head_coach_A if acting_team == teamA_name else head_coach_B
+                        self._handle_substitution(head_coach_acting_team, acting_team, game_lineups, play_by_play)
                 last_score_event_details = None
 
             # Category 3: Two players, two teams (e.g., block, steal, or start of a foul sequence)
@@ -675,10 +695,11 @@ class BasketballReportGenerator:
                         
                         # Substitution window is between free throws
                         if not is_last_shot:
-                            head_coach_A = self.teams[teamA]["head_coach"]
-                            head_coach_B = self.teams[teamB]["head_coach"]
-                            self._handle_substitution(head_coach_A, teamA, game_lineups, play_by_play, cant_sub_player=shooter)
-                            self._handle_substitution(head_coach_B, teamB, game_lineups, play_by_play)
+                            if allow_substitutions:
+                                head_coach_A = self.teams[teamA]["head_coach"]
+                                head_coach_B = self.teams[teamB]["head_coach"]
+                                self._handle_substitution(head_coach_A, teamA, game_lineups, play_by_play, cant_sub_player=shooter)
+                                self._handle_substitution(head_coach_B, teamB, game_lineups, play_by_play)
                 
                 # After any of these non-scoring possessions, reset the VAR memory
                 last_score_event_details = None
@@ -819,80 +840,157 @@ class BasketballReportGenerator:
 
         return game_summary
 
+# # --- MAIN EXECUTION ---
+# # --- with difficulty levels ---
 if __name__ == "__main__":
-    # Define the number of games to generate
-    NUM_GAMES_TO_GENERATE = 10
+    # Define the number of games to generate PER difficulty level
+    GAMES_PER_DIFFICULTY = 5 # Let's generate 5 of each (15 total)
+    DIFFICULTY_LEVELS = ["basic", "medium", "hard"]
     
-    # 1. Initialize the generator once
     generator = BasketballReportGenerator()
     
-    # Create dictionaries to hold all the game data
     all_examples_data = {}
     all_true_reports_data = {}
 
-    print(f"--- Starting generation of {NUM_GAMES_TO_GENERATE} games ---")
+    print(f"--- Starting generation of {GAMES_PER_DIFFICULTY * len(DIFFICULTY_LEVELS)} total games ---")
 
-    # 2. Loop to generate each game
-    for i in range(NUM_GAMES_TO_GENERATE):
-        game_index = i + 1
-        print(f"Generating game {game_index}/{NUM_GAMES_TO_GENERATE}...")
+    # Loop through each difficulty level
+    for difficulty in DIFFICULTY_LEVELS:
+        print(f"\n{'='*20} GENERATING LEVEL: {difficulty.upper()} {'='*20}")
         
-        # A. Generate the comprehensive data for a single game
-        game_data = generator.generate_report(num_events=25)
-        
-        # B. Create a unique key for this game
-        game_key = f"game_{game_index}"
+        # Loop to generate games for this difficulty
+        for i in range(GAMES_PER_DIFFICULTY):
+            game_index = i + 1
+            # Create a unique key like "hard_game_1"
+            game_key = f"{difficulty}_game_{game_index}"
+            print(f"Generating {game_key}...")
+            
+            # Generate the game data with the specified difficulty
+            game_data = generator.generate_report(difficulty=difficulty)
+            
+            # Construct the data for examples.json
+            examples_data = {
+                "matchup": game_data["matchup"],
+                "difficulty": difficulty, # Add difficulty metadata
+                "teams": game_data["teams"],
+                "play_by_play": game_data["play_by_play"]
+            }
+            
+            # Construct the data for true_report.json
+            team_names = list(game_data["final_stats"].keys())
+            score_A = game_data["final_stats"][team_names[0]]["stats"]["score"]
+            score_B = game_data["final_stats"][team_names[1]]["stats"]["score"]
+            true_report_data = {
+                "matchup": game_data["matchup"],
+                "difficulty": difficulty, # Add difficulty metadata
+                "final_score": f"{team_names[0]}: {score_A}, {team_names[1]}: {score_B}",
+                "teams": game_data["teams"],
+                "final_stats": game_data["final_stats"]
+            }
 
-        # C. Construct the data for examples.json for this single game
-        examples_data = {
-            "matchup": game_data["matchup"],
-            "teams": game_data["teams"],
-            "play_by_play": game_data["play_by_play"]
-        }
-        
-        # D. Construct the data for true_report.json for this single game
-        team_names = list(game_data["final_stats"].keys())
-        teamA_name = team_names[0]
-        teamB_name = team_names[1]
-        score_A = game_data["final_stats"][teamA_name]["stats"]["score"]
-        score_B = game_data["final_stats"][teamB_name]["stats"]["score"]
-        true_report_data = {
-            "matchup": game_data["matchup"],
-            "final_score": f"{teamA_name}: {score_A}, {teamB_name}: {score_B}",
-            "teams": game_data["teams"],
-            "final_stats": game_data["final_stats"]
-        }
+            all_examples_data[game_key] = examples_data
+            all_true_reports_data[game_key] = true_report_data
 
-        # E. Add the data for this game to the main dictionaries
-        all_examples_data[game_key] = examples_data
-        all_true_reports_data[game_key] = true_report_data
+    print(f"\n--- Finished generating all games ---\n")
 
-    print(f"--- Finished generating {NUM_GAMES_TO_GENERATE} games ---\n")
-
-    # 3. Save the complete dictionaries to JSON files (outside the loop)
+    # Save the complete dictionaries to JSON files
     output_dir = "data"
     os.makedirs(output_dir, exist_ok=True)
-
     examples_path = os.path.join(output_dir, "examples.json")
     true_report_path = os.path.join(output_dir, "true_report.json")
 
-    # Save the examples file containing all 50 games
     try:
         with open(examples_path, 'w', encoding='utf-8') as f:
             json.dump(all_examples_data, f, indent=4, ensure_ascii=False)
-        print(f"Successfully saved {NUM_GAMES_TO_GENERATE} game examples to {examples_path}")
+        print(f"Successfully saved all game examples to {examples_path}")
     except Exception as e:
         print(f"Error saving to {examples_path}: {e}")
 
-    # Save the true report file containing all 50 games
     try:
         with open(true_report_path, 'w', encoding='utf-8') as f:
             json.dump(all_true_reports_data, f, indent=4, ensure_ascii=False)
-        print(f"Successfully saved {NUM_GAMES_TO_GENERATE} game stats to {true_report_path}")
+        print(f"Successfully saved all game stats to {true_report_path}")
     except Exception as e:
         print(f"Error saving to {true_report_path}: {e}")
 
-# --- one iteration ---
+# # --- MAIN EXECUTION ---
+# # --- without difficulty levels ---
+
+# if __name__ == "__main__":
+#     # Define the number of games to generate
+#     NUM_GAMES_TO_GENERATE = 5
+    
+#     # 1. Initialize the generator once
+#     generator = BasketballReportGenerator()
+    
+#     # Create dictionaries to hold all the game data
+#     all_examples_data = {}
+#     all_true_reports_data = {}
+
+#     print(f"--- Starting generation of {NUM_GAMES_TO_GENERATE} games ---")
+
+#     # 2. Loop to generate each game
+#     for i in range(NUM_GAMES_TO_GENERATE):
+#         game_index = i + 1
+#         print(f"Generating game {game_index}/{NUM_GAMES_TO_GENERATE}...")
+        
+#         # A. Generate the comprehensive data for a single game
+#         game_data = generator.generate_report(num_events=100)
+        
+#         # B. Create a unique key for this game
+#         game_key = f"game_{game_index}"
+
+#         # C. Construct the data for examples.json for this single game
+#         examples_data = {
+#             "matchup": game_data["matchup"],
+#             "teams": game_data["teams"],
+#             "play_by_play": game_data["play_by_play"]
+#         }
+        
+#         # D. Construct the data for true_report.json for this single game
+#         team_names = list(game_data["final_stats"].keys())
+#         teamA_name = team_names[0]
+#         teamB_name = team_names[1]
+#         score_A = game_data["final_stats"][teamA_name]["stats"]["score"]
+#         score_B = game_data["final_stats"][teamB_name]["stats"]["score"]
+#         true_report_data = {
+#             "matchup": game_data["matchup"],
+#             "final_score": f"{teamA_name}: {score_A}, {teamB_name}: {score_B}",
+#             "teams": game_data["teams"],
+#             "final_stats": game_data["final_stats"]
+#         }
+
+#         # E. Add the data for this game to the main dictionaries
+#         all_examples_data[game_key] = examples_data
+#         all_true_reports_data[game_key] = true_report_data
+
+#     print(f"--- Finished generating {NUM_GAMES_TO_GENERATE} games ---\n")
+
+#     # 3. Save the complete dictionaries to JSON files (outside the loop)
+#     output_dir = "data"
+#     os.makedirs(output_dir, exist_ok=True)
+
+#     examples_path = os.path.join(output_dir, "examples.json")
+#     true_report_path = os.path.join(output_dir, "true_report.json")
+
+#     # Save the examples file containing all 50 games
+#     try:
+#         with open(examples_path, 'w', encoding='utf-8') as f:
+#             json.dump(all_examples_data, f, indent=4, ensure_ascii=False)
+#         print(f"Successfully saved {NUM_GAMES_TO_GENERATE} game examples to {examples_path}")
+#     except Exception as e:
+#         print(f"Error saving to {examples_path}: {e}")
+
+#     # Save the true report file containing all 50 games
+#     try:
+#         with open(true_report_path, 'w', encoding='utf-8') as f:
+#             json.dump(all_true_reports_data, f, indent=4, ensure_ascii=False)
+#         print(f"Successfully saved {NUM_GAMES_TO_GENERATE} game stats to {true_report_path}")
+#     except Exception as e:
+#         print(f"Error saving to {true_report_path}: {e}")
+
+# # --- MAIN EXECUTION ---
+# # --- one iteration ---
 
 # if __name__ == "__main__":
 #     # 1. Generate the comprehensive game data object
