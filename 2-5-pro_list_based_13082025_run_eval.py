@@ -55,78 +55,75 @@ SYSTEM_INSTRUCTIONS_PROMPT = """You are a data extraction bot. You will be given
 
                                 ### HOW TO HANDLE EACH EVENT ###
                                 You must follow these rules precisely when calculating the stats for your answer:
-                                - **"{player_A1} delivers a sharp pass to {player_A2}, who finishes with a 2-point layup."**:
+                                - "{player_A1} delivers a sharp pass to {player_A2}, who finishes with a 2-point layup.":
                                     - Add 2 points and 1 assists to scoring team_A.
                                     - Add 1 assist to player_A1.
                                     - Add 2 points, 1 `2pt_shots_made`, and 1 `2pt_shots_attempted` to player_A2.
-                                - **"{player_A1} finds {player_A2} open on the perimeter for a successful 3-point shot."**:
+                                - "{player_A1} finds {player_A2} open on the perimeter for a successful 3-point shot.":
                                     - Add 3 points and 1 assists to scoring team_A.
                                     - Add 1 assist to player_A1.
                                     - Add 3 points, 1 `3pt_shots_made`, and 1 `3pt_shots_attempted` to player_A2.
-                                - **"{player_A} attempts a 2-point shot but misses."**:
+                                - "{player_A} attempts a 2-point shot but misses.":
                                     - Add 1 `2pt_shots_attempted` to player_A.
-                                - **"{player_A} attempts a 3-point shot but misses."**:
+                                - "{player_A} attempts a 3-point shot but misses.":
                                     - Add 1 `3pt_shots_attempted` to player_A.
-                                - **"{player_A} is fouled by {player_B} on a 2-point attempt and will go to the line for two shots."**:
+                                - "{player_A} is fouled by {player_B} on a 2-point attempt and will go to the line for two shots.":
                                     - Add 1 `2pt_shots_attempted` to player_A.
                                     - Add 1 foul to team_B.
                                     - Add 1 foul to player_B.
-                                - **"{player_A} is fouled by {player_B} on a 3-point attempt and will go to the line for three shots."**:
+                                - "{player_A} is fouled by {player_B} on a 3-point attempt and will go to the line for three shots.":
                                     - Add 1 `3pt_shots_attempted` to player_A.
                                     - Add 1 foul to team_B.
                                     - Add 1 foul to player_B.
-                                - **"{player_A} makes the {shot_ordinal} free throw."**:
+                                - "{player_A} makes the {shot_ordinal} free throw.":
                                     - Add 1 point to team_A.
                                     - Add 1 point, 1 `ft_made`, 1 `ft_attempted` to player_A.
-                                - **"{player_A} misses the {shot_ordinal} free throw."**:
+                                - "{player_A} misses the {shot_ordinal} free throw.":
                                     - Add 1 `ft_attempted` to player_A.
-                                - **"{player_A} steals the ball from {player_B}!"**:
+                                - "{player_A} steals the ball from {player_B}!":
                                     - Add 1 steal to team_A.
                                     - Add 1 turnover to team_B.
                                     - Add 1 steal to player_A.
                                     - Add 1 turnover to player_B.
-                                - **"{player_A} blocks the 2pt shot from {player_B}!"**:
+                                - "{player_A} blocks the 2pt shot from {player_B}!":
                                     - Add 1 block to team_A.
                                     - Add 1 block to player_A.
                                     - Add 1 `2pt_shots_attempted` to player_B.
-                                - **"{player_A} blocks the 3pt shot from {player_B}!"**:
+                                - "{player_A} blocks the 3pt shot from {player_B}!":
                                     - Add 1 block to team_A.
                                     - Add 1 block to player_A.
                                     - Add 1 `3pt_shots_attempted` to player_B.
-                                - **"A bad pass from {player_A} results in a turnover."**:
+                                - "A bad pass from {player_A} results in a turnover.":
                                     - Add 1 turnover to team_A.
                                     - Add 1 turnover to player_A.
-                                - **"Defensive rebound by {player_A}."**:
+                                - "Defensive rebound by {player_A}.":
                                     - Add 1 rebound to team_A.
                                     - Add 1 rebound to player_A.
-                                - **"Offensive rebound by {player_A}."**:
+                                - "Offensive rebound by {player_A}.":
                                     - Add 1 rebound to team_A.
                                     - Add 1 rebound to player_A.
-                                - **"After a VAR review, the previous basket by {player_B} is overturned due to an offensive foul committed by {player_B} before the shot."**:
+                                - "After a VAR review, the previous basket by {player_B} is overturned due to an offensive foul committed by {player_B} before the shot.":
                                     - This is a correction. You must REVERSE the stats from the previous scoring play.
                                     - Subtract 2 points, 1 assist from team_B.
                                     - Add 1 foul, 1 turnover to team_B.
                                     - Subtract 1 assist from player_A (the passer).
                                     - Subtract 2 points, 1 made shot, and 1 attempted shot from player_B.
                                     - Add 1 foul, 1 turnover to player_B.
-                                - **"The referees go to the monitor. After review, the 3-point shot by {player_B} is waved off due to a shot clock violation."**:
+                                - "The referees go to the monitor. After review, the 3-point shot by {player_B} is waved off due to a shot clock violation.":
                                     - This is a correction. You must REVERSE the stats from the previous scoring play.
                                     - Subtract 3 points, 1 assist from team_B.
                                     - Add 1 turnover to team_B.
                                     - Subtract 1 assist from player_A (the passer).
                                     - Subtract 3 points, 1 made 3pt shot, 1 attempted 3pt shot from player_B.
                                     - Add 1 turnover to player_B.
-                                - **""Substitution by {head_coach}: {player_in} comes in for {player_out}.""**:
-                                    - This event does not affect player or team statistics. Use it only to track who is on the court.
-                                    - player_in is being active and can contribute to the game now, till he may be substituted out.
-                                    - player_out is temporarily inactive, but may return later by being substituted in.
-                                    - the statistics for both players should be tracked.
+                                - ""Substitution by {head_coach}: {player_in} comes in for {player_out}."":
+                                    - This event does not affect player or team statistics.
 
                                 ### CRITICAL RULES ###
                                 -   Your response MUST be ONLY a Python-style list of numbers (e.g., `[10, 5, 0, 2]`).
                                 -   The numbers in the list must be in the EXACT order requested in the question.
                                 -   Do NOT include any explanations, sentences, or markdown formatting.
-                                -   If all stats are zero, return a list of zeros (e.g., `[0, 0, 0, 0]`).
+                                -   If all stats for a player who is on the roster but did not play are zero, return a list of zeros (e.g., `[0, 0, 0, 0]`).
 
                                 Example Question: Give me the stats for Player A in this order: ['points', 'assists', 'rebounds'].
                                 Example Correct Response: [15, 4, 8]
@@ -135,45 +132,35 @@ SYSTEM_INSTRUCTIONS_PROMPT = """You are a data extraction bot. You will be given
 # --- Part 2: Core Functions ---
 
 def construct_roster_context(game_data):
-    """
-    Creates a detailed string containing the coach, starting lineup, and bench for both teams.
-    """
+    """Creates a detailed string containing the coach and full roster for both teams."""
     team_a_name, team_b_name = list(game_data["teams"].keys())
     team_a_meta = game_data["teams"][team_a_name]
     team_b_meta = game_data["teams"][team_b_name]
 
     return f"""
-            ### TEAM INFORMATION FOR CONTEXT ###
-            This information tells you which players belong to which team and who is playing at the start of the game.
+        ### TEAM INFORMATION FOR CONTEXT ###
+        This information tells you which players belong to which team.
 
-            # {team_a_name}
-            - Coach: {team_a_meta['coach']}
-            - Starting Lineup (Active Players): {', '.join(team_a_meta['starting_lineup'])}
-            - Bench: {', '.join(team_a_meta['bench'])}
+        # {team_a_name}
+        - Coach: {team_a_meta['coach']}
+        - Roster: {', '.join(team_a_meta['roster'])}
 
-            # {team_b_name}
-            - Coach: {team_b_meta['coach']}
-            - Starting Lineup (Active Players): {', '.join(team_b_meta['starting_lineup'])}
-            - Bench: {', '.join(team_b_meta['bench'])}
-            """
+        # {team_b_name}
+        - Coach: {team_b_meta['coach']}
+        - Roster: {', '.join(team_b_meta['roster'])}
+        """
 
-def get_gemini_list_response(model, conversation_history):
+def get_gemini_list_response(chat_session, question):
     """
-    Sends a request to the Gemini API and expects a Python-style list of numbers as a response.
-    Returns the parsed list or None if parsing fails.
+    Sends a single question to an ongoing chat session and expects a list of numbers.
     """
     try:
         print("Sending request to API...")
-        response = model.generate_content(
-            conversation_history,
-            generation_config=genai.types.GenerationConfig( #type: ignore
-                temperature=1.0,
-                max_output_tokens=8196
-            )
-        )
+        #print(f"Asking: {question}")
+        response = chat_session.send_message(question)
         response_text = response.text.strip()
         
-        # Use regex to find the list within the response text, making it robust
+        # Use regex to find the list, making it robust to extra text from the LLM.
         match = re.search(r'\[\s*(-?\d+\s*,\s*)*-?\d*\s*\]', response_text)
         if match:
             # Safely parse the found list string into a Python list
@@ -183,9 +170,7 @@ def get_gemini_list_response(model, conversation_history):
             return None
     except Exception as e:
         print(f"An error occurred during API call: {e}")
-        time.sleep(2) # Wait before the next retry
         return None
-
 
 # --- Part 3: Main Execution ---
 if __name__ == "__main__":
@@ -195,7 +180,23 @@ if __name__ == "__main__":
         print("Error: GEMINI_API_KEY is missing.")
     else:
         genai.configure(api_key=api_key) #type: ignore
-        model = genai.GenerativeModel('gemini-1.5-pro') #type: ignore
+
+        # --- Define generation configuration for model parameters ---
+        generation_config = {
+            "max_output_tokens": 256,  # Set your desired maximum number of tokens
+            "temperature": 0.2         # Set your desired temperature (0.0 to 1.0)
+        }
+
+        # --- Define safety settings to prevent blocking ---
+        safety_settings = [
+            {"category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_NONE"},
+            {"category": "HARM_CATEGORY_HATE_SPEECH", "threshold": "BLOCK_NONE"},
+            {"category": "HARM_CATEGORY_SEXUALLY_EXPLICIT", "threshold": "BLOCK_NONE"},
+            {"category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_NONE"},
+        ]
+
+        # --- MODEL SWITCHED TO 2.5-PRO ---
+        model = genai.GenerativeModel('gemini-2.5-pro', generation_config=generation_config, safety_settings=safety_settings) #type: ignore
 
         data_dir = "data"
         examples_path = os.path.join(data_dir, "examples.json")
@@ -221,35 +222,36 @@ if __name__ == "__main__":
                 ground_truth_data = all_true_reports_data[game_key]
                 difficulty = ground_truth_data.get("difficulty", "unknown")
 
-                # 1. Create the skeleton of the final report
+                # 1. Create the skeleton of the final report by deep copying the ground truth
                 llm_report = json.loads(json.dumps(ground_truth_data))
 
-                # 2. Prepare the narrative log once per game
+                # --- EFFICIENCY IMPROVEMENT: Set up one chat session per game ---
                 ansi_escape = re.compile(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])')
                 narrative_events = [ansi_escape.sub('', event['description']) for event in game_narrative_data['play_by_play']]
                 narrative_log = "\n".join([f"{event['event_id']}. {text}" for event, text in zip(game_narrative_data['play_by_play'], narrative_events)])
                 roster_context = construct_roster_context(game_narrative_data)
                 
+                # Start the chat session with all the context.
+                initial_conversation = [
+                    {'role': 'user', 'parts': [SYSTEM_INSTRUCTIONS_PROMPT]},
+                    {'role': 'model', 'parts': ["Understood. I will answer each question with only a Python-style list of numbers."]},
+                    {'role': 'user', 'parts': [roster_context, f"\nHere is the full game log:\n\n{narrative_log}"]},
+                    {'role': 'model', 'parts': ["I have processed the context and the game log. I am ready for your questions."]}
+                ]
+                chat = model.start_chat(history=initial_conversation) #type: ignore
+                
                 game_succeeded = True
                 
-                # 3. Iterate through every team and player to get their stats
+                # 2. Iterate through every team and player to get their stats
                 for team_name, team_data in ground_truth_data["final_stats"].items():
                     if not game_succeeded: break
 
-                    # 1. Get TEAM stats
+                    # A. Get TEAM stats
                     question = f"Give me the stats for the team '{team_name}' in this exact order: {TEAM_STATS_ORDER}"
-                    
-                    conversation_history = [
-                        {'role': 'user', 'parts': [SYSTEM_INSTRUCTIONS_PROMPT]},
-                        {'role': 'model', 'parts': ["Understood. I will answer each question with a Python-style list of numbers."]},
-                        {'role': 'user', 'parts': [roster_context]},
-                        {'role': 'user', 'parts': [f"Here is the game log:\n\n{narrative_log}"]},
-                        {'role': 'user', 'parts': [question]}
-                    ]
-
                     print(f"  Querying team stats for: {team_name}")
-                    response_list = get_gemini_list_response(model, conversation_history)
-                    
+                    response_list = get_gemini_list_response(chat, question)
+                    time.sleep(1) # Proactively avoid rate limiting
+
                     if response_list and len(response_list) == len(TEAM_STATS_ORDER):
                         for i, stat_key in enumerate(TEAM_STATS_ORDER):
                             llm_report["final_stats"][team_name]["stats"][stat_key] = response_list[i]
@@ -258,22 +260,14 @@ if __name__ == "__main__":
                         game_succeeded = False
                         continue
                     
-                    # 2. Get PLAYER stats for this team
+                    # B. Get PLAYER stats for everyone on the roster for this team
                     for player_name in team_data["players"].keys():
                         if not game_succeeded: break
                         
                         question = f"Give me the stats for the player '{player_name}' in this exact order: {PLAYER_STATS_ORDER}"
-                        
-                        conversation_history = [
-                            {'role': 'user', 'parts': [SYSTEM_INSTRUCTIONS_PROMPT]},
-                            {'role': 'model', 'parts': ["Understood. I will answer each question with a Python-style list of numbers."]},
-                            {'role': 'user', 'parts': [roster_context]},
-                            {'role': 'user', 'parts': [f"Here is the game log:\n\n{narrative_log}"]},
-                            {'role': 'user', 'parts': [question]}
-                        ]
-                        
                         print(f"    Querying player stats for: {player_name}")
-                        response_list = get_gemini_list_response(model, conversation_history)
+                        response_list = get_gemini_list_response(chat, question)
+                        time.sleep(1) # Proactively avoid rate limiting
 
                         if response_list and len(response_list) == len(PLAYER_STATS_ORDER):
                             for i, stat_key in enumerate(PLAYER_STATS_ORDER):
@@ -283,18 +277,15 @@ if __name__ == "__main__":
                             game_succeeded = False
                             continue
                 
-                # 4. Evaluate and save if the entire game was processed successfully
+                # 3. Evaluate and save if the entire game was processed successfully
                 if game_succeeded:
                     total_successful_games += 1
 
-                    # --- Reconstruct the final_score string from the LLM's data ---
+                    # Reconstruct the final_score string from the LLM's data
                     team_names_list = list(llm_report["final_stats"].keys())
-                    teamA_name = team_names_list[0]
-                    teamB_name = team_names_list[1]
-                    
+                    teamA_name, teamB_name = team_names_list[0], team_names_list[1]
                     score_A = llm_report["final_stats"][teamA_name]["stats"]["score"]
                     score_B = llm_report["final_stats"][teamB_name]["stats"]["score"]
-
                     llm_report["final_score"] = f"{teamA_name}: {score_A}, {teamB_name}: {score_B}"
 
                     json_output_path = os.path.join(results_base_dir, difficulty, "json", f"{game_key}.json")
@@ -316,7 +307,14 @@ if __name__ == "__main__":
 
             # Final Summary
             print(f"\n\n{'='*20} FINAL SUMMARY {'='*20}")
-            final_summary = {"model_used": "gemini-1.5-pro", "total_games_attempted": len(all_examples_data), "successful_games": total_successful_games, "failed_games": total_failed_games, "overall_average_accuracy": "N/A", "results_by_difficulty": {} }
+            final_summary = { 
+                "model_used": "gemini-2.5-pro",
+                "total_games_attempted": len(all_examples_data), 
+                "successful_games": total_successful_games, 
+                "failed_games": total_failed_games, 
+                "overall_average_accuracy": "N/A", 
+                "results_by_difficulty": {} 
+            }
             print(f"Total Games Attempted: {total_successful_games + total_failed_games}")
             print(f"Successful Games: {total_successful_games}")
             print(f"Failed Games: {total_failed_games}")

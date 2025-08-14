@@ -7,20 +7,18 @@ load_dotenv(override=True)
 api_key = os.getenv("GEMINI_API_KEY")
 if not api_key:
     raise ValueError("GEMINI_API_KEY is missing")
-genai.configure(api_key=api_key)
+genai.configure(api_key=api_key) # type: ignore
 
+model = genai.GenerativeModel(model_name="gemini-2.5-pro") # type: ignore
 
-# 2. Create the model instance (This is the standard, simple way)
-# Note: The model is 'gemini-1.5-flash', not 2.5
-model = genai.GenerativeModel('gemini-1.5-flash')
+generation_config = {
+    "temperature": 0.5,
+    "max_output_tokens": 8192,
+    "response_mime_type": "application/json",
+}
 
-
-# 3. Call generate_content on the model object, passing the config
-response = model.generate_content(
-    "Explain how AI works in under 5 words.",
-    generation_config=genai.types.GenerationConfig(
-        max_output_tokens=5
-    )
+resp = model.generate_content(
+    "Return a JSON object with keys 'foo' and 'bar'.",
+    generation_config=generation_config, # type: ignore
 )
-
-print(response.text.strip())
+print(resp.text)

@@ -167,8 +167,8 @@ def get_gemini_list_response(model, conversation_history):
         response = model.generate_content(
             conversation_history,
             generation_config=genai.types.GenerationConfig( #type: ignore
-                temperature=1.0,
-                max_output_tokens=8196
+                temperature=0.5,
+                max_output_tokens=1024
             )
         )
         response_text = response.text.strip()

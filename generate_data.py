@@ -14,6 +14,7 @@
 # 6.1 Basic difficulty:  No substitutions allowed, No VAR checks, limited number of events(20)
 # 6.2 Medium difficulty: Substitutions allowed, No VAR checks, limited number of events(60)
 # 6.3 Hard difficulty:   Substitutions allowed, VAR checks allowed, unlimited number of events(100)
+# 7. Consider saving the ground truth data in the "examples.json" file - ask the tutor for clarification.
 
 import random
 import json
@@ -411,15 +412,15 @@ class BasketballReportGenerator:
     def generate_report(self, difficulty="medium"):
         # --- Difficulty Level Configuration ---
         if difficulty == "basic":
-            num_events = 50
+            num_events = 100
             allow_substitutions = False
             allow_var = False
         elif difficulty == "medium":
-            num_events = 150
+            num_events = 200
             allow_substitutions = True
             allow_var = False
         else: # hard
-            num_events = 200
+            num_events = 300
             allow_substitutions = True
             allow_var = True
         team_names = random.sample(list(self.teams.keys()), 2)
@@ -844,7 +845,7 @@ class BasketballReportGenerator:
 # # --- with difficulty levels ---
 if __name__ == "__main__":
     # Define the number of games to generate PER difficulty level
-    GAMES_PER_DIFFICULTY = 5 # Let's generate 5 of each (15 total)
+    GAMES_PER_DIFFICULTY = 10 # Let's generate 10 of each (30 total)
     DIFFICULTY_LEVELS = ["basic", "medium", "hard"]
     
     generator = BasketballReportGenerator()

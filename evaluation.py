@@ -5,6 +5,7 @@
 # TODO:
 # 1. Consider use weights of failures, or, distance from the ground truth.
 # 2. Ask the tutor for clarification on the right approach to evaluate the reports.
+# 3. Check the paper that in the pdf instructions for more details. Send it to chatbot to learn it.
 
 def evaluate_reports(llm_report, ground_truth_report):
     """
