@@ -7,12 +7,6 @@
 # 2. Ask the tutor for clarification on the right approach to evaluate the reports.
 # 3. Check the paper that in the pdf instructions for more details. Send it to chatbot to learn it.
 
-def is_player_stats_all_zeros(player_stats):
-    """Helper function to check if a player's stats dictionary contains only zeros."""
-    if not player_stats:
-        return False
-    return all(value == 0 for value in player_stats.values())
-
 def evaluate_reports(llm_report, ground_truth_report):
     """
     Compares the LLM's generated report against the ground truth and calculates accuracy.
@@ -73,22 +67,16 @@ def evaluate_reports(llm_report, ground_truth_report):
             else:
                 discrepancies.append(f"TEAM STAT MISMATCH for {team_name} ({stat}): GT={gt_value}, LLM={llm_value}")
 
-        # --- Compare player stats based on participation ---
-        
-        # Get the list of players who actually played from the ground truth report
-        participants = ground_truth_report.get("teams", {}).get(team_name, {}).get("participants", [])
-        full_roster = ground_truth_report.get("teams", {}).get(team_name, {}).get("roster", [])
-
-        # 1. Evaluate PARTICIPATING players (detailed, stat-by-stat check)
-        for player_name in participants:
-            gt_player_stats = gt_team_data.get("players", {}).get(player_name, {})
-            llm_player_stats = llm_team_data.get("players", {}).get(player_name)
-
-            if not llm_player_stats:
-                discrepancies.append(f"MISSING PARTICIPATING PLAYER: {player_name} in team {team_name}.")
-                total_fields += len(gt_player_stats) # Penalize for all missing stats
+        # Compare player stats
+        gt_players = gt_team_data.get("players", {})
+        llm_players = llm_team_data.get("players", {})
+        for player_name, gt_player_stats in gt_players.items():
+            if player_name not in llm_players:
+                discrepancies.append(f"MISSING PLAYER STATS for: {player_name} ({team_name})")
+                total_fields += len(gt_player_stats)
                 continue
             
+            llm_player_stats = llm_players[player_name]
             for stat, gt_value in gt_player_stats.items():
                 total_fields += 1
                 llm_value = llm_player_stats.get(stat)
@@ -96,19 +84,6 @@ def evaluate_reports(llm_report, ground_truth_report):
                     correct_fields += 1
                 else:
                     discrepancies.append(f"PLAYER STAT MISMATCH for {player_name} ({stat}): GT={gt_value}, LLM={llm_value}")
-
-        # 2. Evaluate NON-PARTICIPATING players (simple all-zeros check)
-        non_participants = [p for p in full_roster if p not in participants]
-        for player_name in non_participants:
-            total_fields += 1 # This check counts as one field to evaluate
-            llm_player_stats = llm_team_data.get("players", {}).get(player_name)
-
-            if is_player_stats_all_zeros(llm_player_stats):
-                # The LLM correctly reported all zeros for this player who didn't play.
-                correct_fields += 1
-            else:
-                # The LLM either missed the player or incorrectly gave them non-zero stats.
-                discrepancies.append(f"NON-PARTICIPANT ERROR for {player_name}: Should have all zero stats, but got: {llm_player_stats}")
 
     accuracy = (correct_fields / total_fields) * 100 if total_fields > 0 else 0
     return accuracy, discrepancies
