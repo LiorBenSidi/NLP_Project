@@ -2,6 +2,11 @@
 
 #TODO:
 # 1. integrate "examples.json" and "true_report.json" into one file: "examples.jsonl"
+# 2. Ask the course instructor how much to describe the instructions for the report generation process.
+# 2.1 Do I need to tell the LLM exacly how each event effects on the stats?
+# 2.2 Do I need to tell the LLM what stats to calculte for each team and player?
+# 3. Think about compare the JSON output format with LISTs output format.
+# 4. I have notied that the LLM tend to interpret regular passing events as assists, even when they shouldn't be.
 
 import json
 import re
@@ -15,153 +20,230 @@ load_dotenv(override=True)
 # --- Define the model you want to test here ---
 # This is the only line you need to change to switch models.
 #MODEL_TO_TEST = "gemini/gemini-1.5-flash-latest"
-#MODEL_TO_TEST = "gemini/gemini-1.5-pro-latest"
+MODEL_TO_TEST = "gemini/gemini-1.5-pro-latest"
 #MODEL_TO_TEST = "gemini/gemini-2.0-flash-lite"
 #MODEL_TO_TEST = "gemini/gemini-2.0-flash"
 #MODEL_TO_TEST = "gemini/gemini-2.5-flash-lite"
-MODEL_TO_TEST = "gemini/gemini-2.5-flash"
+#MODEL_TO_TEST = "gemini/gemini-2.5-flash"
 #MODEL_TO_TEST = "gemini/gemini-2.5-pro"
+#MODEL_TO_TEST = "gpt-4o-nano"
+#MODEL_TO_TEST = "gpt-4o-mini"
 #MODEL_TO_TEST = "gpt-4o"
 #MODEL_TO_TEST = "claude-3-haiku-20240307"
 
 # --- Part 1: Prompt Templates and Static Data ---
 SYSTEM_INSTRUCTIONS_PROMPT = """You are an automated sports data analyst.
-                                Your sole function is to process a narrative log of a basketball game and convert it into a structured JSON report.
+                                Imagine you are a person who just received a chronological log of events from a basketball game.
+                                Based only on what actually happened in the log, your role is to build the official statistical report for the game.
 
                                 ### YOUR TASK ###
-                                Analyze the provided game log, which lists events in chronological order.
-                                You will be given the full rosters for each team. Your JSON output must include stats for EVERY player on the roster,
-                                even if they did not play (in which case their stats should be 0).
-                                Synthesize this information into a single, complete JSON object that represents the final box score of the game.
-
-                                ### HOW TO HANDLE EACH EVENT ###
-                                You must follow these rules precisely for each event type:
-                                - **"{player_A1} delivers a sharp pass to {player_A2}, who finishes with a 2-point layup."**:
-                                  - Add 2 points and 1 assists to scoring team_A.
-                                  - Add 1 assist to player_A1.
-                                  - Add 2 points, 1 `2pt_shots_made`, and 1 `2pt_shots_attempted` to player_A2.
-                                - **"{player_A1} finds {player_A2} open on the perimeter for a successful 3-point shot."**:
-                                  - Add 3 points and 1 assists to scoring team_A.
-                                  - Add 1 assist to player_A1.
-                                  - Add 3 points, 1 `3pt_shots_made`, and 1 `3pt_shots_attempted` to player_A2.
-                                - **"{player_A} attempts a 2-point shot but misses."**:
-                                  - Add 1 `2pt_shots_attempted` to player_A.
-                                - **"{player_A} attempts a 3-point shot but misses."**:
-                                  - Add 1 `3pt_shots_attempted` to player_A.
-                                - **"{player_A} is fouled by {player_B} on a 2-point attempt and will go to the line for two shots."**:
-                                  - Add 1 `2pt_shots_attempted` to player_A.
-                                  - Add 1 foul to team_B.
-                                  - Add 1 foul to player_B.
-                                - **"{player_A} is fouled by {player_B} on a 3-point attempt and will go to the line for three shots."**:
-                                  - Add 1 `3pt_shots_attempted` to player_A.
-                                  - Add 1 foul to team_B.
-                                  - Add 1 foul to player_B.
-                                - **"{player_A} makes the {shot_ordinal} free throw."**:
-                                  - Add 1 point to team_A.
-                                  - Add 1 point, 1 `ft_made`, 1 `ft_attempted` to player_A.
-                                - **"{player_A} misses the {shot_ordinal} free throw."**:
-                                  - Add 1 `ft_attempted` to player_A.
-                                - **"{player_A} steals the ball from {player_B}!"**:
-                                  - Add 1 steal to team_A.
-                                  - Add 1 turnover to team_B.
-                                  - Add 1 steal to player_A.
-                                  - Add 1 turnover to player_B.
-                                - **"{player_A} blocks the 2pt shot from {player_B}!"**:
-                                  - Add 1 block to team_A.
-                                  - Add 1 block to player_A.
-                                  - Add 1 `2pt_shots_attempted` to player_B.
-                                - **"{player_A} blocks the 3pt shot from {player_B}!"**:
-                                  - Add 1 block to team_A.
-                                  - Add 1 block to player_A.
-                                  - Add 1 `3pt_shots_attempted` to player_B.
-                                - **"A bad pass from {player_A} results in a turnover."**:
-                                  - Add 1 turnover to team_A.
-                                  - Add 1 turnover to player_A.
-                                - **"Defensive rebound by {player_A}."**:
-                                  - Add 1 rebound to team_A.
-                                  - Add 1 rebound to player_A.
-                                - **"Offensive rebound by {player_A}."**:
-                                  - Add 1 rebound to team_A.
-                                  - Add 1 rebound to player_A.
-                                - **"The game starts with a jump ball between {player_A} and {player_B}. {winner} wins possession."**:
-                                  - Do nothing
-                                - **"The final buzzer sounds. End of game."**:
-                                  - Do nothing
-                                - **"{player_A1} inbounds the ball to {player_A2} to start the possession."**
-                                  - Do nothing
-                                - **"{player_A1} passes to {player_A2}."**
-                                  - Do nothing
-                                - **"After a VAR review, the previous basket by {player_B} is overturned due to an offensive foul committed by {player_B} before the shot."**:
-                                  - This is a correction. You must REVERSE the stats from the previous scoring play.
-                                  - Subtract 2 points, 1 assist from team_B.
-                                  - Add 1 foul, 1 turnover to team_B.
-                                  - Subtract 1 assist from player_A (the passer).
-                                  - Subtract 2 points, 1 made shot, and 1 attempted shot from player_B.
-                                  - Add 1 foul, 1 turnover to player_B.
-                                - **"The referees go to the monitor. After review, the 3-point shot by {player_B} is waved off due to a shot clock violation."**:
-                                  - This is a correction. You must REVERSE the stats from the previous scoring play.
-                                  - Subtract 3 points, 1 assist from team_B.
-                                  - Add 1 turnover to team_B.
-                                  - Subtract 1 assist from player_A (the passer).
-                                  - Subtract 3 points, 1 made 3pt shot, 1 attempted 3pt shot from player_B.
-                                  - Add 1 turnover to player_B.
-                                - **""Substitution by {head_coach}: {player_in} comes in for {player_out}.""**:
-                                  - This event does not affect player or team statistics. Use it only to track who is on the court.
-                                  - player_in is being active and can contribute to the game now, till he may be substituted out.
-                                  - player_out is temporarily inactive, but may return later by being substituted in.
-                                  - the statistics for both players should be tracked.
+                                - Read through the sequence of events in order, as if you are watching the game unfold.
+                                - From those events, determine the stats for both teams and all their players.
+                                - You will also have the full rosters for each team, including head coaches and starting lineups and bench players.
+                                - Make sure every team and every player is included in the final report, even if some have zero stats.
+                                - Combine everything into one complete JSON object that represents the final box score.
 
                                 ### REQUIRED STATS ###
                                 For each team, you must track and include the following:
                                 - `matchup`: The matchup of the game in the format "<TeamNameA> vs <TeamNameB>"
                                 - `final_score`: The final score of the game in the format "<TeamNameA>: <ScoreA>, <TeamNameB>: <ScoreB>"
-                                - `teams`: The two teams participating in the game, including their coaches and rosters.
-                                - `final_stats`: A dictionary containing the stats for each team.
-
-                                For each player, you must track and include the following statistics:
-                                - `points`: Total points scored.
-                                - `assists`: Total assists made.
-                                - `rebounds`: Total rebounds grabbed.
-                                - `fouls`: Total fouls committed.
-                                - `steals`: Total steals made.
-                                - `blocks`: Total blocks made.
-                                - `turnovers`: Total turnovers committed.
-                                - `2pt_shots_made`: Total 2-point shots made.
-                                - `2pt_shots_attempted`: Total 2-point shots attempted.
-                                - `3pt_shots_made`: Total 3-point shots made.
-                                - `3pt_shots_attempted`: Total 3-point shots attempted.
-                                - `ft_made`: Total free throws successfully made.
-                                - `ft_attempted`: Total free throws attempted.
+                                - `teams`: The two teams participating in the game, including their coaches, rosters and starting lineups and bench players.
+                                - `final_stats`: A dictionary containing the stats for each team and their players.
 
                                 ### OUTPUT FORMAT ###
                                 - Your entire response MUST be a single, valid JSON object.
                                 - Your response MUST NOT include any introductory text, explanations, or conversational markdown (like ```json ...```).
                                 - Your response MUST begin with the character `{` and end with the character `}`.
+                            """
 
-                                ### EXAMPLE JSON STRUCTURE ###
-                                Your final output must follow this exact structure. Do not add, remove, or rename any keys.
+# FULL - Add example for the required output
+SYSTEM_INSTRUCTIONS_PROMPT += """\n\n### EXAMPLE FOR THE REQUIRED JSON STRUCTURE ###
+                                    Your final output must follow this exact structure. Do not add, remove, or rename any keys.
 
-                                ```json
-                                {
-                                    "matchup": "TeamNameA vs TeamNameB",
-                                    "final_score": "TeamNameA: 0, TeamNameB: 0",
-                                    "teams": {
-                                        "TeamNameA": {
-                                            "coach": "CoachNameA",
-                                            "roster": ["PlayerName1-A", "PlayerName2-A", "PlayerName3-A", "PlayerName4-A", "PlayerName5-A"],
-                                            "starting_lineup": ["PlayerName1-A", "PlayerName2-A", "PlayerName3-A", "PlayerName4-A", "PlayerName5-A"],
-                                            "bench": ["PlayerName6-A", "PlayerName7-A", "PlayerName8-A", "PlayerName9-A", "PlayerName10-A"]
+                                    ```json
+                                    {
+                                        "matchup": "TeamNameA vs TeamNameB",
+                                        "final_score": "TeamNameA: 0, TeamNameB: 0",
+                                        "teams": {
+                                            "TeamNameA": {
+                                                "coach": "CoachNameA",
+                                                "roster": ["PlayerName1-A", "PlayerName2-A", "PlayerName3-A", "PlayerName4-A", "PlayerName5-A"],
+                                                "starting_lineup": ["PlayerName1-A", "PlayerName2-A", "PlayerName3-A", "PlayerName4-A", "PlayerName5-A"],
+                                                "bench": ["PlayerName6-A", "PlayerName7-A", "PlayerName8-A", "PlayerName9-A", "PlayerName10-A"]
+                                            },
+                                            "TeamNameB": {
+                                                "coach": "CoachNameB",
+                                                "roster": ["PlayerName1-B", "PlayerName2-B", "PlayerName3-B", "PlayerName4-B", "PlayerName5-B"],
+                                                "starting_lineup": ["PlayerName1-B", "PlayerName2-B", "PlayerName3-B", "PlayerName4-B", "PlayerName5-B"],
+                                                "bench": ["PlayerName6-B", "PlayerName7-B", "PlayerName8-B", "PlayerName9-B", "PlayerName10-B"]
+                                            }
                                         },
-                                        "TeamNameB": {
-                                            "coach": "CoachNameB",
-                                            "roster": ["PlayerName1-B", "PlayerName2-B", "PlayerName3-B", "PlayerName4-B", "PlayerName5-B"],
-                                            "starting_lineup": ["PlayerName1-B", "PlayerName2-B", "PlayerName3-B", "PlayerName4-B", "PlayerName5-B"],
-                                            "bench": ["PlayerName6-B", "PlayerName7-B", "PlayerName8-B", "PlayerName9-B", "PlayerName10-B"]
-                                        }
-                                    },
-                                    "final_stats": {
-                                        "TeamNameA": {
-                                            "stats": {
+                                        "final_stats": {
+                                            "TeamNameA": {
+                                                "stats": {
+                                                    "score": 0,
+                                                    "assists": 0,
+                                                    "rebounds": 0,
+                                                    "fouls": 0,
+                                                    "steals": 0,
+                                                    "blocks": 0,
+                                                    "turnovers": 0
+                                                },
+                                                "players": {
+                                                    "PlayerName1-A": {
+                                                        "points": 0,
+                                                        "assists": 0,
+                                                        "rebounds": 0,
+                                                        "fouls": 0,
+                                                        "steals": 0,
+                                                        "blocks": 0,
+                                                        "turnovers": 0,
+                                                        "2pt_shots_made": 0,
+                                                        "2pt_shots_attempted": 0,
+                                                        "3pt_shots_made": 0,
+                                                        "3pt_shots_attempted": 0,
+                                                        "ft_made": 0,
+                                                        "ft_attempted": 0
+                                                    },
+                                                    "PlayerName2-A": {
+                                                        "points": 0,
+                                                        "assists": 0,
+                                                        "rebounds": 0,
+                                                        "fouls": 0,
+                                                        "steals": 0,
+                                                        "blocks": 0,
+                                                        "turnovers": 0,
+                                                        "2pt_shots_made": 0,
+                                                        "2pt_shots_attempted": 0,
+                                                        "3pt_shots_made": 0,
+                                                        "3pt_shots_attempted": 0,
+                                                        "ft_made": 0,
+                                                        "ft_attempted": 0
+                                                    },
+                                                    "PlayerName3-A": {
+                                                        "points": 0,
+                                                        "assists": 0,
+                                                        "rebounds": 0,
+                                                        "fouls": 0,
+                                                        "steals": 0,
+                                                        "blocks": 0,
+                                                        "turnovers": 0,
+                                                        "2pt_shots_made": 0,
+                                                        "2pt_shots_attempted": 0,
+                                                        "3pt_shots_made": 0,
+                                                        "3pt_shots_attempted": 0,
+                                                        "ft_made": 0,
+                                                        "ft_attempted": 0
+                                                    },
+                                                    "PlayerName4-A": {
+                                                        "points": 0,
+                                                        "assists": 0,
+                                                        "rebounds": 0,
+                                                        "fouls": 0,
+                                                        "steals": 0,
+                                                        "blocks": 0,
+                                                        "turnovers": 0,
+                                                        "2pt_shots_made": 0,
+                                                        "2pt_shots_attempted": 0,
+                                                        "3pt_shots_made": 0,
+                                                        "3pt_shots_attempted": 0,
+                                                        "ft_made": 0,
+                                                        "ft_attempted": 0
+                                                    },
+                                                    "PlayerName5-A": {
+                                                        "points": 0,
+                                                        "assists": 0,
+                                                        "rebounds": 0,
+                                                        "fouls": 0,
+                                                        "steals": 0,
+                                                        "blocks": 0,
+                                                        "turnovers": 0,
+                                                        "2pt_shots_made": 0,
+                                                        "2pt_shots_attempted": 0,
+                                                        "3pt_shots_made": 0,
+                                                        "3pt_shots_attempted": 0,
+                                                        "ft_made": 0,
+                                                        "ft_attempted": 0
+                                                    },
+                                                    "PlayerName6-A": {
+                                                        "points": 0,
+                                                        "assists": 0,
+                                                        "rebounds": 0,
+                                                        "fouls": 0,
+                                                        "steals": 0,
+                                                        "blocks": 0,
+                                                        "turnovers": 0,
+                                                        "2pt_shots_made": 0,
+                                                        "2pt_shots_attempted": 0,
+                                                        "3pt_shots_made": 0,
+                                                        "3pt_shots_attempted": 0,
+                                                        "ft_made": 0,
+                                                        "ft_attempted": 0
+                                                    },
+                                                    "PlayerName7-A": {
+                                                        "points": 0,
+                                                        "assists": 0,
+                                                        "rebounds": 0,
+                                                        "fouls": 0,
+                                                        "steals": 0,
+                                                        "blocks": 0,
+                                                        "turnovers": 0,
+                                                        "2pt_shots_made": 0,
+                                                        "2pt_shots_attempted": 0,
+                                                        "3pt_shots_made": 0,
+                                                        "3pt_shots_attempted": 0,
+                                                        "ft_made": 0,
+                                                        "ft_attempted": 0
+                                                    },
+                                                    "PlayerName8-A": {
+                                                        "points": 0,
+                                                        "assists": 0,
+                                                        "rebounds": 0,
+                                                        "fouls": 0,
+                                                        "steals": 0,
+                                                        "blocks": 0,
+                                                        "turnovers": 0,
+                                                        "2pt_shots_made": 0,
+                                                        "2pt_shots_attempted": 0,
+                                                        "3pt_shots_made": 0,
+                                                        "3pt_shots_attempted": 0,
+                                                        "ft_made": 0,
+                                                        "ft_attempted": 0
+                                                    },
+                                                    "PlayerName9-A": {
+                                                        "points": 0,
+                                                        "assists": 0,
+                                                        "rebounds": 0,
+                                                        "fouls": 0,
+                                                        "steals": 0,
+                                                        "blocks": 0,
+                                                        "turnovers": 0,
+                                                        "2pt_shots_made": 0,
+                                                        "2pt_shots_attempted": 0,
+                                                        "3pt_shots_made": 0,
+                                                        "3pt_shots_attempted": 0,
+                                                        "ft_made": 0,
+                                                        "ft_attempted": 0
+                                                    },
+                                                    "PlayerName10-A": {
+                                                        "points": 0,
+                                                        "assists": 0,
+                                                        "rebounds": 0,
+                                                        "fouls": 0,
+                                                        "steals": 0,
+                                                        "blocks": 0,
+                                                        "turnovers": 0,
+                                                        "2pt_shots_made": 0,
+                                                        "2pt_shots_attempted": 0,
+                                                        "3pt_shots_made": 0,
+                                                        "3pt_shots_attempted": 0,
+                                                        "ft_made": 0,
+                                                        "ft_attempted": 0
+                                                    }
+                                                }
+                                            },
+                                            "TeamNameB": {
+                                                "stats": {
                                                 "score": 0,
                                                 "assists": 0,
                                                 "rebounds": 0,
@@ -169,327 +251,253 @@ SYSTEM_INSTRUCTIONS_PROMPT = """You are an automated sports data analyst.
                                                 "steals": 0,
                                                 "blocks": 0,
                                                 "turnovers": 0
-                                            },
-                                            "players": {
-                                                "PlayerName1-A": {
-                                                    "points": 0,
-                                                    "assists": 0,
-                                                    "rebounds": 0,
-                                                    "fouls": 0,
-                                                    "steals": 0,
-                                                    "blocks": 0,
-                                                    "turnovers": 0,
-                                                    "2pt_shots_made": 0,
-                                                    "2pt_shots_attempted": 0,
-                                                    "3pt_shots_made": 0,
-                                                    "3pt_shots_attempted": 0,
-                                                    "ft_made": 0,
-                                                    "ft_attempted": 0
                                                 },
-                                                "PlayerName2-A": {
-                                                    "points": 0,
-                                                    "assists": 0,
-                                                    "rebounds": 0,
-                                                    "fouls": 0,
-                                                    "steals": 0,
-                                                    "blocks": 0,
-                                                    "turnovers": 0,
-                                                    "2pt_shots_made": 0,
-                                                    "2pt_shots_attempted": 0,
-                                                    "3pt_shots_made": 0,
-                                                    "3pt_shots_attempted": 0,
-                                                    "ft_made": 0,
-                                                    "ft_attempted": 0
-                                                },
-                                                "PlayerName3-A": {
-                                                    "points": 0,
-                                                    "assists": 0,
-                                                    "rebounds": 0,
-                                                    "fouls": 0,
-                                                    "steals": 0,
-                                                    "blocks": 0,
-                                                    "turnovers": 0,
-                                                    "2pt_shots_made": 0,
-                                                    "2pt_shots_attempted": 0,
-                                                    "3pt_shots_made": 0,
-                                                    "3pt_shots_attempted": 0,
-                                                    "ft_made": 0,
-                                                    "ft_attempted": 0
-                                                },
-                                                "PlayerName4-A": {
-                                                    "points": 0,
-                                                    "assists": 0,
-                                                    "rebounds": 0,
-                                                    "fouls": 0,
-                                                    "steals": 0,
-                                                    "blocks": 0,
-                                                    "turnovers": 0,
-                                                    "2pt_shots_made": 0,
-                                                    "2pt_shots_attempted": 0,
-                                                    "3pt_shots_made": 0,
-                                                    "3pt_shots_attempted": 0,
-                                                    "ft_made": 0,
-                                                    "ft_attempted": 0
-                                                },
-                                                "PlayerName5-A": {
-                                                    "points": 0,
-                                                    "assists": 0,
-                                                    "rebounds": 0,
-                                                    "fouls": 0,
-                                                    "steals": 0,
-                                                    "blocks": 0,
-                                                    "turnovers": 0,
-                                                    "2pt_shots_made": 0,
-                                                    "2pt_shots_attempted": 0,
-                                                    "3pt_shots_made": 0,
-                                                    "3pt_shots_attempted": 0,
-                                                    "ft_made": 0,
-                                                    "ft_attempted": 0
-                                                },
-                                                "PlayerName6-A": {
-                                                    "points": 0,
-                                                    "assists": 0,
-                                                    "rebounds": 0,
-                                                    "fouls": 0,
-                                                    "steals": 0,
-                                                    "blocks": 0,
-                                                    "turnovers": 0,
-                                                    "2pt_shots_made": 0,
-                                                    "2pt_shots_attempted": 0,
-                                                    "3pt_shots_made": 0,
-                                                    "3pt_shots_attempted": 0,
-                                                    "ft_made": 0,
-                                                    "ft_attempted": 0
-                                                },
-                                                "PlayerName7-A": {
-                                                    "points": 0,
-                                                    "assists": 0,
-                                                    "rebounds": 0,
-                                                    "fouls": 0,
-                                                    "steals": 0,
-                                                    "blocks": 0,
-                                                    "turnovers": 0,
-                                                    "2pt_shots_made": 0,
-                                                    "2pt_shots_attempted": 0,
-                                                    "3pt_shots_made": 0,
-                                                    "3pt_shots_attempted": 0,
-                                                    "ft_made": 0,
-                                                    "ft_attempted": 0
-                                                },
-                                                "PlayerName8-A": {
-                                                    "points": 0,
-                                                    "assists": 0,
-                                                    "rebounds": 0,
-                                                    "fouls": 0,
-                                                    "steals": 0,
-                                                    "blocks": 0,
-                                                    "turnovers": 0,
-                                                    "2pt_shots_made": 0,
-                                                    "2pt_shots_attempted": 0,
-                                                    "3pt_shots_made": 0,
-                                                    "3pt_shots_attempted": 0,
-                                                    "ft_made": 0,
-                                                    "ft_attempted": 0
-                                                },
-                                                "PlayerName9-A": {
-                                                    "points": 0,
-                                                    "assists": 0,
-                                                    "rebounds": 0,
-                                                    "fouls": 0,
-                                                    "steals": 0,
-                                                    "blocks": 0,
-                                                    "turnovers": 0,
-                                                    "2pt_shots_made": 0,
-                                                    "2pt_shots_attempted": 0,
-                                                    "3pt_shots_made": 0,
-                                                    "3pt_shots_attempted": 0,
-                                                    "ft_made": 0,
-                                                    "ft_attempted": 0
-                                                },
-                                                "PlayerName10-A": {
-                                                    "points": 0,
-                                                    "assists": 0,
-                                                    "rebounds": 0,
-                                                    "fouls": 0,
-                                                    "steals": 0,
-                                                    "blocks": 0,
-                                                    "turnovers": 0,
-                                                    "2pt_shots_made": 0,
-                                                    "2pt_shots_attempted": 0,
-                                                    "3pt_shots_made": 0,
-                                                    "3pt_shots_attempted": 0,
-                                                    "ft_made": 0,
-                                                    "ft_attempted": 0
-                                                }
-                                            }
-                                        },
-                                        "TeamNameB": {
-                                            "stats": {
-                                            "score": 0,
-                                            "assists": 0,
-                                            "rebounds": 0,
-                                            "fouls": 0,
-                                            "steals": 0,
-                                            "blocks": 0,
-                                            "turnovers": 0
-                                            },
-                                            "players": {
-                                                "PlayerName1-B": {
-                                                    "points": 0,
-                                                    "assists": 0,
-                                                    "rebounds": 0,
-                                                    "fouls": 0,
-                                                    "steals": 0,
-                                                    "blocks": 0,
-                                                    "turnovers": 0,
-                                                    "2pt_shots_made": 0,
-                                                    "2pt_shots_attempted": 0,
-                                                    "3pt_shots_made": 0,
-                                                    "3pt_shots_attempted": 0,
-                                                    "ft_made": 0,
-                                                    "ft_attempted": 0
-                                                },
-                                                "PlayerName2-B": {
-                                                    "points": 0,
-                                                    "assists": 0,
-                                                    "rebounds": 0,
-                                                    "fouls": 0,
-                                                    "steals": 0,
-                                                    "blocks": 0,
-                                                    "turnovers": 0,
-                                                    "2pt_shots_made": 0,
-                                                    "2pt_shots_attempted": 0,
-                                                    "3pt_shots_made": 0,
-                                                    "3pt_shots_attempted": 0,
-                                                    "ft_made": 0,
-                                                    "ft_attempted": 0
-                                                },
-                                                "PlayerName3-B": {
-                                                    "points": 0,
-                                                    "assists": 0,
-                                                    "rebounds": 0,
-                                                    "fouls": 0,
-                                                    "steals": 0,
-                                                    "blocks": 0,
-                                                    "turnovers": 0,
-                                                    "2pt_shots_made": 0,
-                                                    "2pt_shots_attempted": 0,
-                                                    "3pt_shots_made": 0,
-                                                    "3pt_shots_attempted": 0,
-                                                    "ft_made": 0,
-                                                    "ft_attempted": 0
-                                                },
-                                                "PlayerName4-B": {
-                                                    "points": 0,
-                                                    "assists": 0,
-                                                    "rebounds": 0,
-                                                    "fouls": 0,
-                                                    "steals": 0,
-                                                    "blocks": 0,
-                                                    "turnovers": 0,
-                                                    "2pt_shots_made": 0,
-                                                    "2pt_shots_attempted": 0,
-                                                    "3pt_shots_made": 0,
-                                                    "3pt_shots_attempted": 0,
-                                                    "ft_made": 0,
-                                                    "ft_attempted": 0
-                                                },
-                                                "PlayerName5-B": {
-                                                    "points": 0,
-                                                    "assists": 0,
-                                                    "rebounds": 0,
-                                                    "fouls": 0,
-                                                    "steals": 0,
-                                                    "blocks": 0,
-                                                    "turnovers": 0,
-                                                    "2pt_shots_made": 0,
-                                                    "2pt_shots_attempted": 0,
-                                                    "3pt_shots_made": 0,
-                                                    "3pt_shots_attempted": 0,
-                                                    "ft_made": 0,
-                                                    "ft_attempted": 0
-                                                },
-                                                "PlayerName6-B": {
-                                                    "points": 0,
-                                                    "assists": 0,
-                                                    "rebounds": 0,
-                                                    "fouls": 0,
-                                                    "steals": 0,
-                                                    "blocks": 0,
-                                                    "turnovers": 0,
-                                                    "2pt_shots_made": 0,
-                                                    "2pt_shots_attempted": 0,
-                                                    "3pt_shots_made": 0,
-                                                    "3pt_shots_attempted": 0,
-                                                    "ft_made": 0,
-                                                    "ft_attempted": 0
-                                                },
-                                                "PlayerName7-B": {
-                                                    "points": 0,
-                                                    "assists": 0,
-                                                    "rebounds": 0,
-                                                    "fouls": 0,
-                                                    "steals": 0,
-                                                    "blocks": 0,
-                                                    "turnovers": 0,
-                                                    "2pt_shots_made": 0,
-                                                    "2pt_shots_attempted": 0,
-                                                    "3pt_shots_made": 0,
-                                                    "3pt_shots_attempted": 0,
-                                                    "ft_made": 0,
-                                                    "ft_attempted": 0
-                                                },
-                                                "PlayerName8-B": {
-                                                    "points": 0,
-                                                    "assists": 0,
-                                                    "rebounds": 0,
-                                                    "fouls": 0,
-                                                    "steals": 0,
-                                                    "blocks": 0,
-                                                    "turnovers": 0,
-                                                    "2pt_shots_made": 0,
-                                                    "2pt_shots_attempted": 0,
-                                                    "3pt_shots_made": 0,
-                                                    "3pt_shots_attempted": 0,
-                                                    "ft_made": 0,
-                                                    "ft_attempted": 0
-                                                },
-                                                "PlayerName9-B": {
-                                                    "points": 0,
-                                                    "assists": 0,
-                                                    "rebounds": 0,
-                                                    "fouls": 0,
-                                                    "steals": 0,
-                                                    "blocks": 0,
-                                                    "turnovers": 0,
-                                                    "2pt_shots_made": 0,
-                                                    "2pt_shots_attempted": 0,
-                                                    "3pt_shots_made": 0,
-                                                    "3pt_shots_attempted": 0,
-                                                    "ft_made": 0,
-                                                    "ft_attempted": 0
-                                                },
-                                                "PlayerName10-B": {
-                                                    "points": 0,
-                                                    "assists": 0,
-                                                    "rebounds": 0,
-                                                    "fouls": 0,
-                                                    "steals": 0,
-                                                    "blocks": 0,
-                                                    "turnovers": 0,
-                                                    "2pt_shots_made": 0,
-                                                    "2pt_shots_attempted": 0,
-                                                    "3pt_shots_made": 0,
-                                                    "3pt_shots_attempted": 0,
-                                                    "ft_made": 0,
-                                                    "ft_attempted": 0
+                                                "players": {
+                                                    "PlayerName1-B": {
+                                                        "points": 0,
+                                                        "assists": 0,
+                                                        "rebounds": 0,
+                                                        "fouls": 0,
+                                                        "steals": 0,
+                                                        "blocks": 0,
+                                                        "turnovers": 0,
+                                                        "2pt_shots_made": 0,
+                                                        "2pt_shots_attempted": 0,
+                                                        "3pt_shots_made": 0,
+                                                        "3pt_shots_attempted": 0,
+                                                        "ft_made": 0,
+                                                        "ft_attempted": 0
+                                                    },
+                                                    "PlayerName2-B": {
+                                                        "points": 0,
+                                                        "assists": 0,
+                                                        "rebounds": 0,
+                                                        "fouls": 0,
+                                                        "steals": 0,
+                                                        "blocks": 0,
+                                                        "turnovers": 0,
+                                                        "2pt_shots_made": 0,
+                                                        "2pt_shots_attempted": 0,
+                                                        "3pt_shots_made": 0,
+                                                        "3pt_shots_attempted": 0,
+                                                        "ft_made": 0,
+                                                        "ft_attempted": 0
+                                                    },
+                                                    "PlayerName3-B": {
+                                                        "points": 0,
+                                                        "assists": 0,
+                                                        "rebounds": 0,
+                                                        "fouls": 0,
+                                                        "steals": 0,
+                                                        "blocks": 0,
+                                                        "turnovers": 0,
+                                                        "2pt_shots_made": 0,
+                                                        "2pt_shots_attempted": 0,
+                                                        "3pt_shots_made": 0,
+                                                        "3pt_shots_attempted": 0,
+                                                        "ft_made": 0,
+                                                        "ft_attempted": 0
+                                                    },
+                                                    "PlayerName4-B": {
+                                                        "points": 0,
+                                                        "assists": 0,
+                                                        "rebounds": 0,
+                                                        "fouls": 0,
+                                                        "steals": 0,
+                                                        "blocks": 0,
+                                                        "turnovers": 0,
+                                                        "2pt_shots_made": 0,
+                                                        "2pt_shots_attempted": 0,
+                                                        "3pt_shots_made": 0,
+                                                        "3pt_shots_attempted": 0,
+                                                        "ft_made": 0,
+                                                        "ft_attempted": 0
+                                                    },
+                                                    "PlayerName5-B": {
+                                                        "points": 0,
+                                                        "assists": 0,
+                                                        "rebounds": 0,
+                                                        "fouls": 0,
+                                                        "steals": 0,
+                                                        "blocks": 0,
+                                                        "turnovers": 0,
+                                                        "2pt_shots_made": 0,
+                                                        "2pt_shots_attempted": 0,
+                                                        "3pt_shots_made": 0,
+                                                        "3pt_shots_attempted": 0,
+                                                        "ft_made": 0,
+                                                        "ft_attempted": 0
+                                                    },
+                                                    "PlayerName6-B": {
+                                                        "points": 0,
+                                                        "assists": 0,
+                                                        "rebounds": 0,
+                                                        "fouls": 0,
+                                                        "steals": 0,
+                                                        "blocks": 0,
+                                                        "turnovers": 0,
+                                                        "2pt_shots_made": 0,
+                                                        "2pt_shots_attempted": 0,
+                                                        "3pt_shots_made": 0,
+                                                        "3pt_shots_attempted": 0,
+                                                        "ft_made": 0,
+                                                        "ft_attempted": 0
+                                                    },
+                                                    "PlayerName7-B": {
+                                                        "points": 0,
+                                                        "assists": 0,
+                                                        "rebounds": 0,
+                                                        "fouls": 0,
+                                                        "steals": 0,
+                                                        "blocks": 0,
+                                                        "turnovers": 0,
+                                                        "2pt_shots_made": 0,
+                                                        "2pt_shots_attempted": 0,
+                                                        "3pt_shots_made": 0,
+                                                        "3pt_shots_attempted": 0,
+                                                        "ft_made": 0,
+                                                        "ft_attempted": 0
+                                                    },
+                                                    "PlayerName8-B": {
+                                                        "points": 0,
+                                                        "assists": 0,
+                                                        "rebounds": 0,
+                                                        "fouls": 0,
+                                                        "steals": 0,
+                                                        "blocks": 0,
+                                                        "turnovers": 0,
+                                                        "2pt_shots_made": 0,
+                                                        "2pt_shots_attempted": 0,
+                                                        "3pt_shots_made": 0,
+                                                        "3pt_shots_attempted": 0,
+                                                        "ft_made": 0,
+                                                        "ft_attempted": 0
+                                                    },
+                                                    "PlayerName9-B": {
+                                                        "points": 0,
+                                                        "assists": 0,
+                                                        "rebounds": 0,
+                                                        "fouls": 0,
+                                                        "steals": 0,
+                                                        "blocks": 0,
+                                                        "turnovers": 0,
+                                                        "2pt_shots_made": 0,
+                                                        "2pt_shots_attempted": 0,
+                                                        "3pt_shots_made": 0,
+                                                        "3pt_shots_attempted": 0,
+                                                        "ft_made": 0,
+                                                        "ft_attempted": 0
+                                                    },
+                                                    "PlayerName10-B": {
+                                                        "points": 0,
+                                                        "assists": 0,
+                                                        "rebounds": 0,
+                                                        "fouls": 0,
+                                                        "steals": 0,
+                                                        "blocks": 0,
+                                                        "turnovers": 0,
+                                                        "2pt_shots_made": 0,
+                                                        "2pt_shots_attempted": 0,
+                                                        "3pt_shots_made": 0,
+                                                        "3pt_shots_attempted": 0,
+                                                        "ft_made": 0,
+                                                        "ft_attempted": 0
+                                                    }
                                                 }
                                             }
                                         }
                                     }
-                                }
-                                ```
-                            """
+                                    ```
+                                """
+
+# # SHORTENED - Add example for the required output
+# SYSTEM_INSTRUCTIONS_PROMPT += """\n\n### EXAMPLE FOR THE REQUIRED JSON STRUCTURE ###
+#                                     Your final output must follow this **exact JSON structure**. 
+#                                     Do not add, remove, or rename any keys. 
+#                                     Do not wrap it in code fences or extra text. 
+#                                     Return only one valid JSON object.
+
+#                                     EXAMPLE JSON STRUCTURE (values here are placeholders, the model must calculate real ones):
+
+#                                     {
+#                                         "matchup": "TeamNameA vs TeamNameB",
+#                                         "final_score": "TeamNameA: 0, TeamNameB: 0",
+#                                         "teams": {
+#                                             "TeamNameA": {
+#                                                 "coach": "CoachNameA",
+#                                                 "roster": ["PlayerName1-A", "PlayerName2-A", "PlayerName3-A", "PlayerName4-A", "PlayerName5-A"],
+#                                                 "starting_lineup": ["PlayerName1-A", "PlayerName2-A", "PlayerName3-A", "PlayerName4-A", "PlayerName5-A"],
+#                                                 "bench": ["PlayerName6-A", "PlayerName7-A", "PlayerName8-A", "PlayerName9-A", "PlayerName10-A"]
+#                                             },
+#                                             "TeamNameB": {
+#                                                 "coach": "CoachNameB",
+#                                                 "roster": ["PlayerName1-B", "PlayerName2-B", "PlayerName3-B", "PlayerName4-B", "PlayerName5-B"],
+#                                                 "starting_lineup": ["PlayerName1-B", "PlayerName2-B", "PlayerName3-B", "PlayerName4-B", "PlayerName5-B"],
+#                                                 "bench": ["PlayerName6-B", "PlayerName7-B", "PlayerName8-B", "PlayerName9-B", "PlayerName10-B"]
+#                                             }
+#                                         },
+#                                         "final_stats": {
+#                                             "TeamNameA": {
+#                                                 "stats": {
+#                                                     "score": 0,
+#                                                     "assists": 0,
+#                                                     "rebounds": 0,
+#                                                     "fouls": 0,
+#                                                     "steals": 0,
+#                                                     "blocks": 0,
+#                                                     "turnovers": 0
+#                                                 },
+#                                                 "players": {
+#                                                     "PlayerName1-A": {
+#                                                         "points": 0,
+#                                                         "assists": 0,
+#                                                         "rebounds": 0,
+#                                                         "fouls": 0,
+#                                                         "steals": 0,
+#                                                         "blocks": 0,
+#                                                         "turnovers": 0,
+#                                                         "2pt_shots_made": 0,
+#                                                         "2pt_shots_attempted": 0,
+#                                                         "3pt_shots_made": 0,
+#                                                         "3pt_shots_attempted": 0,
+#                                                         "ft_made": 0,
+#                                                         "ft_attempted": 0
+#                                                     }
+#                                                     // ... repeat for all 10 players
+#                                                 }
+#                                             },
+#                                             "TeamNameB": {
+#                                                 "stats": {
+#                                                     "score": 0,
+#                                                     "assists": 0,
+#                                                     "rebounds": 0,
+#                                                     "fouls": 0,
+#                                                     "steals": 0,
+#                                                     "blocks": 0,
+#                                                     "turnovers": 0
+#                                                 },
+#                                                 "players": {
+#                                                     "PlayerName1-B": {
+#                                                         "points": 0,
+#                                                         "assists": 0,
+#                                                         "rebounds": 0,
+#                                                         "fouls": 0,
+#                                                         "steals": 0,
+#                                                         "blocks": 0,
+#                                                         "turnovers": 0,
+#                                                         "2pt_shots_made": 0,
+#                                                         "2pt_shots_attempted": 0,
+#                                                         "3pt_shots_made": 0,
+#                                                         "3pt_shots_attempted": 0,
+#                                                         "ft_made": 0,
+#                                                         "ft_attempted": 0
+#                                                     }
+#                                                     // ... repeat for all 10 players
+#                                                 }
+#                                             }
+#                                         }
+#                                     }
+#                                     """
 
 # Add strict JSON reminder
 SYSTEM_INSTRUCTIONS_PROMPT += "\n\nSTRICT: Output only a single valid JSON object. No prose, no code fences, no comments, no trailing commas."
@@ -565,8 +573,9 @@ def get_litellm_response(model_name, messages):
             model=model_name,
             messages=messages,
             response_format={"type": "json_object"},
+            max_tokens=4096,  # safe upper bound (based on analysis, ~2760 tokens needed, 3584 would also work)
             # Only Gemini needs this extra body param
-            extra_body={"response_mime_type": "application/json"} if model_name.startswith("gemini") else None
+            extra_body={"response_mime_type": "application/json"} if model_name.startswith("gemini") else {}
         )
 
         print("Response received.")
@@ -648,7 +657,7 @@ def repair_json_structure(raw: str) -> str:
     fixed = _remove_trailing_commas(fixed)
     return fixed
 
-# --- NEW: model-only JSON fixer ---
+# --- model-only JSON fixer ---
 def ask_model_to_fix_json(model_name: str, raw: str) -> str | None:
     messages = [
         {"role": "system", "content": "You are a formatter. Return only a single valid JSON object. No code fences. No comments. No extra text."},
@@ -660,8 +669,9 @@ def ask_model_to_fix_json(model_name: str, raw: str) -> str | None:
             model=model_name,
             messages=messages,
             response_format={"type": "json_object"},
+            max_tokens=4096,  # safe upper bound (based on analysis, ~2760 tokens needed, 3584 would also work)
             # Only Gemini needs this extra body param
-            extra_body={"response_mime_type": "application/json"} if model_name.startswith("gemini") else None
+            extra_body={"response_mime_type": "application/json"} if model_name.startswith("gemini") else {}
         )
             
         print("Response received (for fixing JSON).")
@@ -671,7 +681,7 @@ def ask_model_to_fix_json(model_name: str, raw: str) -> str | None:
         print(f"An unexpected error occurred during LiteLLM API call (for fixing JSON): {e}")
         return None
 
-# --- NEW: Type coercion after rebuild ---
+# --- Type coercion after rebuild ---
 def coerce_numbers_inplace(report: dict, template: dict):
     def walk(rv, tv):
         if isinstance(tv, dict):
@@ -754,18 +764,58 @@ def repair_and_rebuild_json(llm_dict, ground_truth_template):
     return rebuilt_dict
 
 if __name__ == "__main__":
-
+    
     data_dir = "data"
-    examples_path = os.path.join(data_dir, "examples.json")
-    true_report_path = os.path.join(data_dir, "true_report.json")
+    jsonl_path = os.path.join(data_dir, "examples.jsonl")
 
-    if not os.path.exists(examples_path) or not os.path.exists(true_report_path):
-        print("Error: Data files not found.")
+    if not os.path.exists(jsonl_path):
+        print("Error: JSONL file not found.")
     else:
-        with open(examples_path, 'r', encoding='utf-8') as f:
-            all_examples_data = json.load(f)
-        with open(true_report_path, 'r', encoding='utf-8') as f:
-            all_true_reports_data = json.load(f)
+        all_examples_data = {}
+        all_true_reports_data = {}
+
+        with open(jsonl_path, "r", encoding="utf-8") as f:
+            for line in f:
+                line = line.strip()
+                if not line:
+                    continue
+                try:
+                    obj = json.loads(line)
+                except json.JSONDecodeError:
+                    print("Skipping malformed JSONL line.")
+                    continue
+
+                game_id = obj.get("game_id")
+                typ = obj.get("type")
+                data = obj.get("data", {})
+
+                if not game_id or not typ:
+                    continue
+
+                if typ == "example":
+                    all_examples_data[game_id] = data
+                elif typ == "true_report":
+                    all_true_reports_data[game_id] = data
+
+        # Optional sanity check
+        missing_in_examples = set(all_true_reports_data.keys()) - set(all_examples_data.keys())
+        missing_in_truth = set(all_examples_data.keys()) - set(all_true_reports_data.keys())
+        if missing_in_examples or missing_in_truth:
+            print(f"WARNING: mismatched game_ids. "
+                f"Missing in examples: {sorted(missing_in_examples)}; "
+                f"missing in true_report: {sorted(missing_in_truth)}")
+
+    # data_dir = "data"
+    # examples_path = os.path.join(data_dir, "examples.json")
+    # true_report_path = os.path.join(data_dir, "true_report.json")
+
+    # if not os.path.exists(examples_path) or not os.path.exists(true_report_path):
+    #     print("Error: Data files not found.")
+    # else:
+    #     with open(examples_path, 'r', encoding='utf-8') as f:
+    #         all_examples_data = json.load(f)
+    #     with open(true_report_path, 'r', encoding='utf-8') as f:
+    #         all_true_reports_data = json.load(f)
         
         results_base_dir = os.path.join(data_dir, "llm_responses")
         for difficulty_level in ["basic", "medium", "hard"]:
@@ -787,7 +837,7 @@ if __name__ == "__main__":
             for attempt in range(max_retries):
                 messages = construct_litellm_messages(game_narrative_data)
                 raw_response_str = get_litellm_response(MODEL_TO_TEST, messages)
-                if MODEL_TO_TEST.startswith("gemini/gemini-2"):
+                if MODEL_TO_TEST.startswith("gemini/gemini-2") or MODEL_TO_TEST.startswith("gpt-4o"):
                     time.sleep(60) # Proactively avoid rate limiting
                 
                 if not raw_response_str:
@@ -804,7 +854,7 @@ if __name__ == "__main__":
                 except json.JSONDecodeError:
                     # Last resort: ask model to fix JSON only
                     fixed_by_model = ask_model_to_fix_json(MODEL_TO_TEST, raw_response_str)
-                    if MODEL_TO_TEST.startswith("gemini/gemini-2"):
+                    if MODEL_TO_TEST.startswith("gemini/gemini-2") or MODEL_TO_TEST.startswith("gpt-4o"):
                         time.sleep(60) # Proactively avoid rate limiting
 
                     if fixed_by_model:

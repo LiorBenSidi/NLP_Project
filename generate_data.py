@@ -305,10 +305,10 @@ class BasketballReportGenerator:
                 }
         return game_state
 
-    def _handle_substitution(self, head_coach, team_name, game_lineups, play_by_play, game_participants, cant_sub_player=None):
+    def _handle_substitution(self, head_coach, team_name, game_lineups, play_by_play, game_participants, sub_chance=0.0, cant_sub_player=None):
         """Randomly performs a substitution for a team if conditions are met."""
-        # 10% chance of a substitution at any given opportunity
-        if random.random() < 0.10:
+        # Chance of a substitution at any given opportunity
+        if random.random() < sub_chance:
             active_players = game_lineups[team_name]['active']
             bench_players = game_lineups[team_name]['bench']
 
@@ -339,9 +339,12 @@ class BasketballReportGenerator:
     def generate_report(self, difficulty="medium"):
         # --- Difficulty Level Configuration ---
         if difficulty == "basic":
-            target_events = 150
+            target_events = 15
+            difficulty_max_passes = 1 # Max passes per possession
             allow_substitutions = False
+            difficulty_sub_chance = 0.0  # No substitutions allowed
             allow_var = False
+            difficulty_var_chance = 0.0  # No VAR checks allowed
             # Basic: Maximize simple, single-player events. Minimize complex multi-player events.
             # Goal: Create the easiest possible log for the LLM to parse.
             EVENT_WEIGHTS = [
@@ -357,9 +360,12 @@ class BasketballReportGenerator:
                 7,   # shooting_foul_3pt     (Low)
             ]
         elif difficulty == "medium":
-            target_events = 300
+            target_events = 30
+            difficulty_max_passes = 2 # Max passes per possession
             allow_substitutions = True
+            difficulty_sub_chance = 0.25  # 25% chance of substitution
             allow_var = False
+            difficulty_var_chance = 0.0  # No VAR checks allowed
             # Medium: Introduce multi-player complexity. More steals and blocks.
             # Goal: Test the LLM's ability to handle attribution between two players from different teams.
             EVENT_WEIGHTS = [
@@ -375,9 +381,12 @@ class BasketballReportGenerator:
                 12,  # shooting_foul_3pt     (Higher)
             ]
         else: # hard
-            target_events = 450
+            target_events = 45
+            difficulty_max_passes = 3 # Max passes per possession
             allow_substitutions = True
+            difficulty_sub_chance = 0.50  # 50% chance of substitution
             allow_var = True
+            difficulty_var_chance = 0.25  # 25% chance of VAR checks
             # Hard: Maximize multi-step sequences. High rate of fouls, which trigger FTs/subs/rebounds.
             # Goal: Test the LLM's ability to maintain state through long, complex event chains.
             EVENT_WEIGHTS = [
@@ -456,7 +465,7 @@ class BasketballReportGenerator:
                 player_with_ball = receiver
 
             # --- Ball Movement ---
-            num_passes = random.randint(0, 2)
+            num_passes = random.randint(0, difficulty_max_passes)
             for _ in range(num_passes):
                 passer = player_with_ball
                 receiver = random.choice([p for p in active_players if p != passer])
@@ -476,7 +485,7 @@ class BasketballReportGenerator:
                 play_by_play.append({"event_id": len(play_by_play) + 1, "description": event["template"].format(player_A=self._get_colored_name(passer, offensive_team), player_B=self._get_colored_name(scorer, offensive_team))})
                 
                 possession = defensive_team # Default possession change
-                if allow_var and random.random() < 0.10:
+                if allow_var and random.random() < difficulty_var_chance: # Check for VAR
                     var_event_type = "var_overturn_2pt" if last_score_event_details['type'] == "assist_and_score_2pt" else "var_overturn_3pt"
                     var_event = self.event_templates[var_event_type]
                     pA_v, pB_v, team_v = last_score_event_details['pA'], last_score_event_details['pB'], last_score_event_details['team']
@@ -484,8 +493,8 @@ class BasketballReportGenerator:
                     play_by_play.append({"event_id": len(play_by_play) + 1, "description": var_event["template"].format(player_A=self._get_colored_name(pA_v, team_v), player_B=self._get_colored_name(pB_v, team_v))})
                 
                 if allow_substitutions:
-                    self._handle_substitution(self.teams[teamA_name]['head_coach'], teamA_name, game_lineups, play_by_play, game_participants)
-                    self._handle_substitution(self.teams[teamB_name]['head_coach'], teamB_name, game_lineups, play_by_play, game_participants)
+                    self._handle_substitution(self.teams[teamA_name]['head_coach'], teamA_name, game_lineups, play_by_play, game_participants, sub_chance=difficulty_sub_chance)
+                    self._handle_substitution(self.teams[teamB_name]['head_coach'], teamB_name, game_lineups, play_by_play, game_participants, sub_chance=difficulty_sub_chance)
                 
                 player_with_ball = None # --- FIX: Reset player with ball after change of possession
 
@@ -525,7 +534,7 @@ class BasketballReportGenerator:
                     possession = defensive_team
                     # Substitutions are allowed after this kind of turnover
                     if allow_substitutions:
-                        self._handle_substitution(self.teams[offensive_team]['head_coach'], offensive_team, game_lineups, play_by_play, game_participants)
+                        self._handle_substitution(self.teams[offensive_team]['head_coach'], offensive_team, game_lineups, play_by_play, game_participants, sub_chance=difficulty_sub_chance)
                     # The ball is dead, so the next possession will start with an inbound
                     player_with_ball = None
 
@@ -573,8 +582,8 @@ class BasketballReportGenerator:
                             player_with_ball = rebounder # --- FIX: Rebounder has the ball
                     
                     if not is_last_shot and allow_substitutions:
-                        self._handle_substitution(self.teams[teamA_name]['head_coach'], teamA_name, game_lineups, play_by_play, game_participants, cant_sub_player=shooter)
-                        self._handle_substitution(self.teams[teamB_name]['head_coach'], teamB_name, game_lineups, play_by_play, game_participants)
+                        self._handle_substitution(self.teams[teamA_name]['head_coach'], teamA_name, game_lineups, play_by_play, game_participants, sub_chance=difficulty_sub_chance, cant_sub_player=shooter)
+                        self._handle_substitution(self.teams[teamB_name]['head_coach'], teamB_name, game_lineups, play_by_play, game_participants, sub_chance=difficulty_sub_chance)
             
             last_score_event_details = None
 
@@ -639,15 +648,18 @@ if __name__ == "__main__":
             # Generate the game data with the specified difficulty
             game_data = generator.generate_report(difficulty=difficulty)
             
-            # Construct the data for examples.json
+            # Construct the data for examples (without participants)
+            teams_no_participants = {
+                team: {k: v for k, v in team_data.items() if k != "participants"}
+                for team, team_data in game_data["teams"].items()
+            }
             examples_data = {
                 "matchup": game_data["matchup"],
-                "difficulty": difficulty, # Add difficulty metadata
-                "teams": game_data["teams"],
-                "play_by_play": game_data["play_by_play"]
+                "teams": teams_no_participants,
+                "play_by_play": game_data["play_by_play"],
             }
             
-            # Construct the data for true_report.json
+            # Construct the data for true_report
             team_names = list(game_data["final_stats"].keys())
             score_A = game_data["final_stats"][team_names[0]]["stats"]["score"]
             score_B = game_data["final_stats"][team_names[1]]["stats"]["score"]
@@ -664,22 +676,36 @@ if __name__ == "__main__":
 
     print(f"\n--- Finished generating all games ---\n")
 
-    # Save the complete dictionaries to JSON files
-    output_dir = "data"
-    os.makedirs(output_dir, exist_ok=True)
-    examples_path = os.path.join(output_dir, "examples.json")
-    true_report_path = os.path.join(output_dir, "true_report.json")
+    if True: # Save JSONL with alternating lines: example, then true_report
+        output_dir = "data"
+        os.makedirs(output_dir, exist_ok=True)
+        jsonl_path = os.path.join(output_dir, "examples.jsonl")
 
-    try:
-        with open(examples_path, 'w', encoding='utf-8') as f:
-            json.dump(all_examples_data, f, indent=4, ensure_ascii=False)
-        print(f"Successfully saved all game examples to {examples_path}")
-    except Exception as e:
-        print(f"Error saving to {examples_path}: {e}")
+        try:
+            with open(jsonl_path, "w", encoding="utf-8") as f:
+                for game_key in all_examples_data.keys():
+                    f.write(json.dumps({"game_id": game_key, "type": "example", "data": all_examples_data[game_key]}, ensure_ascii=False) + "\n")
+                    f.write(json.dumps({"game_id": game_key, "type": "true_report", "data": all_true_reports_data[game_key]}, ensure_ascii=False) + "\n")
+            print(f"Successfully saved alternating JSONL to {jsonl_path}")
+        except Exception as e:
+            print(f"Error saving to {jsonl_path}: {e}")
 
-    try:
-        with open(true_report_path, 'w', encoding='utf-8') as f:
-            json.dump(all_true_reports_data, f, indent=4, ensure_ascii=False)
-        print(f"Successfully saved all game stats to {true_report_path}")
-    except Exception as e:
-        print(f"Error saving to {true_report_path}: {e}")
+    if True: # Save the complete dictionaries to 2 JSON files
+        output_dir = "data"
+        os.makedirs(output_dir, exist_ok=True)
+        examples_path = os.path.join(output_dir, "examples.json")
+        true_report_path = os.path.join(output_dir, "true_report.json")
+
+        try:
+            with open(examples_path, 'w', encoding='utf-8') as f:
+                json.dump(all_examples_data, f, indent=4, ensure_ascii=False)
+            print(f"Successfully saved all game examples to {examples_path}")
+        except Exception as e:
+            print(f"Error saving to {examples_path}: {e}")
+
+        try:
+            with open(true_report_path, 'w', encoding='utf-8') as f:
+                json.dump(all_true_reports_data, f, indent=4, ensure_ascii=False)
+            print(f"Successfully saved all game stats to {true_report_path}")
+        except Exception as e:
+            print(f"Error saving to {true_report_path}: {e}")
