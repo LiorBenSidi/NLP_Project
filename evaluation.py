@@ -19,41 +19,17 @@ def evaluate_reports(llm_report, ground_truth_report):
     This function is designed to validate the complex JSON structure including metadata and stats.
     """
     discrepancies, total_fields, correct_fields = [], 0, 0
-    
-    # 1. Evaluate top-level metadata
-    for key in ["matchup", "final_score"]:
-        total_fields += 1
-        llm_value = llm_report.get(key)
-        gt_value = ground_truth_report.get(key)
-        if llm_value == gt_value:
-            correct_fields += 1
-        else:
-            discrepancies.append(f"METADATA MISMATCH for '{key}': GT='{gt_value}', LLM='{llm_value}'")
 
-    # 2. Evaluate team metadata (rosters, coaches, etc.)
-    gt_teams_meta = ground_truth_report.get("teams", {})
-    llm_teams_meta = llm_report.get("teams", {})
-    for team_name, gt_meta in gt_teams_meta.items():
-        if team_name not in llm_teams_meta:
-            discrepancies.append(f"MISSING TEAM METADATA for: {team_name}")
-            continue
-        llm_meta = llm_teams_meta[team_name]
-        for key, gt_value in gt_meta.items():
-            total_fields += 1
-            llm_value = llm_meta.get(key)
-            # For lists like rosters, order doesn't matter, so we compare sets
-            if isinstance(gt_value, list):
-                if llm_value and set(gt_value) == set(llm_value):
-                    correct_fields += 1
-                else:
-                    discrepancies.append(f"TEAM METADATA MISMATCH for {team_name} ('{key}'): GT={gt_value}, LLM={llm_value}")
-            else: # For strings like coach name
-                if gt_value == llm_value:
-                    correct_fields += 1
-                else:
-                    discrepancies.append(f"TEAM METADATA MISMATCH for {team_name} ('{key}'): GT='{gt_value}', LLM='{llm_value}'")
+    # 1. Evaluate the final score
+    total_fields += 1
+    llm_value = llm_report.get("final_score")
+    gt_value = ground_truth_report.get("final_score")
+    if llm_value == gt_value:
+        correct_fields += 1
+    else:
+        discrepancies.append(f"METADATA MISMATCH for 'final_score': GT='{gt_value}', LLM='{llm_value}'")
 
-    # 3. Evaluate detailed final statistics
+    # 2. Evaluate detailed final statistics
     gt_stats_block = ground_truth_report.get("final_stats", {})
     llm_stats_block = llm_report.get("final_stats", {})
     for team_name, gt_team_data in gt_stats_block.items():

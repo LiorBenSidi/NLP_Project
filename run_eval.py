@@ -1,19 +1,28 @@
 # run_eval.py
 
-# TODO:
-# 1. Ask the tutor for clarification on the way that they will contact the LLM using the API.
-# 2. Improve the instruction to be more clear and unambiguous
-# 3. Provide examples of the expected inputs (events) and output formats (effects)
-# 4. Ask the tutor for clarification regarding to the advanced LLM settings.
-# 5. Ask the tutor if there will be different scores for students who are using different LLM models.
-# 6. Need to fix bug with the brackets ({}).
+#TODO:
+# 1. integrate "examples.json" and "true_report.json" into one file: "examples.jsonl"
 
 import json
 import re
 import os
 import litellm
-from dotenv import load_dotenv
+import time
 from evaluation import evaluate_reports
+from dotenv import load_dotenv
+load_dotenv(override=True)
+
+# --- Define the model you want to test here ---
+# This is the only line you need to change to switch models.
+#MODEL_TO_TEST = "gemini/gemini-1.5-flash-latest"
+#MODEL_TO_TEST = "gemini/gemini-1.5-pro-latest"
+#MODEL_TO_TEST = "gemini/gemini-2.0-flash-lite"
+#MODEL_TO_TEST = "gemini/gemini-2.0-flash"
+#MODEL_TO_TEST = "gemini/gemini-2.5-flash-lite"
+MODEL_TO_TEST = "gemini/gemini-2.5-flash"
+#MODEL_TO_TEST = "gemini/gemini-2.5-pro"
+#MODEL_TO_TEST = "gpt-4o"
+#MODEL_TO_TEST = "claude-3-haiku-20240307"
 
 # --- Part 1: Prompt Templates and Static Data ---
 SYSTEM_INSTRUCTIONS_PROMPT = """You are an automated sports data analyst.
@@ -105,7 +114,6 @@ SYSTEM_INSTRUCTIONS_PROMPT = """You are an automated sports data analyst.
                                 ### REQUIRED STATS ###
                                 For each team, you must track and include the following:
                                 - `matchup`: The matchup of the game in the format "<TeamNameA> vs <TeamNameB>"
-                                - `difficulty`: The difficulty level of the game, which can be "basic", "medium", or "hard".
                                 - `final_score`: The final score of the game in the format "<TeamNameA>: <ScoreA>, <TeamNameB>: <ScoreB>"
                                 - `teams`: The two teams participating in the game, including their coaches and rosters.
                                 - `final_stats`: A dictionary containing the stats for each team.
@@ -136,7 +144,6 @@ SYSTEM_INSTRUCTIONS_PROMPT = """You are an automated sports data analyst.
                                 ```json
                                 {
                                     "matchup": "TeamNameA vs TeamNameB",
-                                    "difficulty": "basic",
                                     "final_score": "TeamNameA: 0, TeamNameB: 0",
                                     "teams": {
                                         "TeamNameA": {
@@ -483,6 +490,10 @@ SYSTEM_INSTRUCTIONS_PROMPT = """You are an automated sports data analyst.
                                 }
                                 ```
                             """
+
+# Add strict JSON reminder
+SYSTEM_INSTRUCTIONS_PROMPT += "\n\nSTRICT: Output only a single valid JSON object. No prose, no code fences, no comments, no trailing commas."
+
 MODEL_ACKNOWLEDGEMENT = "Understood. I am ready to process the game log. I will adhere to all instructions and provide the final report as a single, valid JSON object."
 
 # --- Part 2: Core Functions ---
@@ -544,30 +555,145 @@ def is_report_all_zeros(llm_report):
     # If we get through the whole loop without finding a non-zero score or points, it's an all-zero report.
     return True
 
-def get_litellm_response(model_name, messages, api_keys):
+def get_litellm_response(model_name, messages):
     """Calls any LLM using the LiteLLM library and returns the response content."""
     try:
         print(f"\nSending request to model: {model_name} via LiteLLM...")
-        # --- Determine the correct API key to use ---
-        provider = model_name.split('/')[0] # e.g., "gemini/..." -> "gemini"
-        api_key = api_keys.get(provider)
-        if not api_key:
-            raise ValueError(f"API key for provider '{provider}' not found in .env file.")
+
         # --- Call the LiteLLM API ---
         response = litellm.completion(
             model=model_name,
             messages=messages,
-            temperature=0.0,
-            max_tokens=8192,
             response_format={"type": "json_object"},
-            api_key=api_key # Pass the specific key
+            # Only Gemini needs this extra body param
+            extra_body={"response_mime_type": "application/json"} if model_name.startswith("gemini") else None
         )
+
         print("Response received.")
-        return response.choices[0].message.content #type: ignore
+        return response.choices[0].message.content  # type: ignore
+
     except Exception as e:
         print(f"An unexpected error occurred during LiteLLM API call: {e}")
         return None
-    
+
+# --- NEW: Structure-safe JSON repair utilities ---
+_MD_FENCE_RE = re.compile(r"^```(?:json)?\\s*|\\s*```$", re.MULTILINE)
+_LINE_COMMENT_RE = re.compile(r"//[^\\n]*")
+_BLOCK_COMMENT_RE = re.compile(r"/\\*.*?\\*/", re.DOTALL)
+
+def _strip_noise(s: str) -> str:
+    s = s.strip()
+    s = _MD_FENCE_RE.sub("", s)
+    # Remove BOM/control chars except whitespace
+    s = s.encode("utf-8", "ignore").decode("utf-8", "ignore")
+    s = "".join(ch for ch in s if ch == "\\t" or ch == "\\n" or ch == "\\r" or ch >= " ")
+    # Normalize curly quotes/backticks → standard
+    s = s.replace("“", '"').replace("”", '"').replace("‟", '"').replace("`", '"').replace("’", "'").replace("‚", "'")
+    return s
+
+def _remove_jsonc_comments(s: str) -> str:
+    s = _LINE_COMMENT_RE.sub("", s)
+    s = _BLOCK_COMMENT_RE.sub("", s)
+    return s
+
+def _remove_trailing_commas(s: str) -> str:
+    # remove ", ]" and ", }"
+    return re.sub(r",(\\s*[\\}\\]])", r"\\1", s)
+
+def repair_json_structure(raw: str) -> str:
+    """
+    Structure-safe repair:
+    - strip fences / noise / comments / trailing commas
+    - walk chars, ignore braces inside strings
+    - drop unexpected closers
+    - append missing closers in correct order
+    """
+    s = _strip_noise(raw)
+    s = _remove_jsonc_comments(s)
+    s = _remove_trailing_commas(s)
+
+    result = []
+    stack = []  # holds expected closers: '}' or ']'
+    in_str = False
+    esc = False
+
+    for ch in s:
+        result.append(ch)
+        if in_str:
+            if esc:
+                esc = False
+            elif ch == "\\":
+                esc = True
+            elif ch == '"':
+                in_str = False
+        else:
+            if ch == '"':
+                in_str = True
+            elif ch == "{":
+                stack.append("}")
+            elif ch == "[":
+                stack.append("]")
+            elif ch in "}]":
+                if stack and stack[-1] == ch:
+                    stack.pop()
+                else:
+                    # unexpected closer → drop it
+                    result.pop()
+
+    # close any missing scopes
+    while stack:
+        result.append(stack.pop())
+
+    fixed = "".join(result)
+    fixed = _remove_trailing_commas(fixed)
+    return fixed
+
+# --- NEW: model-only JSON fixer ---
+def ask_model_to_fix_json(model_name: str, raw: str) -> str | None:
+    messages = [
+        {"role": "system", "content": "You are a formatter. Return only a single valid JSON object. No code fences. No comments. No extra text."},
+        {"role": "user", "content": raw},
+    ]
+    try:
+        # --- Call the LiteLLM API ---
+        response = litellm.completion(
+            model=model_name,
+            messages=messages,
+            response_format={"type": "json_object"},
+            # Only Gemini needs this extra body param
+            extra_body={"response_mime_type": "application/json"} if model_name.startswith("gemini") else None
+        )
+            
+        print("Response received (for fixing JSON).")
+        return response.choices[0].message.content  # type: ignore
+
+    except Exception as e:
+        print(f"An unexpected error occurred during LiteLLM API call (for fixing JSON): {e}")
+        return None
+
+# --- NEW: Type coercion after rebuild ---
+def coerce_numbers_inplace(report: dict, template: dict):
+    def walk(rv, tv):
+        if isinstance(tv, dict):
+            out = {}
+            if not isinstance(rv, dict):
+                rv = {}
+            for k, tvv in tv.items():
+                out[k] = walk(rv.get(k), tvv)
+            return out
+        elif isinstance(tv, list):
+            return rv if isinstance(rv, list) else []
+        elif isinstance(tv, (int, float)):
+            try:
+                return int(rv)
+            except Exception:
+                return 0
+        elif isinstance(tv, str):
+            return "" if rv is None else str(rv)
+        else:
+            return rv if rv is not None else 0
+    return walk(report, template)
+
 def repair_and_rebuild_json(llm_dict, ground_truth_template):
     """
     Intelligently rebuilds a dictionary from the LLM to match the exact structure
@@ -582,9 +708,9 @@ def repair_and_rebuild_json(llm_dict, ground_truth_template):
     # Iterate through the keys of the PERFECT template to define the structure
     for key, gt_value in ground_truth_template.items():
 
-        # --- CRITICAL: Skip the 'participants' key ---
+        # --- CRITICAL: Skip the 'participants' and 'difficulty' keys ---
         # This is evaluation metadata and should NOT be in the LLM's final report.
-        if key == "participants":
+        if key in ["participants", "difficulty"]:
             continue
 
         if key == "final_stats":
@@ -627,33 +753,7 @@ def repair_and_rebuild_json(llm_dict, ground_truth_template):
             
     return rebuilt_dict
 
-def repair_json_syntax(json_string):
-    """Performs a basic syntax repair on a raw string to make it parsable."""
-    repaired = json_string.strip().strip("```json").strip("```").strip()
-    open_braces = repaired.count('{')
-    close_braces = repaired.count('}')
-    if repaired.startswith('{') and open_braces > close_braces:
-        repaired += '}' * (open_braces - close_braces)
-    return repaired
-
 if __name__ == "__main__":
-    load_dotenv(override=True)
-    # --- Load all potential API keys into a dictionary ---
-    api_keys = {
-        "gemini": os.getenv("GEMINI_API_KEY"),
-        "openai": os.getenv("OPENAI_API_KEY"),
-        "anthropic": os.getenv("ANTHROPIC_API_KEY"),
-        # Add keys for other providers here if needed
-    }
-    
-    # --- NEW: Define the model you want to test here ---
-    # This is the only line you need to change to switch models!
-    #MODEL_TO_TEST = "gemini/gemini-1.5-flash-latest"
-    MODEL_TO_TEST = "gemini/gemini-1.5-pro-latest"
-    #MODEL_TO_TEST = "gemini/gemini-1.5-flash"
-    #MODEL_TO_TEST = "gemini/gemini-2.5-pro"
-    #MODEL_TO_TEST = "gpt-4o"
-    #MODEL_TO_TEST = "claude-3-haiku-20240307"
 
     data_dir = "data"
     examples_path = os.path.join(data_dir, "examples.json")
@@ -682,34 +782,60 @@ if __name__ == "__main__":
 
             max_retries = 2
             llm_report = None
+            raw_response_str = None
             
             for attempt in range(max_retries):
                 messages = construct_litellm_messages(game_narrative_data)
-                raw_response_str = get_litellm_response(MODEL_TO_TEST, messages, api_keys)
+                raw_response_str = get_litellm_response(MODEL_TO_TEST, messages)
+                if MODEL_TO_TEST.startswith("gemini/gemini-2"):
+                    time.sleep(60) # Proactively avoid rate limiting
                 
                 if not raw_response_str:
                     print(f"--- ERROR on attempt {attempt + 1}: No response from API. Retrying... ---")
                     continue
 
-                # Stage 1: Fix basic syntax of the raw string
-                repaired_syntax_str = repair_json_syntax(raw_response_str)
-                
-                try:
-                    # Attempt to parse the syntactically corrected string
-                    llm_dict_candidate = json.loads(repaired_syntax_str)
-                    
-                    # Stage 2: Rebuild the dictionary to ensure perfect structure
-                    rebuilt_report = repair_and_rebuild_json(llm_dict_candidate, ground_truth_data)
+                # Stage 1: structure-safe repair
+                repaired_syntax_str = repair_json_structure(raw_response_str)
 
-                    if not is_report_all_zeros(rebuilt_report):
-                        print(f"--- SUCCESS on attempt {attempt + 1}: LLM response parsed and rebuilt successfully. ---")
-                        llm_report = rebuilt_report
-                        break
-                    else:
-                        print(f"--- WARNING on attempt {attempt + 1}: All-zeros report. Retrying... ---")
+                # Try to parse
+                parsed = None
+                try:
+                    parsed = json.loads(repaired_syntax_str)
                 except json.JSONDecodeError:
-                    print(f"--- ERROR on attempt {attempt + 1}: Could not parse JSON even after syntax repair. Retrying... ---")
+                    # Last resort: ask model to fix JSON only
+                    fixed_by_model = ask_model_to_fix_json(MODEL_TO_TEST, raw_response_str)
+                    if MODEL_TO_TEST.startswith("gemini/gemini-2"):
+                        time.sleep(60) # Proactively avoid rate limiting
+
+                    if fixed_by_model:
+                        try:
+                            parsed = json.loads(fixed_by_model)
+                        except json.JSONDecodeError:
+                            parsed = None
+
+                if not parsed:
+                    print(f"--- ERROR on attempt {attempt + 1}: Could not parse JSON after repair + fixer. Retrying... ---")
+                    continue
+                    
+                # Stage 2: Rebuild the dictionary to ensure perfect structure
+                rebuilt_report = repair_and_rebuild_json(parsed, ground_truth_data)
+
+                # Stage 3: coerce types (recommended)
+                rebuilt_report = coerce_numbers_inplace(rebuilt_report, ground_truth_data)
+
+                if not is_report_all_zeros(rebuilt_report):
+                    print(f"--- SUCCESS on attempt {attempt + 1}: LLM response parsed and rebuilt successfully. ---")
+                    llm_report = rebuilt_report
+                    break
+                else:
+                    print(f"--- WARNING on attempt {attempt + 1}: All-zeros report. Retrying... ---")
             
+            # This code now runs for both successful and failed games.
+            raw_output_path = os.path.join(results_base_dir, difficulty, "text", f"{game_key}.txt")
+            with open(raw_output_path, 'w', encoding='utf-8') as f:
+                f.write(raw_response_str or "")
+            print(f"Saved original raw response to: {raw_output_path}")
+
             # --- Process, save, and evaluate the final, rebuilt report ---
             if llm_report:
                 total_successful_games += 1
@@ -717,11 +843,6 @@ if __name__ == "__main__":
                 with open(json_output_path, 'w', encoding='utf-8') as f:
                     json.dump(llm_report, f, indent=4, ensure_ascii=False)
                 print(f"Saved rebuilt report to: {json_output_path}")
-
-                raw_output_path = os.path.join(results_base_dir, difficulty, "text", f"{game_key}.txt")
-                with open(raw_output_path, 'w', encoding='utf-8') as f:
-                    f.write(raw_response_str) #type: ignore
-                print(f"Saved original raw response to: {raw_output_path}")
 
                 accuracy, discrepancies = evaluate_reports(llm_report, ground_truth_data)
                 
@@ -735,7 +856,7 @@ if __name__ == "__main__":
                 total_failed_games += 1
                 print(f"--- FAILURE for {game_key}: Could not get a valid report after {max_retries} attempts. SKIPPING. ---")
                 if difficulty in results_by_difficulty:
-                        results_by_difficulty[difficulty]["discrepancies"][game_key] = [f"Failed after {max_retries} retries."]
+                        results_by_difficulty[difficulty]["discrepancies"][game_key] = [f"Failed after {max_retries} retries. See raw text file for details."]
 
             # --- Final Summary ---
             print(f"\n\n{'='*20} FINAL SUMMARY {'='*20}")

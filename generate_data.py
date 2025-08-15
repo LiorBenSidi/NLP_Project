@@ -339,17 +339,59 @@ class BasketballReportGenerator:
     def generate_report(self, difficulty="medium"):
         # --- Difficulty Level Configuration ---
         if difficulty == "basic":
-            target_events = 20
+            target_events = 150
             allow_substitutions = False
             allow_var = False
+            # Basic: Maximize simple, single-player events. Minimize complex multi-player events.
+            # Goal: Create the easiest possible log for the LLM to parse.
+            EVENT_WEIGHTS = [
+                20,  # assist_and_score_2pt  (High)
+                15,  # assist_and_score_3pt  (High)
+                15,  # miss_2pt              (High)
+                15,  # miss_3pt              (High)
+                8,   # turnover_by_bad_pass  (High)
+                4,   # steal                 (Very Low -> lower complexity)
+                4,   # block_on_2pt_shot     (Very Low -> lower complexity)
+                2,   # block_on_3pt_shot     (Very Low -> lower complexity)
+                10,  # shooting_foul_2pt     (Low)
+                7,   # shooting_foul_3pt     (Low)
+            ]
         elif difficulty == "medium":
-            target_events = 60
+            target_events = 300
             allow_substitutions = True
             allow_var = False
+            # Medium: Introduce multi-player complexity. More steals and blocks.
+            # Goal: Test the LLM's ability to handle attribution between two players from different teams.
+            EVENT_WEIGHTS = [
+                15,  # assist_and_score_2pt  (Lower)
+                10,  # assist_and_score_3pt  (Lower)
+                8,   # miss_2pt              (Lower)
+                8,   # miss_3pt              (Lower)
+                6,   # turnover_by_bad_pass  (Lower)
+                12,  # steal                 (Higher)
+                8,   # block_on_2pt_shot     (Higher)
+                6,   # block_on_3pt_shot     (Higher)
+                15,  # shooting_foul_2pt     (Higher)
+                12,  # shooting_foul_3pt     (Higher)
+            ]
         else: # hard
-            target_events = 100
+            target_events = 450
             allow_substitutions = True
             allow_var = True
+            # Hard: Maximize multi-step sequences. High rate of fouls, which trigger FTs/subs/rebounds.
+            # Goal: Test the LLM's ability to maintain state through long, complex event chains.
+            EVENT_WEIGHTS = [
+                15,  # assist_and_score_2pt  (Still common, to allow for VAR)
+                10,  # assist_and_score_3pt  (Still common, to allow for VAR)
+                2,   # miss_2pt              (Lower)
+                2,   # miss_3pt              (Lower)
+                2,   # turnover_by_bad_pass  (Lower)
+                13,  # steal                 (Higher)
+                9,   # block_on_2pt_shot     (Higher)
+                7,   # block_on_3pt_shot     (Higher)
+                20,  # shooting_foul_2pt     -> Maximized - lead to chain of another 3 events
+                20,  # shooting_foul_3pt     -> Maximized - lead to chain of another 4 events
+            ]
         
         team_names = random.sample(list(self.teams.keys()), 2)
         teamA_name, teamB_name = team_names[0], team_names[1]
@@ -398,21 +440,6 @@ class BasketballReportGenerator:
             "assist_and_score_2pt", "assist_and_score_3pt", "miss_2pt", "miss_3pt",
             "turnover_by_bad_pass", "steal", "block_on_2pt_shot", "block_on_3pt_shot",
             "shooting_foul_2pt", "shooting_foul_3pt"
-        ]
-
-        # --- Define weights for each event ---
-        # The order MUST match the OFFENSIVE_EVENTS list exactly.
-        EVENT_WEIGHTS = [ # sum to 100 (each number is like percentage for success)
-            19,  # assist_and_score_2pt -> High probability
-            13,  # assist_and_score_3pt -> High probability
-            10,  # miss_2pt
-            13,  # miss_3pt
-            6,   # turnover_by_bad_pass
-            5,   # steal (less common)
-            4,   # block_on_2pt_shot (less common)
-            3,   # block_on_3pt_shot (less common)
-            16,  # shooting_foul_2pt -> High probability
-            11,  # shooting_foul_3pt -> High probability
         ]
 
         while len(play_by_play) < target_events:
