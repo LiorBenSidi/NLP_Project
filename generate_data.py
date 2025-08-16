@@ -339,7 +339,7 @@ class BasketballReportGenerator:
     def generate_report(self, difficulty="medium"):
         # --- Difficulty Level Configuration ---
         if difficulty == "basic":
-            target_events = 15
+            target_events = 20
             difficulty_max_passes = 1 # Max passes per possession
             allow_substitutions = False
             difficulty_sub_chance = 0.0  # No substitutions allowed
@@ -360,8 +360,8 @@ class BasketballReportGenerator:
                 7,   # shooting_foul_3pt     (Low)
             ]
         elif difficulty == "medium":
-            target_events = 30
-            difficulty_max_passes = 2 # Max passes per possession
+            target_events = 60
+            difficulty_max_passes = 5 # Max passes per possession
             allow_substitutions = True
             difficulty_sub_chance = 0.25  # 25% chance of substitution
             allow_var = False
@@ -381,8 +381,8 @@ class BasketballReportGenerator:
                 12,  # shooting_foul_3pt     (Higher)
             ]
         else: # hard
-            target_events = 45
-            difficulty_max_passes = 3 # Max passes per possession
+            target_events = 100
+            difficulty_max_passes = 7 # Max passes per possession
             allow_substitutions = True
             difficulty_sub_chance = 0.50  # 50% chance of substitution
             allow_var = True
@@ -392,14 +392,14 @@ class BasketballReportGenerator:
             EVENT_WEIGHTS = [
                 15,  # assist_and_score_2pt  (Still common, to allow for VAR)
                 10,  # assist_and_score_3pt  (Still common, to allow for VAR)
-                2,   # miss_2pt              (Lower)
-                2,   # miss_3pt              (Lower)
-                2,   # turnover_by_bad_pass  (Lower)
+                1,   # miss_2pt              (Lower)
+                1,   # miss_3pt              (Lower)
+                1,   # turnover_by_bad_pass  (Lower)
                 13,  # steal                 (Higher)
-                9,   # block_on_2pt_shot     (Higher)
-                7,   # block_on_3pt_shot     (Higher)
+                14,   # block_on_2pt_shot     (Higher)
+                10,   # block_on_3pt_shot     (Higher)
                 20,  # shooting_foul_2pt     -> Maximized - lead to chain of another 3 events
-                20,  # shooting_foul_3pt     -> Maximized - lead to chain of another 4 events
+                15,  # shooting_foul_3pt     -> Maximized - lead to chain of another 4 events
             ]
         
         team_names = random.sample(list(self.teams.keys()), 2)
