@@ -1,12 +1,11 @@
 # run_eval.py
 
 #TODO:
-# 1. integrate "examples.json" and "true_report.json" into one file: "examples.jsonl"
-# 2. Ask the course instructor how much to describe the instructions for the report generation process.
-# 2.1 Do I need to tell the LLM exacly how each event effects on the stats?
-# 2.2 Do I need to tell the LLM what stats to calculte for each team and player?
-# 3. Think about compare the JSON output format with LISTs output format.
-# 4. I have notied that the LLM tend to interpret regular passing events as assists, even when they shouldn't be.
+# 1. Ask the course instructor how much to describe the instructions for the report generation process.
+# 1.1 Do I need to tell the LLM exacly how each event effects on the stats?
+# 1.2 Do I need to tell the LLM what stats to calculte for each team and player?
+# 2. Think about compare the JSON output format with LISTs output format.
+# 3. I have notied that the LLM tend to interpret regular passing events as assists, even when they shouldn't be.
 
 import json
 import re
@@ -19,21 +18,30 @@ load_dotenv(override=True)
 
 # --- Define the model you want to test here ---
 # This is the only line you need to change to switch models.
-#MODEL_TO_TEST = "gemini/gemini-1.5-flash-latest"
-MODEL_TO_TEST = "gemini/gemini-1.5-pro-latest"
+# --- Gemini ---
+#MODEL_TO_TEST = "gemini/gemini-1.5-flash"
+#MODEL_TO_TEST = "gemini/gemini-1.5-pro"
 #MODEL_TO_TEST = "gemini/gemini-2.0-flash-lite"
 #MODEL_TO_TEST = "gemini/gemini-2.0-flash"
 #MODEL_TO_TEST = "gemini/gemini-2.5-flash-lite"
 #MODEL_TO_TEST = "gemini/gemini-2.5-flash"
 #MODEL_TO_TEST = "gemini/gemini-2.5-pro"
+# --- OpenAI --- already paid 10$
 #MODEL_TO_TEST = "gpt-4o-nano"
 #MODEL_TO_TEST = "gpt-4o-mini"
-#MODEL_TO_TEST = "gpt-4o"
+MODEL_TO_TEST = "gpt-4o"
+#MODEL_TO_TEST = "gpt-5-mini"
+# --- Anthropic --- need to pay!
 #MODEL_TO_TEST = "claude-3-haiku-20240307"
+#MODEL_TO_TEST = "claude-opus-4-20250514"
+#MODEL_TO_TEST = "claude-sonnet-4-20250514"
+# --- DeepSeek --- need to pay!
+#MODEL_TO_TEST = "deepseek/deepseek-chat"
+#MODEL_TO_TEST = "deepseek/deepseek-coder"
 
 # --- Part 1: Prompt Templates and Static Data ---
 SYSTEM_INSTRUCTIONS_PROMPT = """You are an automated sports data analyst.
-                                Imagine you are a person who just received a chronological log of events from a basketball game.
+                                You have just received a chronological log of events from a basketball game.
                                 Based only on what actually happened in the log, your role is to build the official statistical report for the game.
 
                                 ### YOUR TASK ###
@@ -410,7 +418,7 @@ SYSTEM_INSTRUCTIONS_PROMPT += """\n\n### EXAMPLE FOR THE REQUIRED JSON STRUCTURE
                                     ```
                                 """
 
-# # SHORTENED - Add example for the required output
+# # SHORTENED (DONT WORK) - Add example for the required output
 # SYSTEM_INSTRUCTIONS_PROMPT += """\n\n### EXAMPLE FOR THE REQUIRED JSON STRUCTURE ###
 #                                     Your final output must follow this **exact JSON structure**. 
 #                                     Do not add, remove, or rename any keys. 
@@ -572,14 +580,14 @@ def get_litellm_response(model_name, messages):
         response = litellm.completion(
             model=model_name,
             messages=messages,
+            tools=None,  # No tools needed for this task
             response_format={"type": "json_object"},
-            max_tokens=4096,  # safe upper bound (based on analysis, ~2760 tokens needed, 3584 would also work)
             # Only Gemini needs this extra body param
             extra_body={"response_mime_type": "application/json"} if model_name.startswith("gemini") else {}
         )
 
         print("Response received.")
-        return response.choices[0].message.content  # type: ignore
+        return response.choices[0].message.content # type: ignore
 
     except Exception as e:
         print(f"An unexpected error occurred during LiteLLM API call: {e}")
@@ -668,8 +676,8 @@ def ask_model_to_fix_json(model_name: str, raw: str) -> str | None:
         response = litellm.completion(
             model=model_name,
             messages=messages,
+            tools=None,  # No tools needed for this task
             response_format={"type": "json_object"},
-            max_tokens=4096,  # safe upper bound (based on analysis, ~2760 tokens needed, 3584 would also work)
             # Only Gemini needs this extra body param
             extra_body={"response_mime_type": "application/json"} if model_name.startswith("gemini") else {}
         )
@@ -837,8 +845,7 @@ if __name__ == "__main__":
             for attempt in range(max_retries):
                 messages = construct_litellm_messages(game_narrative_data)
                 raw_response_str = get_litellm_response(MODEL_TO_TEST, messages)
-                if MODEL_TO_TEST.startswith("gemini/gemini-2") or MODEL_TO_TEST.startswith("gpt-4o"):
-                    time.sleep(60) # Proactively avoid rate limiting
+                time.sleep(30) # Proactively avoid rate limiting
                 
                 if not raw_response_str:
                     print(f"--- ERROR on attempt {attempt + 1}: No response from API. Retrying... ---")
@@ -854,8 +861,7 @@ if __name__ == "__main__":
                 except json.JSONDecodeError:
                     # Last resort: ask model to fix JSON only
                     fixed_by_model = ask_model_to_fix_json(MODEL_TO_TEST, raw_response_str)
-                    if MODEL_TO_TEST.startswith("gemini/gemini-2") or MODEL_TO_TEST.startswith("gpt-4o"):
-                        time.sleep(60) # Proactively avoid rate limiting
+                    time.sleep(60) # Proactively avoid rate limiting
 
                     if fixed_by_model:
                         try:
