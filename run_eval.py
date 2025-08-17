@@ -22,10 +22,10 @@ load_dotenv(override=True)
 
 # --- Gemini ---
 #MODEL_TO_TEST = "gemini/gemini-1.5-flash"
-#MODEL_TO_TEST = "gemini/gemini-1.5-pro"
+MODEL_TO_TEST = "gemini/gemini-1.5-pro"
 #MODEL_TO_TEST = "gemini/gemini-2.0-flash-lite"
 #MODEL_TO_TEST = "gemini/gemini-2.0-flash"
-MODEL_TO_TEST = "gemini/gemini-2.5-flash-lite"
+#MODEL_TO_TEST = "gemini/gemini-2.5-flash-lite"
 #MODEL_TO_TEST = "gemini/gemini-2.5-flash"
 #MODEL_TO_TEST = "gemini/gemini-2.5-pro"
 
@@ -34,6 +34,7 @@ MODEL_TO_TEST = "gemini/gemini-2.5-flash-lite"
 #MODEL_TO_TEST = "gpt-4o-mini"
 #MODEL_TO_TEST = "gpt-4o"
 #MODEL_TO_TEST = "gpt-5-mini"
+#MODEL_TO_TEST = "gpt-5"
 
 # --- Anthropic --- need to pay!
 #MODEL_TO_TEST = "claude-3-haiku-20240307"

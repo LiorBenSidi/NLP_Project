@@ -338,7 +338,7 @@ class BasketballReportGenerator:
     def generate_report(self, difficulty="medium"):
         # --- Difficulty Level Configuration ---
         if difficulty == "basic":
-            target_events = 20
+            target_events = 200
             difficulty_max_passes = 1 # Max passes per possession
             allow_substitutions = False
             difficulty_sub_chance = 0.0  # No substitutions allowed
@@ -359,7 +359,7 @@ class BasketballReportGenerator:
                 7,   # shooting_foul_3pt     (Low)
             ]
         elif difficulty == "medium":
-            target_events = 30
+            target_events = 600
             difficulty_max_passes = 5 # Max passes per possession
             allow_substitutions = True
             difficulty_sub_chance = 0.25  # 25% chance of substitution
@@ -380,12 +380,12 @@ class BasketballReportGenerator:
                 12,  # shooting_foul_3pt     (Higher)
             ]
         else: # hard
-            target_events = 40
+            target_events = 1000
             difficulty_max_passes = 7 # Max passes per possession
             allow_substitutions = True
             difficulty_sub_chance = 0.50  # 50% chance of substitution
             allow_var = True
-            difficulty_var_chance = 0.25  # 25% chance of VAR checks
+            difficulty_var_chance = 0.50  # 50% chance of VAR checks
             # Hard: Maximize multi-step sequences. High rate of fouls, which trigger FTs/subs/rebounds.
             # Goal: Test the LLM's ability to maintain state through long, complex event chains.
             EVENT_WEIGHTS = [
