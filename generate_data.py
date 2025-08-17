@@ -8,6 +8,7 @@
 # 1. Support for different types of fouls (not only shooting foul that results in free throws)
 # 2. Call for timeout and after that immediately return to the game
 # 2.1 After a timeout, the game resumes with the same possession
+# 2.2 Both teams are allowed to make substitutions after a timeout
 # 3. Support for different types of 2pt shots (e.g., layup, dunk, jump shot, tried for 3pt but step on the line) - must be from assist!!
 # 3.1 Also missed 2pt/3pt shots that started with a pass
 # 4. Support for different types of 3pt shots (e.g., corner three, from the half court like Steph Curry) - must be from assist!!

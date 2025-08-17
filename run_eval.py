@@ -19,26 +19,36 @@ load_dotenv(override=True)
 
 # --- Define the model you want to test here ---
 # This is the only line you need to change to switch models.
+
 # --- Gemini ---
 #MODEL_TO_TEST = "gemini/gemini-1.5-flash"
 #MODEL_TO_TEST = "gemini/gemini-1.5-pro"
 #MODEL_TO_TEST = "gemini/gemini-2.0-flash-lite"
 #MODEL_TO_TEST = "gemini/gemini-2.0-flash"
-#MODEL_TO_TEST = "gemini/gemini-2.5-flash-lite"
-MODEL_TO_TEST = "gemini/gemini-2.5-flash"
+MODEL_TO_TEST = "gemini/gemini-2.5-flash-lite"
+#MODEL_TO_TEST = "gemini/gemini-2.5-flash"
 #MODEL_TO_TEST = "gemini/gemini-2.5-pro"
+
 # --- OpenAI --- already paid 10$
 #MODEL_TO_TEST = "gpt-4o-nano"
 #MODEL_TO_TEST = "gpt-4o-mini"
 #MODEL_TO_TEST = "gpt-4o"
 #MODEL_TO_TEST = "gpt-5-mini"
+
 # --- Anthropic --- need to pay!
 #MODEL_TO_TEST = "claude-3-haiku-20240307"
 #MODEL_TO_TEST = "claude-opus-4-20250514"
 #MODEL_TO_TEST = "claude-sonnet-4-20250514"
+
 # --- DeepSeek --- need to pay!
 #MODEL_TO_TEST = "deepseek/deepseek-chat"
 #MODEL_TO_TEST = "deepseek/deepseek-coder"
+
+# --- Grok ---
+#MODEL_TO_TEST = ""
+
+# --- Meta ---
+#MODEL_TO_TEST = ""
 
 # --- Part 1: Prompt Templates and Static Data ---
 SYSTEM_INSTRUCTIONS_PROMPT = """You are an automated sports data analyst.
