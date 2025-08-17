@@ -5,16 +5,14 @@
 # 
 
 # TODO: Need to add:
-# 1. Support for different types of fouls (e.g., shooting foul, technical foul)
+# 1. Support for different types of fouls (not only shooting foul that results in free throws)
 # 2. Call for timeout and after that immediately return to the game
-# 3. After a timeout, the game resumes with the same possession
-# 4. Support for different types of 2pt shots (e.g., layup, dunk, jump shot, tried for 3pt but step on the line)
-# 5. Support for different types of 3pt shots (e.g., corner three, from the half court like Steph Curry)
-# 6. Add difficulty levels
-# 6.1 Basic difficulty:  No substitutions allowed, No VAR checks, limited number of events(20)
-# 6.2 Medium difficulty: Substitutions allowed, No VAR checks, limited number of events(60)
-# 6.3 Hard difficulty:   Substitutions allowed, VAR checks allowed, unlimited number of events(100)
-# 7. Consider saving the ground truth data in the "examples.json" file - ask the tutor for clarification.
+# 2.1 After a timeout, the game resumes with the same possession
+# 3. Support for different types of 2pt shots (e.g., layup, dunk, jump shot, tried for 3pt but step on the line) - must be from assist!!
+# 3.1 Also missed 2pt/3pt shots that started with a pass
+# 4. Support for different types of 3pt shots (e.g., corner three, from the half court like Steph Curry) - must be from assist!!
+# 5. Test on different languages (e.g., Hebrew)
+# 6. Give the script of events to people and give them the same task.
 
 import random
 import json
@@ -360,7 +358,7 @@ class BasketballReportGenerator:
                 7,   # shooting_foul_3pt     (Low)
             ]
         elif difficulty == "medium":
-            target_events = 60
+            target_events = 30
             difficulty_max_passes = 5 # Max passes per possession
             allow_substitutions = True
             difficulty_sub_chance = 0.25  # 25% chance of substitution
@@ -381,7 +379,7 @@ class BasketballReportGenerator:
                 12,  # shooting_foul_3pt     (Higher)
             ]
         else: # hard
-            target_events = 100
+            target_events = 40
             difficulty_max_passes = 7 # Max passes per possession
             allow_substitutions = True
             difficulty_sub_chance = 0.50  # 50% chance of substitution
