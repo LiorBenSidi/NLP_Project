@@ -1,6 +1,9 @@
 # run_eval.py
 
 #TODO:
+# 1. Ask the course instructor how much to describe the instructions for the report generation process.
+# 1.1 Do I need to tell the LLM exacly how each event effects on the stats?
+# 1.2 Do I need to tell the LLM what stats to calculte for each team and player?
 # 2. Think about compare the JSON output format with LISTs output format.
 # 3. I have notied that the LLM tend to interpret regular passing events as assists, even when they shouldn't be.
 # 4. I have also noticed that the LLM sometimes fails to recognize when a player is attempting a shot.

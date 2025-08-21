@@ -1,6 +1,9 @@
 # run_eval.py
 
 #TODO:
+# 1. Ask the course instructor how much to describe the instructions for the report generation process.
+# 1.1 Do I need to tell the LLM exacly how each event effects on the stats?
+# 1.2 Do I need to tell the LLM what stats to calculte for each team and player?
 # 2. Think about compare the JSON output format with LISTs output format.
 # 3. I have notied that the LLM tend to interpret regular passing events as assists, even when they shouldn't be.
 # 4. I have also noticed that the LLM sometimes fails to recognize when a player is attempting a shot.
@@ -14,8 +17,9 @@ from evaluation import evaluate_reports
 from dotenv import load_dotenv
 load_dotenv(override=True)
 
-# Support computing multiple evaluation types in the same run
-EVAL_TYPES = ["field", "fractional_per_block"]
+# Evaluation type: 'field' (default) or 'fractional_per_block'
+EVAL_TYPE = "field"
+#EVAL_TYPE = "fractional_per_block"
 
 # --- Define the model you want to test here ---
 # This is the only line you need to change to switch models.
@@ -590,13 +594,7 @@ if __name__ == "__main__":
             os.makedirs(os.path.join(results_base_dir, difficulty_level, "text"), exist_ok=True)
             os.makedirs(os.path.join(results_base_dir, difficulty_level, "json"), exist_ok=True)
 
-        # results_by_difficulty stores per-difficulty, per-eval-type accuracies and discrepancies
-        results_by_difficulty = {}
-        for lvl in ["basic", "medium", "hard"]:
-            results_by_difficulty[lvl] = {
-                "accuracies": {et: [] for et in EVAL_TYPES},
-                "discrepancies": {et: {} for et in EVAL_TYPES}
-            }
+        results_by_difficulty = { "basic": {"accuracies": [], "discrepancies": {}}, "medium": {"accuracies": [], "discrepancies": {}}, "hard": {"accuracies": [], "discrepancies": {}}}
         total_successful_games, total_failed_games = 0, 0
         
         for game_key, game_narrative_data in all_examples_data.items():
@@ -666,18 +664,14 @@ if __name__ == "__main__":
                     json.dump(llm_report, f, indent=4, ensure_ascii=False)
                 print(f"Saved rebuilt report to: {json_output_path}")
 
-                # compute all evaluation types and store per-type results
-                per_type_results = {}
-                for et in EVAL_TYPES:
-                    acc, disc = evaluate_reports(llm_report, ground_truth_data, eval_type=et)
-                    per_type_results[et] = (acc, disc)
-                    if difficulty in results_by_difficulty:
-                        results_by_difficulty[difficulty]["accuracies"][et].append(acc)
-                        if disc:
-                            results_by_difficulty[difficulty]["discrepancies"][et][game_key] = disc
-
-                for et, (acc, disc) in per_type_results.items():
-                    print(f"--- RESULT for {game_key} ({et}): Accuracy = {acc:.2f}% ---")
+                accuracy, discrepancies = evaluate_reports(llm_report, ground_truth_data, eval_type=EVAL_TYPE)
+                
+                if difficulty in results_by_difficulty:
+                    results_by_difficulty[difficulty]["accuracies"].append(accuracy)
+                    if discrepancies:
+                        results_by_difficulty[difficulty]["discrepancies"][game_key] = discrepancies
+                
+                print(f"--- RESULT for {game_key}: Accuracy = {accuracy:.2f}% ---")
             else:
                 total_failed_games += 1
                 print(f"--- FAILURE for {game_key}: Could not get a valid report after {max_retries} attempts. SKIPPING. ---")
@@ -692,7 +686,7 @@ if __name__ == "__main__":
                 "successful_games": total_successful_games,
                 "failed_games": total_failed_games,
                 "overall_average_accuracy": "N/A",
-                "evaluation_type": EVAL_TYPES,
+                "evaluation_type": EVAL_TYPE,
                 "results_by_difficulty": {}
             }
 
@@ -700,36 +694,29 @@ if __name__ == "__main__":
             print(f"Successful Games: {total_successful_games}")
             print(f"Failed Games: {total_failed_games}")
             
-            all_successful_accuracies = {et: [] for et in EVAL_TYPES}
+            all_successful_accuracies = []
             for difficulty, results in results_by_difficulty.items():
-                per_type_summary = {}
-                print(f"\n--- Difficulty: {difficulty.upper()} ---")
-                for et in EVAL_TYPES:
-                    acc_list = results["accuracies"].get(et, [])
-                    num_games_succeeded = len(acc_list)
-                    avg_acc = (sum(acc_list) / num_games_succeeded) if num_games_succeeded > 0 else 0.0
-                    per_type_summary[et] = {
+                num_games_succeeded = len(results["accuracies"])
+                if num_games_succeeded > 0:
+                    avg_acc = sum(results["accuracies"]) / num_games_succeeded
+                    all_successful_accuracies.extend(results["accuracies"])
+                    
+                    print(f"\n--- Difficulty: {difficulty.upper()} ---")
+                    print(f"  Games Succeeded: {num_games_succeeded}")
+                    print(f"  Average Accuracy: {avg_acc:.2f}%")
+                    
+                    final_summary["results_by_difficulty"][difficulty] = {
                         "average_accuracy": f"{avg_acc:.2f}%",
                         "games_succeeded": num_games_succeeded,
-                        "discrepancies": results["discrepancies"].get(et, {})
+                        "discrepancies": results["discrepancies"]
                     }
-                    all_successful_accuracies[et].extend(acc_list)
-                    print(f"  [{et}] Games Succeeded: {num_games_succeeded}  Average: {avg_acc:.2f}%")
-
-                final_summary["results_by_difficulty"][difficulty] = per_type_summary
             
             # Calculate and print the overall average accuracy
-            # overall averages per evaluation type
-            overall_avgs = {}
-            for et in EVAL_TYPES:
-                lst = all_successful_accuracies.get(et, [])
-                if lst:
-                    overall_avgs[et] = f"{(sum(lst)/len(lst)):.2f}%"
-                    print(f"\nOVERALL AVERAGE ACCURACY ({et}) (on {len(lst)} successful games): {overall_avgs[et]}")
-                else:
-                    overall_avgs[et] = "N/A"
-
-            final_summary["overall_average_accuracy"] = overall_avgs
+            if all_successful_accuracies:
+                overall_average = sum(all_successful_accuracies) / len(all_successful_accuracies)
+                print(f"\n-------------------------------------")
+                print(f"OVERALL AVERAGE ACCURACY (on {len(all_successful_accuracies)} successful games): {overall_average:.2f}%")
+                final_summary["overall_average_accuracy"] = f"{overall_average:.2f}%"
 
             summary_path = os.path.join(data_dir, "summary.json")
             with open(summary_path, 'w', encoding='utf-8') as f:
