@@ -26,8 +26,8 @@ EVAL_TYPES = ["field", "fractional_per_block"]
 #MODEL_TO_TEST = "gemini/gemini-2.0-flash-lite"
 #MODEL_TO_TEST = "gemini/gemini-2.0-flash"
 #MODEL_TO_TEST = "gemini/gemini-2.5-flash-lite"
-MODEL_TO_TEST = "gemini/gemini-2.5-flash"
-#MODEL_TO_TEST = "gemini/gemini-2.5-pro"
+#MODEL_TO_TEST = "gemini/gemini-2.5-flash"
+MODEL_TO_TEST = "gemini/gemini-2.5-pro"
 
 # --- OpenAI --- already paid 10$
 #MODEL_TO_TEST = "gpt-4o-nano"
