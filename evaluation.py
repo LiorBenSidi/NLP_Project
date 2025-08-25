@@ -8,6 +8,7 @@
 # 3. Calculate more metrics (e.g., precision, recall, F1-score) to get a comprehensive view of performance.
 # 4. Add more types of evaluation metrics, like if the LLM had success with more then 50% of the stats.
 # 5. Add penalty for players that get more than 5 fouls by the LLM.
+# 6. consider adaptation of the evaluation based on fouls limit, Overtimes
 
 def is_player_stats_all_zeros(player_stats):
     """Helper function to check if a player's stats dictionary contains only zeros."""

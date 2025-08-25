@@ -22,12 +22,12 @@ EVAL_TYPES = ["field", "fractional_per_block"]
 
 # --- Gemini ---
 #MODEL_TO_TEST = "gemini/gemini-1.5-flash"
-#MODEL_TO_TEST = "gemini/gemini-1.5-pro"
+MODEL_TO_TEST = "gemini/gemini-1.5-pro"
 #MODEL_TO_TEST = "gemini/gemini-2.0-flash-lite"
 #MODEL_TO_TEST = "gemini/gemini-2.0-flash"
 #MODEL_TO_TEST = "gemini/gemini-2.5-flash-lite"
 #MODEL_TO_TEST = "gemini/gemini-2.5-flash"
-MODEL_TO_TEST = "gemini/gemini-2.5-pro"
+#MODEL_TO_TEST = "gemini/gemini-2.5-pro"
 
 # --- OpenAI --- already paid 10$
 #MODEL_TO_TEST = "gpt-4o-nano"
@@ -177,95 +177,6 @@ Your final output must follow this exact structure. Do not add, remove, or renam
 }
 ```
 """
-
-# # SHORTENED (DONT WORK) - Add example for the required output
-# SYSTEM_INSTRUCTIONS_PROMPT += """\n\n### EXAMPLE FOR THE REQUIRED JSON STRUCTURE ###
-#                                     Your final output must follow this **exact JSON structure**. 
-#                                     Do not add, remove, or rename any keys. 
-#                                     Do not wrap it in code fences or extra text. 
-#                                     Return only one valid JSON object.
-
-#                                     EXAMPLE JSON STRUCTURE (values here are placeholders, the model must calculate real ones):
-
-#                                     {
-#                                         "matchup": "TeamNameA vs TeamNameB",
-#                                         "final_score": "TeamNameA: 0, TeamNameB: 0",
-#                                         "teams": {
-#                                             "TeamNameA": {
-#                                                 "coach": "CoachNameA",
-#                                                 "roster": ["PlayerName1-A", "PlayerName2-A", "PlayerName3-A", "PlayerName4-A", "PlayerName5-A"],
-#                                                 "starting_lineup": ["PlayerName1-A", "PlayerName2-A", "PlayerName3-A", "PlayerName4-A", "PlayerName5-A"],
-#                                                 "bench": ["PlayerName6-A", "PlayerName7-A", "PlayerName8-A", "PlayerName9-A", "PlayerName10-A"]
-#                                             },
-#                                             "TeamNameB": {
-#                                                 "coach": "CoachNameB",
-#                                                 "roster": ["PlayerName1-B", "PlayerName2-B", "PlayerName3-B", "PlayerName4-B", "PlayerName5-B"],
-#                                                 "starting_lineup": ["PlayerName1-B", "PlayerName2-B", "PlayerName3-B", "PlayerName4-B", "PlayerName5-B"],
-#                                                 "bench": ["PlayerName6-B", "PlayerName7-B", "PlayerName8-B", "PlayerName9-B", "PlayerName10-B"]
-#                                             }
-#                                         },
-#                                         "final_stats": {
-#                                             "TeamNameA": {
-#                                                 "stats": {
-#                                                     "score": 0,
-#                                                     "assists": 0,
-#                                                     "rebounds": 0,
-#                                                     "fouls": 0,
-#                                                     "steals": 0,
-#                                                     "blocks": 0,
-#                                                     "turnovers": 0
-#                                                 },
-#                                                 "players": {
-#                                                     "PlayerName1-A": {
-#                                                         "points": 0,
-#                                                         "assists": 0,
-#                                                         "rebounds": 0,
-#                                                         "fouls": 0,
-#                                                         "steals": 0,
-#                                                         "blocks": 0,
-#                                                         "turnovers": 0,
-#                                                         "2pt_shots_made": 0,
-#                                                         "2pt_shots_attempted": 0,
-#                                                         "3pt_shots_made": 0,
-#                                                         "3pt_shots_attempted": 0,
-#                                                         "ft_made": 0,
-#                                                         "ft_attempted": 0
-#                                                     }
-#                                                     // ... repeat for all 10 players
-#                                                 }
-#                                             },
-#                                             "TeamNameB": {
-#                                                 "stats": {
-#                                                     "score": 0,
-#                                                     "assists": 0,
-#                                                     "rebounds": 0,
-#                                                     "fouls": 0,
-#                                                     "steals": 0,
-#                                                     "blocks": 0,
-#                                                     "turnovers": 0
-#                                                 },
-#                                                 "players": {
-#                                                     "PlayerName1-B": {
-#                                                         "points": 0,
-#                                                         "assists": 0,
-#                                                         "rebounds": 0,
-#                                                         "fouls": 0,
-#                                                         "steals": 0,
-#                                                         "blocks": 0,
-#                                                         "turnovers": 0,
-#                                                         "2pt_shots_made": 0,
-#                                                         "2pt_shots_attempted": 0,
-#                                                         "3pt_shots_made": 0,
-#                                                         "3pt_shots_attempted": 0,
-#                                                         "ft_made": 0,
-#                                                         "ft_attempted": 0
-#                                                     }
-#                                                     // ... repeat for all 10 players
-#                                                 }
-#                                             }
-#                                         }
-#                                     }
-#                                     """
 
 # Add strict JSON reminder
 SYSTEM_INSTRUCTIONS_PROMPT += "\n\nSTRICT: Output only a single valid JSON object. No prose, no code fences, no comments, no trailing commas."

@@ -7,26 +7,49 @@
 # TODO: Need to add:
 # 1. Support for different types of fouls (not only shooting foul that results in free throws)
 # 2. Give the script of events to people and give them the same task.
-# 3. Split into 4 quarters and add team foul limit for each quarter (after 5 fouls, each foul results in free throws)
 
 import random
 import json
 import os
 
 class BasketballReportGenerator:
+    """
+    Generates simulated basketball game data, including play-by-play commentary
+    and detailed final statistics.
+
+    This class simulates a basketball game between two randomly chosen teams,
+    generating a sequence of events based on configurable difficulty levels.
+    It tracks player and team stats throughout the game and produces a
+    structured JSON output containing the full game report.
+
+    Key features:
+    - Dynamic generation of play-by-play events.
+    - Statistical tracking for players and teams (points, assists, rebounds, etc.).
+    - Configurable difficulty levels ("basic", "medium", "hard") that affect
+      game complexity (e.g., substitutions, VAR reviews, event frequency).
+    - Management of player substitutions, foul-outs, and team foul bonuses.
+    - Output of a comprehensive game summary in JSON format.
+    """
 
     def __init__(self):
-        # Set foul limit for each player
-        self.FOUL_LIMIT = 5
-        # Initialize teams with head coach and players
+        """
+        Initializes the BasketballReportGenerator.
 
-        # head coaches
+        Sets up game rules, team rosters, and event templates.
+        """
+        # --- Game Rules ---
+        self.FOUL_LIMIT = 5  # Per-player foul limit before disqualification
+        self.TEAM_FOUL_LIMIT = 5  # Per-quarter team foul limit for bonus free throws
+        self.DEBUG_TEAM_FOULS = False  # If True, adds debug messages for team fouls
+
+        # --- Team and Player Data ---
+        # Head coaches for each team
         self.Maccabi_Tel_Aviv_head_coach = "Oded Kattash"
         self.Hapoel_Tel_Aviv_head_coach = "Dimitrios Itoudis"
         self.Hapoel_Jerusalem_head_coach = "Yonatan Alon"
         self.DDS_Dream_Team_head_coach = "Sagi Dvir"
 
-        # players
+        # Player rosters for each team
         self.Maccabi_Tel_Aviv_players = ["Tal Brody", "Miki Berkovich", "Motti Aroesti", "Doron Jamchi", "Derrick Sharp",
                                          "Anthony Parker", "David Blu", "Guy Pnini", "Omri Casspi", "Lior Eliyahu"]
         #self.Maccabi_Tel_Aviv_players = ["MACCABI_TLV-" + player for player in self.Maccabi_Tel_Aviv_players]
@@ -40,7 +63,7 @@ class BasketballReportGenerator:
                                        "Gal Ofir", "Yarin Katan", "Alon Krichely", "Ido Avital", "Ofek Bernstein"]
         #self.DDS_Dream_Team_players = ["DDS-" + player for player in self.DDS_Dream_Team_players]
 
-        # Combine all teams into a single dictionary
+        # Master dictionary of all teams
         self.teams = {"Maccabi Tel Aviv": {"head_coach": self.Maccabi_Tel_Aviv_head_coach,
                                             "players": self.Maccabi_Tel_Aviv_players},
                       "Hapoel Tel Aviv": {"head_coach": self.Hapoel_Tel_Aviv_head_coach,
@@ -50,7 +73,8 @@ class BasketballReportGenerator:
                       "DDS Dream Team": {"head_coach": self.DDS_Dream_Team_head_coach,
                                         "players": self.DDS_Dream_Team_players}}
 
-        # Event templates for generating play-by-play commentary
+        # --- Event Templates ---
+        # Each event has a text template and an 'effect' lambda function to update game stats.
         self.event_templates = {
             # --- Scoring Events ---
             "assist_and_score_2pt": {
@@ -196,7 +220,7 @@ class BasketballReportGenerator:
 
             # --- VAR Events ---
             "var_overturn_2pt": {
-                "template": "After a VAR review, the previous basket by {player_B} is overturned due to an offensive foul committed by {player_B} before the shot.",
+                "template": "After a VAR review, the previous basket by {player_B} is overturned due to an offensive foul committed by {player_B} against {player_C} before the shot.",
                 "effect": lambda state, pA, pB, team: (
                     # 1. Update Team Stats: reverse score/assist, add foul/turnover
                     state[team]['stats'].update({
@@ -353,7 +377,7 @@ class BasketballReportGenerator:
                 "effect": lambda state, pA, pB, team: None # No statistical effect
             },
             "end_of_game": {
-                "template": "The final buzzer sounds. End of game.",
+                "template": "End of game.",
                 "effect": lambda state: None # No statistical effect
             }
         }
@@ -369,7 +393,7 @@ class BasketballReportGenerator:
 
     def _force_foul_out_substitution(self, team_name, player_out, game_lineups, play_by_play, game_participants):
         """Remove a player who reached FOUL_LIMIT and ensure they can't return."""
-        # Ensure disqualified list exists
+        # Ensure the 'disqualified' list exists for the team
         game_lineups[team_name].setdefault('disqualified', [])
 
         was_active = False
@@ -379,21 +403,21 @@ class BasketballReportGenerator:
         elif player_out in game_lineups[team_name]['bench']:
             game_lineups[team_name]['bench'].remove(player_out)
 
-        # Mark as disqualified (no return)
+        # Mark as disqualified to prevent re-entry
         if player_out not in game_lineups[team_name]['disqualified']:
             game_lineups[team_name]['disqualified'].append(player_out)
 
-        # Log the foul-out
+        # Log the foul-out event
         avail = self._available_players_count(team_name, game_lineups)
         play_by_play.append({
             "event_id": len(play_by_play) + 1,
             "description": (
-                f"{self._get_colored_name(player_out, team_name)} commits a {self.FOUL_LIMIT}th foul and is disqualified. "
+                f"{player_out} commits a {self.FOUL_LIMIT}th foul and is disqualified. "
                 f"{team_name} available players: {avail}."
             )
         })
 
-        # If they were on the floor, bring in a bench replacement if possible
+        # If the player was on the court, perform a substitution if possible.
         if was_active:
             bench = game_lineups[team_name]['bench']
             if bench:
@@ -404,9 +428,10 @@ class BasketballReportGenerator:
                 coach = self.teams[team_name]['head_coach']
                 play_by_play.append({
                     "event_id": len(play_by_play) + 1,
-                    "description": f"Substitution by {coach}: {self._get_colored_name(player_in, team_name)} comes in for {self._get_colored_name(player_out, team_name)} (fouled out)."
+                    "description": f"Substitution by {coach}: {player_in} comes in for {player_out} (fouled out)."
                 })
             else:
+                # If no substitutes are available, the team plays short-handed.
                 play_by_play.append({
                     "event_id": len(play_by_play) + 1,
                     "description": f"{team_name} has no eligible substitutes and will continue short-handed."
@@ -414,7 +439,7 @@ class BasketballReportGenerator:
 
     def _check_and_handle_foul_out(self, team_name, player_name, game_stats, game_lineups, play_by_play, game_participants):
         """If player reached FOUL_LIMIT, disqualify and sub immediately. Returns True if foul-out occurred."""
-        # Already disqualified? Nothing to do.
+        # Already disqualified -> Nothing to do.
         if player_name in game_lineups[team_name].get('disqualified', []):
             return False
         fouls = game_stats[team_name]['players'][player_name]['fouls']
@@ -422,30 +447,6 @@ class BasketballReportGenerator:
             self._force_foul_out_substitution(team_name, player_name, game_lineups, play_by_play, game_participants)
             return True
         return False
-
-    def _get_colored_name(self, name, team_name):
-        """Returns the name wrapped in ANSI color codes based on team."""
-        COLORS = {
-            'YELLOW': '\033[93m',    # Bright Yellow
-            'RED': '\033[91m',        # Bright Red
-            'MAGENTA': '\033[95m',    # Bright Magenta
-            'BLUE': '\033[94m',      # Bright Blue
-            'ENDC': '\033[0m'         # Reset
-        }
-        return name # Return uncolored
-
-        if team_name == "Maccabi Tel Aviv":
-            color = COLORS['YELLOW']
-        elif team_name == "Hapoel Tel Aviv":
-            color = COLORS['RED']
-        elif team_name == "Hapoel Jerusalem":
-            color = COLORS['MAGENTA']
-        elif team_name == "DDS Dream Team":
-            color = COLORS['BLUE']
-        else:
-            return name # Return uncolored if team is unknown
-        
-        return f"{color}{name}{COLORS['ENDC']}"
 
     def _initialize_stats(self):
         """Helper to create the complex nested dictionary for tracking ground truth."""
@@ -468,7 +469,7 @@ class BasketballReportGenerator:
 
     def _handle_substitution(self, head_coach, team_name, game_lineups, play_by_play, game_participants, sub_chance=0.0, cant_sub_player=None):
         """Randomly performs a substitution for a team if conditions are met."""
-        # Chance of a substitution at any given opportunity
+        # Decide whether to substitute based on probability
         if random.random() < sub_chance:
             active_players = game_lineups[team_name]['active']
             bench_players = game_lineups[team_name]['bench']
@@ -483,22 +484,41 @@ class BasketballReportGenerator:
             player_in = random.choice(bench_players)
             game_participants[team_name].add(player_in)
 
-            # Perform the swap
+            # Perform the swap between active and bench lists
             active_players.remove(player_out)
             bench_players.append(player_out)
             bench_players.remove(player_in)
             active_players.append(player_in)
 
-            colored_player_in = self._get_colored_name(player_in, team_name)
-            colored_player_out = self._get_colored_name(player_out, team_name)
-            #play_by_play.append(f"Substitution by {head_coach}: {colored_player_in} comes in for {colored_player_out}.")
+            # Log the substitution event
             play_by_play.append({
                 "event_id": len(play_by_play) + 1,
-                "description": f"Substitution by {head_coach}: {colored_player_in} comes in for {colored_player_out}."
+                "description": f"Substitution by {head_coach}: {player_in} comes in for {player_out}."
             })
 
     def generate_report(self, difficulty="medium"):
-        # --- Difficulty Level Configuration ---
+        """
+        Generates a full basketball game report based on a specified difficulty.
+
+        This method simulates a complete game, from the initial jump ball to the
+        final buzzer. It orchestrates the game flow quarter by quarter, generating
+        events, updating stats, and handling game logic like substitutions and fouls.
+
+        Args:
+            difficulty (str): The difficulty level of the game to generate.
+                Accepts "basic", "medium", or "hard". This controls the complexity
+                of the game simulation.
+
+        Returns:
+            dict: A dictionary containing the complete game summary, including:
+                - "matchup": A string describing the two teams playing.
+                - "teams": A dictionary with details for each team (roster, coach, etc.).
+                - "play_by_play": A list of event dictionaries.
+                - "final_stats": A dictionary of the final aggregated stats for
+                  teams and players.
+        """
+        # --- 1. Difficulty Level Configuration ---
+        # Set parameters based on the chosen difficulty level.
         if difficulty == "basic":
             target_events = 20
             difficulty_max_passes = 1 # Max passes per possession
@@ -526,11 +546,11 @@ class BasketballReportGenerator:
                 # --- Unsuccessful_2pt_events ---
                 6,   # miss_2pt_from_pass
                 4,   # block_on_2pt_shot
-                10,  # shooting_foul_2pt
+                20,  # shooting_foul_2pt
                 # --- Unsuccessful_3pt_events ---
                 6,   # miss_3pt_from_pass
                 2,   # block_on_3pt_shot
-                7,   # shooting_foul_3pt
+                20,   # shooting_foul_3pt
             ]
         elif difficulty == "medium":
             target_events = 60
@@ -559,11 +579,11 @@ class BasketballReportGenerator:
                 # --- Unsuccessful_2pt_events ---
                 6,   # miss_2pt_from_pass
                 8,   # block_on_2pt_shot
-                15,  # shooting_foul_2pt
+                30,  # shooting_foul_2pt
                 # --- Unsuccessful_3pt_events ---
                 6,   # miss_3pt_from_pass
                 6,   # block_on_3pt_shot
-                12,  # shooting_foul_3pt
+                30,  # shooting_foul_3pt
             ]
         else: # hard
             target_events = 100
@@ -592,56 +612,77 @@ class BasketballReportGenerator:
                 # --- Unsuccessful_2pt_events ---
                 1,   # miss_2pt_from_pass
                 14,  # block_on_2pt_shot
-                20,  # shooting_foul_2pt
+                40,  # shooting_foul_2pt
                 # --- Unsuccessful_3pt_events ---
                 1,   # miss_3pt_from_pass
                 10,  # block_on_3pt_shot
-                15,  # shooting_foul_3pt
+                40,  # shooting_foul_3pt
             ]
         
+        # --- 2. Game Setup ---
+        # Randomly select two teams to play
         team_names = random.sample(list(self.teams.keys()), 2)
         teamA_name, teamB_name = team_names[0], team_names[1]
         
+        # Create initial lineups (5 active, rest on bench)
         game_lineups = {}
         for team_name in team_names:
             full_roster = list(self.teams[team_name]["players"])
             random.shuffle(full_roster)
             game_lineups[team_name] = {'active': full_roster[:5], 'bench': full_roster[5:], 'disqualified': []}
         
+        # Store initial lineups and create sets for tracking all participants
         initial_lineups = {tn: {'starting_lineup': list(gl['active']), 'bench': list(gl['bench'])} for tn, gl in game_lineups.items()}
         game_participants = {
             teamA_name: set(initial_lineups[teamA_name]['starting_lineup']),
             teamB_name: set(initial_lineups[teamB_name]['starting_lineup'])
         }
+        # Initialize the statistics tracker for the two selected teams
         game_stats = self._initialize_stats()
         game_stats = {team: game_stats[team] for team in team_names}
 
+        # --- 3. Game Simulation Initialization ---
         play_by_play = []
-        last_score_event_details = None
+        last_score_event_details = None # Used for VAR checks
         player_with_ball = None
 
         # --- Start the game with a jump ball ---
         jumper_A = random.choice(game_lineups[teamA_name]['active'])
         jumper_B = random.choice(game_lineups[teamB_name]['active'])
         
-        # Randomly determine the winner
+        # Randomly determine the winner of the jump ball
         winner_team = random.choice([teamA_name, teamB_name])
         winner_player = jumper_A if winner_team == teamA_name else jumper_B
 
-        # The winner of the jump ball gets the first possession and has the ball
+        # The winner gets the first possession
         possession = winner_team
         player_with_ball = winner_player # This prevents an inbound pass on the first play
 
-        # Add the jump ball event to the play-by-play
+        # Log the jump ball event
         jump_ball_event = self.event_templates["jump_ball"]
-        colored_jumper_A = self._get_colored_name(jumper_A, teamA_name)
-        colored_jumper_B = self._get_colored_name(jumper_B, teamB_name)
-        colored_winner = self._get_colored_name(winner_player, winner_team)
         play_by_play.append({
             "event_id": len(play_by_play) + 1,
-            "description": jump_ball_event["template"].format(player_A=colored_jumper_A, player_B=colored_jumper_B, winner=colored_winner)
+            "description": jump_ball_event["template"].format(player_A=jumper_A, player_B=jumper_B, winner=winner_player)
         })
 
+        # --- Quarters: Q1/Q3 = winner, Q2/Q4 = other ---
+        other_team = teamB_name if winner_team == teamA_name else teamA_name
+        quarter_starters = [winner_team, other_team, winner_team, other_team] # Alternating possession
+        # Distribute the target number of events across four quarters
+        base = max(0, target_events // 4)
+        rem = target_events % 4
+        quarter_targets = [base + (1 if i < rem else 0) for i in range(4)]
+        quarter = 1
+        # Log the start of the first quarter
+        play_by_play.append({"event_id": len(play_by_play) + 1, "description": "Start of Q1."})
+        # Per-quarter team foul counters (reset each quarter)
+        team_fouls_in_quarter = {teamA_name: 0, teamB_name: 0}
+        # Counters to track the number of generated events against the target
+        billed_total = 0            # Total events generated for the whole game
+        billed_in_quarter = 0       # Events generated in the current quarter
+        ot_num = 0                  # Number of overtimes played
+
+        # --- Event Categories for easier selection ---
         Successful_2pt_events = [
             "assist_and_score_2pt", "assist_and_score_2pt_layup", "assist_and_score_2pt_dunk", "assist_and_score_2pt_jump", "assist_and_score_2pt_step3",
         ]
@@ -666,21 +707,24 @@ class BasketballReportGenerator:
 
         OFFENSIVE_EVENTS += Successful_2pt_events + Successful_3pt_events + unsuccessful_2pt_events + unsuccessful_3pt_events
 
-        while len(play_by_play) < (target_events - 1):
+        # --- 4. Main Game Loop ---
+        # The loop continues until the target number of events has been generated.
+        while billed_total < target_events:
+            prev_len = len(play_by_play)
             offensive_team = possession
             defensive_team = teamB_name if offensive_team == teamA_name else teamA_name
             active_players = game_lineups[offensive_team]['active']
 
-            # --- Start of Possession ---
+            # --- Start of Possession: Inbound if necessary ---
             if player_with_ball is None:
                 inbounder = random.choice(game_lineups[offensive_team]['active'])
                 receiver_options = [p for p in active_players if p != inbounder]
                 receiver = random.choice(receiver_options) if receiver_options else inbounder # fallback if no receiver (not possible situation, but just in case)
                 inbound_event = self.event_templates["inbound_pass"]
-                play_by_play.append({"event_id": len(play_by_play) + 1, "description": inbound_event["template"].format(player_A=self._get_colored_name(inbounder, offensive_team), player_B=self._get_colored_name(receiver, offensive_team))})
+                play_by_play.append({"event_id": len(play_by_play) + 1, "description": inbound_event["template"].format(player_A=inbounder, player_B=receiver)})
                 player_with_ball = receiver
 
-            # --- Ball Movement ---
+            # --- Ball Movement: Simulate passes ---
             num_passes = random.randint(0, difficulty_max_passes)
             for _ in range(num_passes):
                 passer = player_with_ball
@@ -689,34 +733,39 @@ class BasketballReportGenerator:
                     break
                 receiver = random.choice(options)
                 pass_event = self.event_templates["pass_ball"]
-                play_by_play.append({"event_id": len(play_by_play) + 1, "description": pass_event["template"].format(player_A=self._get_colored_name(passer, offensive_team), player_B=self._get_colored_name(receiver, offensive_team))})
+                play_by_play.append({"event_id": len(play_by_play) + 1, "description": pass_event["template"].format(player_A=passer, player_B=receiver)})
                 player_with_ball = receiver
 
-            # --- End of Possession ---
-            # Weighted event pick; only block fouls COMMITTED BY a no-bench team.
+            # --- End of Possession: Choose and execute an event ---
+            # Filter possible events based on game state (e.g., can't foul if no bench players)
             pairs = []
             for et, w in zip(OFFENSIVE_EVENTS, EVENT_WEIGHTS):
-                # Offense needs two different players for these events (not possible situation, but just in case)
+                # Offense needs at least two players for assisted shots
                 if len(active_players) < 2 and et in two_offense_player_events:
                     continue
-                # Defensive shooting fouls are committed by the defense
+                # A team can only commit a shooting foul if they have players on the bench
                 if "shooting_foul" in et and not self._team_can_commit_fouls(defensive_team, game_lineups):
                     continue
-                # Offensive foul events (if you have them) are committed by the offense
+                # A team can only commit an offensive foul if they have players on the bench
                 if "offensive_foul" in et and not self._team_can_commit_fouls(offensive_team, game_lineups):
                     continue
                 pairs.append((et, w))
+            
+            # Select an event based on the weighted probabilities
             if pairs:
                 events, weights = zip(*pairs)
                 event_type = random.choices(events, weights=weights, k=1)[0]
             else:
-                # Guaranteed-legal fallback to keep progress smooth
+                # Fallback to a timeout if no other event is possible
                 event_type = "timeout"
             event = self.event_templates[event_type]
             action_player = player_with_ball
+            # Flag to track if the possession ended with a shot attempt
+            ended_with_shot_attempt = False
             
             Successful_events = Successful_2pt_events + Successful_3pt_events
 
+            # --- Event Execution ---
             if event_type in Successful_events:
                 passer = action_player
                 scorer_options = [p for p in active_players if p != action_player]
@@ -726,9 +775,12 @@ class BasketballReportGenerator:
                 scorer = random.choice(scorer_options)
                 last_score_event_details = {'type': event_type, 'pA': passer, 'pB': scorer, 'team': offensive_team}
                 event["effect"](game_stats, passer, scorer, offensive_team)
-                play_by_play.append({"event_id": len(play_by_play) + 1, "description": event["template"].format(player_A=self._get_colored_name(passer, offensive_team), player_B=self._get_colored_name(scorer, offensive_team))})
+                play_by_play.append({"event_id": len(play_by_play) + 1, "description": event["template"].format(player_A=passer, player_B=scorer)})
+                ended_with_shot_attempt = True
+
+                possession = defensive_team # Possession changes after a score
                 
-                possession = defensive_team # Default possession change
+                # --- Optional: VAR Review ---
                 if allow_var and random.random() < difficulty_var_chance: # Check for VAR
                     last_type = last_score_event_details['type']
                     if last_type in Successful_2pt_events:
@@ -736,36 +788,86 @@ class BasketballReportGenerator:
                     else: # last_type in Successful_3pt_events
                         var_event_type = "var_overturn_3pt"
                     pA_v, pB_v, team_v = last_score_event_details['pA'], last_score_event_details['pB'], last_score_event_details['team']
-                    # Only skip if the VAR would assign an OFFENSIVE FOUL to a no-bench team
+                    # Only skip if the VAR would assign an OFFENSIVE FOUL to a team with no bench players
                     if not (var_event_type == "var_overturn_2pt" and not self._team_can_commit_fouls(team_v, game_lineups)):
                         var_event = self.event_templates[var_event_type]
                         var_event["effect"](game_stats, pA_v, pB_v, team_v)
+                        # Identify the fouled defender (victim) on the opposing team
+                        opponent_team = teamB_name if team_v == teamA_name else teamA_name
+                        victim = random.choice(game_lineups[opponent_team]['active'])
                         play_by_play.append({
                             "event_id": len(play_by_play) + 1,
                             "description": var_event["template"].format(
-                                player_A=self._get_colored_name(pA_v, team_v),
-                                player_B=self._get_colored_name(pB_v, team_v)
+                                player_A=pA_v,
+                                player_B=pB_v,
+                                player_C=victim
                             )
                         })
-                        # If VAR overturned due to offensive foul, check foul-out on the offender (pB_v on team_v)
+                        # If VAR overturned due to an offensive foul, check for foul-out
                         if var_event_type == "var_overturn_2pt":
                             self._check_and_handle_foul_out(team_v, pB_v, game_stats, game_lineups, play_by_play, game_participants)
+                            # Count team foul for the offensive team
+                            team_fouls_in_quarter[team_v] += 1
+                            if self.DEBUG_TEAM_FOULS:
+                                play_by_play.append({
+                                    "event_id": len(play_by_play) + 1,
+                                    "description": f"Team fouls this quarter – {team_v}: {team_fouls_in_quarter[team_v]}/{self.TEAM_FOUL_LIMIT}."
+                                })
+                            # If in bonus, award two free throws to the opponent
+                            if team_fouls_in_quarter[team_v] >= self.TEAM_FOUL_LIMIT:
+                                if self.DEBUG_TEAM_FOULS:
+                                    play_by_play.append({
+                                        "event_id": len(play_by_play) + 1,
+                                        "description": "Bonus in effect: two free throws for the non-fouling team."
+                                    })
+                                bonus_team = opponent_team
+                                # The fouled player (victim) takes the free throws
+                                ft_shooter = victim
+                                play_by_play.append({
+                                    "event_id": len(play_by_play) + 1,
+                                    "description": f"{ft_shooter} is awarded two free throws (team fouls in bonus)."
+                                })
+                                ordinals = ["first", "second"]
+                                for i in range(2):
+                                    is_last_shot = (i == 1)
+                                    if random.random() <= 0.5:
+                                        self.event_templates['ft_made']['effect'](game_stats, ft_shooter, bonus_team)
+                                        desc = self.event_templates['ft_made']['template'].format(player_A=ft_shooter, shot_ordinal=ordinals[i])
+                                        play_by_play.append({"event_id": len(play_by_play) + 1, "description": desc})
+                                        if is_last_shot:
+                                            # After a made last FT, possession goes to the fouling team
+                                            possession = team_v
+                                            player_with_ball = None
+                                    else:
+                                        self.event_templates['ft_missed']['effect'](game_stats, ft_shooter, bonus_team)
+                                        desc = self.event_templates['ft_missed']['template'].format(player_A=ft_shooter, shot_ordinal=ordinals[i])
+                                        play_by_play.append({"event_id": len(play_by_play) + 1, "description": desc})
+                                        if is_last_shot:
+                                            # On a missed last FT, the ball is live for a rebound
+                                            rebound_type = random.choices(["offensive", "defensive"], weights=[0.2, 0.8])[0]
+                                            rebound_team = bonus_team if rebound_type == "offensive" else team_v
+                                            rebounder = random.choice(game_lineups[rebound_team]['active'])
+                                            rebound_event = self.event_templates[f"rebound_{rebound_type}"]
+                                            rebound_event["effect"](game_stats, rebounder, rebound_team)
+                                            play_by_play.append({"event_id": len(play_by_play) + 1, "description": rebound_event["template"].format(player_A=rebounder)})
+                                            possession = rebound_team
+                                            player_with_ball = rebounder
 
 
                 if allow_substitutions:
                     self._handle_substitution(self.teams[teamA_name]['head_coach'], teamA_name, game_lineups, play_by_play, game_participants, sub_chance=difficulty_sub_chance)
                     self._handle_substitution(self.teams[teamB_name]['head_coach'], teamB_name, game_lineups, play_by_play, game_participants, sub_chance=difficulty_sub_chance)
                 
-                player_with_ball = None # --- FIX: Reset player with ball after change of possession
+                player_with_ball = None # Reset player with ball after change of possession
 
             elif event_type == "timeout":
                 coach_name = self.teams[offensive_team]['head_coach']
-                play_by_play.append({"event_id": len(play_by_play) + 1, "description": event["template"].format(coach=self._get_colored_name(coach_name, offensive_team))})
-                # Allow both teams to make substitutions after timeout
+                play_by_play.append({"event_id": len(play_by_play) + 1, "description": event["template"].format(coach=coach_name)})
+                # Allow both teams to make substitutions after a timeout
                 if allow_substitutions:
                     self._handle_substitution(self.teams[teamA_name]['head_coach'], teamA_name, game_lineups, play_by_play, game_participants, sub_chance=difficulty_sub_chance)
                     self._handle_substitution(self.teams[teamB_name]['head_coach'], teamB_name, game_lineups, play_by_play, game_participants, sub_chance=difficulty_sub_chance)
-                # After timeout, play resumes with an inbound by a random player of the team that has possession
+                # After timeout, play resumes with an inbound pass
                 resume_event = self.event_templates.get("game_resume")
                 if resume_event:
                     play_by_play.append({"event_id": len(play_by_play) + 1, "description": resume_event["template"]})
@@ -774,8 +876,9 @@ class BasketballReportGenerator:
                 receiver_options = [p for p in game_lineups[offensive_team]['active'] if p != inbounder]
                 receiver = random.choice(receiver_options) if receiver_options else inbounder
                 inbound_event = self.event_templates["inbound_pass"]
-                play_by_play.append({"event_id": len(play_by_play) + 1, "description": inbound_event["template"].format(player_A=self._get_colored_name(inbounder, offensive_team), player_B=self._get_colored_name(receiver, offensive_team))})
+                play_by_play.append({"event_id": len(play_by_play) + 1, "description": inbound_event["template"].format(player_A=inbounder, player_B=receiver)})
                 player_with_ball = receiver
+                # Possession does not change on a timeout
                 # possession remains unchanged
 
             elif event_type in ["miss_2pt_from_pass", "miss_3pt_from_pass"]:
@@ -786,16 +889,17 @@ class BasketballReportGenerator:
                     shooter_options = [action_player]
                 shooter = random.choice(shooter_options)
                 event["effect"](game_stats, passer, shooter, offensive_team)
-                play_by_play.append({"event_id": len(play_by_play) + 1, "description": event["template"].format(player_A=self._get_colored_name(passer, offensive_team), player_B=self._get_colored_name(shooter, offensive_team))})
+                play_by_play.append({"event_id": len(play_by_play) + 1, "description": event["template"].format(player_A=passer, player_B=shooter)})
                 rebound_type = random.choices(["offensive", "defensive"], weights=[0.2, 0.8])[0]
                 rebound_team = offensive_team if rebound_type == "offensive" else defensive_team
                 rebounder = random.choice(game_lineups[rebound_team]['active'])
                 rebound_event = self.event_templates[f"rebound_{rebound_type}"]
                 rebound_event["effect"](game_stats, rebounder, rebound_team)
-                play_by_play.append({"event_id": len(play_by_play) + 1, "description": rebound_event["template"].format(player_A=self._get_colored_name(rebounder, rebound_team))})
+                play_by_play.append({"event_id": len(play_by_play) + 1, "description": rebound_event["template"].format(player_A=rebounder)})
                 possession = rebound_team
-                player_with_ball = rebounder # --- FIX: Rebounder now has the ball
-            
+                player_with_ball = rebounder # Rebounder now has the ball
+                ended_with_shot_attempt = True
+
             elif event_type in ["turnover_by_bad_pass", "steal"]:
                 turnover_player = action_player
                 
@@ -804,17 +908,17 @@ class BasketballReportGenerator:
                     event["effect"](game_stats, stealer, turnover_player, defensive_team, offensive_team)
                     play_by_play.append({
                         "event_id": len(play_by_play) + 1,
-                        "description": event["template"].format(player_A=self._get_colored_name(stealer, defensive_team), player_B=self._get_colored_name(turnover_player, offensive_team))
+                        "description": event["template"].format(player_A=stealer, player_B=turnover_player)
                     })
                     possession = defensive_team
-                    # --- CRITICAL FIX: The player who got the steal now has the ball ---
+                    # The player who got the steal now has the ball
                     player_with_ball = stealer 
                 
                 else: # A bad pass results in a dead ball and an inbound
                     event["effect"](game_stats, turnover_player, offensive_team)
                     play_by_play.append({
                         "event_id": len(play_by_play) + 1,
-                        "description": event["template"].format(player_A=self._get_colored_name(turnover_player, offensive_team))
+                        "description": event["template"].format(player_A=turnover_player)
                     })
                     possession = defensive_team
                     # Substitutions are allowed after this kind of turnover
@@ -826,15 +930,16 @@ class BasketballReportGenerator:
             elif event_type in ["block_on_2pt_shot", "block_on_3pt_shot"]:
                 shooter, blocker = action_player, random.choice(game_lineups[defensive_team]['active'])
                 event["effect"](game_stats, blocker, shooter, defensive_team, offensive_team)
-                play_by_play.append({"event_id": len(play_by_play) + 1, "description": event["template"].format(player_A=self._get_colored_name(blocker, defensive_team), player_B=self._get_colored_name(shooter, offensive_team))})
+                play_by_play.append({"event_id": len(play_by_play) + 1, "description": event["template"].format(player_A=blocker, player_B=shooter)})
                 rebound_type = random.choices(["offensive", "defensive"], weights=[0.2, 0.8])[0]
                 rebound_team = offensive_team if rebound_type == "offensive" else defensive_team
                 rebounder = random.choice(game_lineups[rebound_team]['active'])
                 rebound_event = self.event_templates[f"rebound_{rebound_type}"]
                 rebound_event["effect"](game_stats, rebounder, rebound_team)
-                play_by_play.append({"event_id": len(play_by_play) + 1, "description": rebound_event["template"].format(player_A=self._get_colored_name(rebounder, rebound_team))})
+                play_by_play.append({"event_id": len(play_by_play) + 1, "description": rebound_event["template"].format(player_A=rebounder)})
                 possession = rebound_team
-                player_with_ball = rebounder # --- FIX: Rebounder now has the ball
+                player_with_ball = rebounder # Rebounder now has the ball
+                ended_with_shot_attempt = True
 
             elif "shooting_foul" in event_type:
                 shooter, defender = action_player, random.choice(game_lineups[defensive_team]['active'])
@@ -842,24 +947,33 @@ class BasketballReportGenerator:
                 if not self._team_can_commit_fouls(defensive_team, game_lineups):
                      continue
                 event["effect"](game_stats, shooter, defender, offensive_team, defensive_team)
-                play_by_play.append({"event_id": len(play_by_play) + 1, "description": event["template"].format(player_A=self._get_colored_name(shooter, offensive_team), player_B=self._get_colored_name(defender, defensive_team))})
+                play_by_play.append({"event_id": len(play_by_play) + 1, "description": event["template"].format(player_A=shooter, player_B=defender)})
+                ended_with_shot_attempt = True  # shooting foul counts as a shot attempt
                 # Immediate foul-out check for the defender
                 self._check_and_handle_foul_out(defensive_team, defender, game_stats, game_lineups, play_by_play, game_participants)
+                # Count team foul for the defensive team
+                team_fouls_in_quarter[defensive_team] += 1
+                if self.DEBUG_TEAM_FOULS:
+                    play_by_play.append({
+                        "event_id": len(play_by_play) + 1,
+                        "description": f"Team fouls this quarter – {defensive_team}: {team_fouls_in_quarter[defensive_team]}/{self.TEAM_FOUL_LIMIT}."
+                    })
 
+                # Shooting fouls result in 2 or 3 free throws
                 num_shots = 3 if event_type == "shooting_foul_3pt" else 2
                 ordinals = ["first", "second", "third"]
                 for i in range(num_shots):
                     is_last_shot = (i + 1) == num_shots
                     if random.random() <= 0.5: # Made FT
                         self.event_templates['ft_made']['effect'](game_stats, shooter, offensive_team)
-                        desc = self.event_templates['ft_made']['template'].format(player_A=self._get_colored_name(shooter, offensive_team), shot_ordinal=ordinals[i])
+                        desc = self.event_templates['ft_made']['template'].format(player_A=shooter, shot_ordinal=ordinals[i])
                         play_by_play.append({"event_id": len(play_by_play) + 1, "description": desc})
                         if is_last_shot:
                             possession = defensive_team
-                            player_with_ball = None # --- FIX: Reset
+                            player_with_ball = None # Reset
                     else: # Missed FT
                         self.event_templates['ft_missed']['effect'](game_stats, shooter, offensive_team)
-                        desc = self.event_templates['ft_missed']['template'].format(player_A=self._get_colored_name(shooter, offensive_team), shot_ordinal=ordinals[i])
+                        desc = self.event_templates['ft_missed']['template'].format(player_A=shooter, shot_ordinal=ordinals[i])
                         play_by_play.append({"event_id": len(play_by_play) + 1, "description": desc})
                         if is_last_shot:
                             rebound_type = random.choices(["offensive", "defensive"], weights=[0.2, 0.8])[0]
@@ -867,9 +981,9 @@ class BasketballReportGenerator:
                             rebounder = random.choice(game_lineups[rebound_team]['active'])
                             rebound_event = self.event_templates[f"rebound_{rebound_type}"]
                             rebound_event["effect"](game_stats, rebounder, rebound_team)
-                            play_by_play.append({"event_id": len(play_by_play) + 1, "description": rebound_event["template"].format(player_A=self._get_colored_name(rebounder, rebound_team))})
+                            play_by_play.append({"event_id": len(play_by_play) + 1, "description": rebound_event["template"].format(player_A=rebounder)})
                             possession = rebound_team
-                            player_with_ball = rebounder # --- FIX: Rebounder has the ball
+                            player_with_ball = rebounder # Rebounder has the ball
                     
                     if not is_last_shot and allow_substitutions:
                         # Only the shooting team must keep the shooter on the floor
@@ -879,17 +993,106 @@ class BasketballReportGenerator:
                         self._handle_substitution(self.teams[defensive_team]['head_coach'], defensive_team,
                                                   game_lineups, play_by_play, game_participants,
                                                   sub_chance=difficulty_sub_chance)            
+            # --- Event Billing ---
+            # Count the generated events towards the quarter's target.
+            added_this_iter = len(play_by_play) - prev_len
+            if added_this_iter > 0:
+                can_bill = max(0, quarter_targets[quarter - 1] - billed_in_quarter)
+                bill_now = min(added_this_iter, can_bill)
+
+                # Q4 like the others: don't let Q4 hit its CAP unless THIS play ended with a shot attempt.
+                if quarter >= 4 and not ended_with_shot_attempt and billed_in_quarter + bill_now >= quarter_targets[quarter - 1]:
+                    # Hold back one unit so the loop stays alive until a shot attempt closes Q4
+                    bill_now = max(0, quarter_targets[quarter - 1] - billed_in_quarter - 1)
+
+                billed_in_quarter += bill_now
+                billed_total += bill_now
+
+
+            # --- Quarter Boundary Check ---
+            # Check if the quarter should end.
+            if quarter < 4 and ended_with_shot_attempt and billed_in_quarter >= quarter_targets[quarter - 1]:
+                play_by_play.append({"event_id": len(play_by_play) + 1, "description": f"End of Q{quarter}."})
+                quarter += 1
+                billed_in_quarter = 0  # Reset event counter for the new quarter
+                # Set possession for the start of the next quarter
+                possession = quarter_starters[quarter - 1]
+                player_with_ball = None  # Force an inbound pass
+                play_by_play.append({"event_id": len(play_by_play) + 1, "description": f"Start of Q{quarter}."})
+                # Reset team fouls for the new quarter
+                team_fouls_in_quarter[teamA_name] = 0
+                team_fouls_in_quarter[teamB_name] = 0
+                if self.DEBUG_TEAM_FOULS:
+                    play_by_play.append({"event_id": len(play_by_play) + 1, "description": "Team fouls reset for new quarter."})
+
+                last_score_event_details = None
+                continue
+
+            # --- Overtime trigger: simulate another “mini-quarter” (half length) starting with a jump ball ---
+            # If we exhausted the current target and the game is tied (after Q4 or any OT), extend budget for a new OT.
+            if billed_total >= target_events and quarter >= 4:
+                scoreA = game_stats[teamA_name]['stats']['score']
+                scoreB = game_stats[teamB_name]['stats']['score']
+                if scoreA == scoreB:
+                    next_ot = ot_num + 1
+                    if quarter == 4:
+                        # Close regulation and announce tie → OT1
+                        if not any(ev.get("description") == "End of Q4." for ev in play_by_play):
+                            play_by_play.append({"event_id": len(play_by_play) + 1, "description": "End of Q4."})
+                        play_by_play.append({
+                            "event_id": len(play_by_play) + 1,
+                            "description": f"Q4 ends in a tie. Going to OT{next_ot}."
+                            #"description": f"Q4 ends in a tie, {scoreA}-{scoreB}. Going to OT{next_ot}."
+                        })
+                    else:
+                        # Close previous OT and announce tie → next OT
+                        if ot_num > 0 and not any(ev.get("description") == f"End of OT{ot_num}." for ev in play_by_play):
+                            play_by_play.append({"event_id": len(play_by_play) + 1, "description": f"End of OT{ot_num}."})
+                        play_by_play.append({
+                            "event_id": len(play_by_play) + 1,
+                            "description": f"OT{ot_num} ends in a tie. Going to OT{next_ot}."
+                            #"description": f"OT{ot_num} ends in a tie, {scoreA}-{scoreB}. Going to OT{next_ot}."
+                        })                    
+                    # Create a new OT “period” with half a quarter’s cap (min 1)
+                    ot_num += 1
+                    ot_cap = max(1, quarter_targets[0] // 2)
+                    target_events += ot_cap
+                    quarter_targets.append(ot_cap)
+                    billed_in_quarter = 0
+                    # Reset team fouls for the new OT
+                    team_fouls_in_quarter[teamA_name] = 0
+                    team_fouls_in_quarter[teamB_name] = 0
+                    # OT jump ball → winner gets the ball (no inbound)
+                    jA = random.choice(game_lineups[teamA_name]['active'])
+                    jB = random.choice(game_lineups[teamB_name]['active'])
+                    win_team = random.choice([teamA_name, teamB_name])
+                    win_player = jA if win_team == teamA_name else jB
+                    play_by_play.append({"event_id": len(play_by_play) + 1,
+                                         "description": f"Overtime {ot_num} jump ball between {jA} and {jB}. {win_player} wins the tip."})
+                    play_by_play.append({"event_id": len(play_by_play) + 1,
+                                         "description": f"Start of OT{ot_num}."})
+                    quarter += 1
+                    possession = win_team
+                    player_with_ball = win_player
+                    # fall-through: next loop iterations generate OT plays
+
             last_score_event_details = None
 
-        # --- Add the End of Game event ---
+        # --- 5. Finalize Game ---
+        # Ensure the end of Q4 is logged if not already present.
+        if quarter == 4 and not any(ev.get("description") == "End of Q4." for ev in play_by_play):
+            play_by_play.append({"event_id": len(play_by_play) + 1, "description": "End of Q4."})
+        # If we had OT(s), close the last one
+        if ot_num > 0 and not any(ev.get("description") == f"End of OT{ot_num}." for ev in play_by_play):
+            play_by_play.append({"event_id": len(play_by_play) + 1, "description": f"End of OT{ot_num}."})
+        # Add the final end-of-game event.
         end_event = self.event_templates["end_of_game"]
         play_by_play.append({
             "event_id": len(play_by_play) + 1,
             "description": end_event["template"]
         })
 
-        #return play_by_play, game_stats
-        # --- Create a comprehensive game object to return ---
+        # --- 6. Compile and Return Game Summary ---
         game_summary = {
             "matchup": f"{teamA_name} vs {teamB_name}",
             "teams": {
@@ -915,34 +1118,39 @@ class BasketballReportGenerator:
         return game_summary
 
 # # --- MAIN EXECUTION ---
-# # --- with difficulty levels ---
 if __name__ == "__main__":
-    # Define the number of games to generate PER difficulty level
-    GAMES_PER_DIFFICULTY = 10 # Let's generate 10 of each (30 total)
+    # --- Configuration ---
+    # Define the number of games to generate per difficulty level.
+    GAMES_PER_DIFFICULTY = 10 # Generates 10 games for each level (30 total)
     DIFFICULTY_LEVELS = ["basic", "medium", "hard"]
     
+    # --- Initialization ---
     generator = BasketballReportGenerator()
     
+    # Dictionaries to hold all generated data, keyed by a unique game ID.
     all_examples_data = {}
     all_true_reports_data = {}
 
     print(f"--- Starting generation of {GAMES_PER_DIFFICULTY * len(DIFFICULTY_LEVELS)} total games ---")
 
-    # Loop through each difficulty level
+    # --- Data Generation Loop ---
+    # Loop through each difficulty level.
     for difficulty in DIFFICULTY_LEVELS:
         print(f"\n{'='*20} GENERATING LEVEL: {difficulty.upper()} {'='*20}")
         
-        # Loop to generate games for this difficulty
+        # Generate the specified number of games for the current difficulty.
         for i in range(GAMES_PER_DIFFICULTY):
             game_index = i + 1
-            # Create a unique key like "hard_game_1"
+            # Create a unique key like "hard_game_1".
             game_key = f"{difficulty}_game_{game_index}"
             print(f"Generating {game_key}...")
             
-            # Generate the game data with the specified difficulty
+            # Generate the game data.
             game_data = generator.generate_report(difficulty=difficulty)
             
-            # Construct the data for examples (without participants)
+            # --- Data Structuring ---
+            # 1. `examples.json`: Data for the model's input (play-by-play, rosters).
+            #    Participants are excluded as they are part of the ground truth.
             teams_no_participants = {
                 team: {k: v for k, v in team_data.items() if k != "participants"}
                 for team, team_data in game_data["teams"].items()
@@ -953,23 +1161,27 @@ if __name__ == "__main__":
                 "play_by_play": game_data["play_by_play"],
             }
             
-            # Construct the data for true_report
+            # 2. `true_report.json`: The ground truth data for evaluation.
+            #    Includes final stats and all participants.
             team_names = list(game_data["final_stats"].keys())
             score_A = game_data["final_stats"][team_names[0]]["stats"]["score"]
             score_B = game_data["final_stats"][team_names[1]]["stats"]["score"]
             true_report_data = {
                 "matchup": game_data["matchup"],
-                "difficulty": difficulty, # Add difficulty metadata
+                "difficulty": difficulty, # Add difficulty for metadata
                 "final_score": f"{team_names[0]}: {score_A}, {team_names[1]}: {score_B}",
                 "teams": game_data["teams"],
                 "final_stats": game_data["final_stats"]
             }
 
+            # Add the structured data to the main dictionaries.
             all_examples_data[game_key] = examples_data
             all_true_reports_data[game_key] = true_report_data
 
     print(f"\n--- Finished generating all games ---\n")
 
+    # --- File Output ---
+    # Save the generated data to JSON and JSONL files.
     if True: # Save JSONL with alternating lines: example, then true_report
         output_dir = "data"
         os.makedirs(output_dir, exist_ok=True)
@@ -984,7 +1196,7 @@ if __name__ == "__main__":
         except Exception as e:
             print(f"Error saving to {jsonl_path}: {e}")
 
-    if True: # Save the complete dictionaries to 2 JSON files
+    if True: # Save the complete dictionaries to 2 separate JSON files
         output_dir = "data"
         os.makedirs(output_dir, exist_ok=True)
         examples_path = os.path.join(output_dir, "examples.json")
