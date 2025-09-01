@@ -7,6 +7,7 @@
 # TODO: Need to add:
 # 1. Support for different types of fouls (not only shooting foul that results in free throws)
 # 2. Give the script of events to people and give them the same task.
+# 3. Think about switching from uniform random sampling to a different distribution (e.g., normal distribution) for certain events.
 
 import random
 import json
@@ -518,107 +519,196 @@ class BasketballReportGenerator:
                   teams and players.
         """
         # --- 1. Difficulty Level Configuration ---
+        """
+        -----------------------------------------------------------------------------
+        LLM Pitfalls (Observations) → Why (NLP theory) → How we exploit in difficulty
+        -----------------------------------------------------------------------------
+        General principles for this simulator
+        - Passes (that are not result in turnovers or shot attempts) are filler (don’t change stats) → more passes = easier; fewer passes = denser stat-bearing events.
+        - Miss/Block force the model to infer “a shot occurred” without an explicit “shoots” token (token-level cue reliance).
+        - Shooting-foul lines add explicit FT cues (can simplify), but useful to test FT-rule reasoning (2 vs. 3).
+        - VAR requires non-monotonic discourse updates (rollback) — hard for stepwise decoding.
+        - Substitutions change the active entity set — increase reference/identity tracking load.
+
+        Event-by-event rationale (weights shown as Basic / Medium / Hard)
+
+        1) turnover_by_bad_pass
+        Observation: Role/agency can be misattributed near steals/turnovers.
+        Why (theory): Predicate–argument ambiguity; local parsing under sparse cues.
+        How (weights): 4 / 3 / 2 — higher in Basic to inject some agent/patient ambiguity under discourse load; minimal in Hard to keep sequences clean.
+
+        2) steal
+        Observation: Steal may be credited to the wrong side when context flips quickly.
+        Why: Argument-role confusion; proximity bias.
+        How: 5 / 4 / 2 — elevated in Basic for attribution stress (with VAR/subs); toned down in Hard.
+
+        3) timeout
+        Observation: Excess meta-events can blur period boundaries. It is only a filler event and does not change any game stats.
+        Why: Discourse segmentation (RST); boundary under-weighting vs. action lines.
+        How: 2 / 2 / 1 — kept low across levels to preserve “end-on-shot” pacing.
+
+        4) Assisted 2PT family
+        (assist_and_score_2pt, _layup, _dunk, _jump, _step3 (TODO: need to take into account that "_step3" is a specific type of assisted 2PT shot))
+        Observation: “Pass → score” becomes a stereotyped script that’s easy to parse.
+        Why: Strong lexical/structural cues (assist frame); low need for inference.
+        How: 4,4,4,4,4 in Basic / 5,5,5,5,4 in Medium / 6,6,6,6,5 in Hard — i.e., fewer clean makes in Basic (easiest), most in Hard (harder).
+
+        5) Assisted 3PT family
+        (assist_and_score_3pt, _corner, _catch_and_shoot, _deep)
+        Observation: Same scripted ease as 2PT assisted, with even stronger cueing in corner/catch-and-shoot.
+        Why: Stereotype completion; salient lexical frames.
+        How: 3,3,3,2 (Basic) / 4,4,4,3 (Medium) / 5,5,5,4 (Hard) — escalate with ease.
+
+        6) miss_2pt_from_pass
+        Observation: Model sometimes fails to register that the shot didn't result in a score.
+        Why: Cue-word reliance; implicit event presupposition.
+        How: 10 / 9 / 8 — dominant in Basic to force structural shot recognition; relaxed toward Hard.
+
+        7) block_on_2pt_shot
+        Observation: Blocks can hide the attempt or flip rebound attribution.
+        Why: Polarity/symmetry; implicit shot cue.
+        How: 8 / 7 / 6 — high in Basic to push extraction + rebound logic; lower in Hard.
+
+        8) shooting_foul_2pt
+        Observation: FT logic (2 vs. 3; bonus interaction) can be over- or under-applied.
+        Why: Rule conflation; schema interference.
+        How: 8 / 6 / 5 — present across levels; more prominent in Basic to test rules under discourse churn.
+
+        9) miss_3pt_from_pass
+        Observation: Same “attempt without ‘shoots’ token” issue, plus 3PT rebound/possession swings.
+        Why: Cue reliance; long-range context resets after misses.
+        How: 9 / 8 / 7 — high in Basic; smoother in Hard.
+
+        10) block_on_3pt_shot
+        Observation: Similar to 2PT blocks, with longer rebounds/possession ambiguity.
+        Why: Polarity confusion; minimal local cues.
+        How: 8 / 6 / 5 — elevated stress in Basic; eased in Hard.
+
+        11) shooting_foul_3pt
+        Observation: FT-count errors (2 vs. 3) and bonus conflation.
+        Why: Competing frames/rules at decode time.
+        How: 7 / 5 / 4 — keep it meaningful in Basic/Medium; minimal in Hard for simplicity.
+
+        Why the profiles look this way:
+        - Basic (hardest overall here): many passes (normally easy) but coupled with high miss/block/foul + VAR + substitutions → dense inference + discourse/identity churn.
+        - Medium: fewer passes, no VAR/Subs → simpler discourse, still shot-heavy → balanced recognition focus.
+        - Hard (easiest): single-pass sequences, no VAR/Subs, many clean assisted makes → stereotyped, lexically guided narratives.
+        """
         # Set parameters based on the chosen difficulty level.
+        # EVENT_WEIGHTS order MUST match OFFENSIVE_EVENTS:
+        # [ turnover_by_bad_pass, steal, timeout,
+        #   assist_and_score_2pt, assist_and_score_2pt_layup, assist_and_score_2pt_dunk, assist_and_score_2pt_jump, assist_and_score_2pt_step3,
+        #   assist_and_score_3pt, assist_and_score_3pt_corner, assist_and_score_3pt_catch_and_shoot, assist_and_score_3pt_deep,
+        #   miss_2pt_from_pass, block_on_2pt_shot, shooting_foul_2pt,
+        #   miss_3pt_from_pass, block_on_3pt_shot, shooting_foul_3pt ]
         if difficulty == "basic":
-            target_events = 20
-            difficulty_max_passes = 1 # Max passes per possession
-            allow_substitutions = False
-            difficulty_sub_chance = 0.0  # No substitutions allowed
-            allow_var = False
-            difficulty_var_chance = 0.0  # No VAR checks allowed
-            # Basic: Maximize simple, single-player events. Minimize complex multi-player events.
-            # Goal: Create the easiest possible log for the LLM to parse.
-            EVENT_WEIGHTS = [
-                8,   # turnover_by_bad_pass
-                4,   # steal
-                5,   # timeout
-                # --- Successful_2pt_events ---
-                20,  # assist_and_score_2pt
-                15,  # assist_and_score_2pt_layup
-                15,  # assist_and_score_2pt_dunk
-                15,  # assist_and_score_2pt_jump
-                15,  # assist_and_score_2pt_step3
-                # --- Successful_3pt_events ---
-                15,  # assist_and_score_3pt
-                12,  # assist_and_score_3pt_corner
-                12,  # assist_and_score_3pt_catch_and_shoot
-                12,  # assist_and_score_3pt_deep
-                # --- Unsuccessful_2pt_events ---
-                6,   # miss_2pt_from_pass
-                4,   # block_on_2pt_shot
-                20,  # shooting_foul_2pt
-                # --- Unsuccessful_3pt_events ---
-                6,   # miss_3pt_from_pass
-                2,   # block_on_3pt_shot
-                20,   # shooting_foul_3pt
-            ]
-        elif difficulty == "medium":
-            target_events = 60
-            difficulty_max_passes = 5 # Max passes per possession
+            target_events = 500
+            difficulty_max_passes = 12 
             allow_substitutions = True
-            difficulty_sub_chance = 0.25  # 25% chance of substitution
-            allow_var = False
-            difficulty_var_chance = 0.0  # No VAR checks allowed
-            # Medium: Introduce multi-player complexity. More steals and blocks.
-            # Goal: Test the LLM's ability to handle attribution between two players from different teams.
-            EVENT_WEIGHTS = [
-                6,   # turnover_by_bad_pass
-                12,  # steal
-                10,  # timeout
-                # --- Successful_2pt_events ---
-                15,  # assist_and_score_2pt
-                12,  # assist_and_score_2pt_layup
-                12,  # assist_and_score_2pt_dunk
-                12,  # assist_and_score_2pt_jump
-                12,  # assist_and_score_2pt_step3
-                # --- Successful_3pt_events ---
-                10,  # assist_and_score_3pt
-                8,   # assist_and_score_3pt_corner
-                8,   # assist_and_score_3pt_catch_and_shoot
-                8,   # assist_and_score_3pt_deep
-                # --- Unsuccessful_2pt_events ---
-                6,   # miss_2pt_from_pass
-                8,   # block_on_2pt_shot
-                30,  # shooting_foul_2pt
-                # --- Unsuccessful_3pt_events ---
-                6,   # miss_3pt_from_pass
-                6,   # block_on_3pt_shot
-                30,  # shooting_foul_3pt
-            ]
-        else: # hard
-            target_events = 100
-            difficulty_max_passes = 7 # Max passes per possession
-            allow_substitutions = True
-            difficulty_sub_chance = 0.50  # 50% chance of substitution
+            difficulty_sub_chance = 0.75  # 75% chance to substitute players
             allow_var = True
-            difficulty_var_chance = 0.50  # 50% chance of VAR checks
-            # Hard: Maximize multi-step sequences. High rate of fouls, which trigger FTs/subs/rebounds.
-            # Goal: Test the LLM's ability to maintain state through long, complex event chains.
+            difficulty_var_chance = 0  # No VAR
             EVENT_WEIGHTS = [
-                1,   # turnover_by_bad_pass
-                13,  # steal
-                15,  # timeout
-                # --- Successful_2pt_events ---
-                15,  # assist_and_score_2pt
-                12,  # assist_and_score_2pt_layup
-                12,  # assist_and_score_2pt_dunk
-                12,  # assist_and_score_2pt_jump
-                12,  # assist_and_score_2pt_step3
-                # --- Successful_3pt_events ---
-                10,  # assist_and_score_3pt
-                12,  # assist_and_score_3pt_corner
-                12,  # assist_and_score_3pt_catch_and_shoot
-                12,  # assist_and_score_3pt_deep
-                # --- Unsuccessful_2pt_events ---
-                1,   # miss_2pt_from_pass
-                14,  # block_on_2pt_shot
-                40,  # shooting_foul_2pt
-                # --- Unsuccessful_3pt_events ---
-                1,   # miss_3pt_from_pass
-                10,  # block_on_3pt_shot
-                40,  # shooting_foul_3pt
+                4,  # turnover_by_bad_pass
+                5,  # steal
+                2,  # timeout
+
+                # Successful 2PT
+                4,  # assist_and_score_2pt
+                4,  # assist_and_score_2pt_layup
+                4,  # assist_and_score_2pt_dunk
+                4,  # assist_and_score_2pt_jump
+                4,  # assist_and_score_2pt_step3
+
+                # Successful 3PT
+                3,  # assist_and_score_3pt
+                3,  # assist_and_score_3pt_corner
+                3,  # assist_and_score_3pt_catch_and_shoot
+                2,  # assist_and_score_3pt_deep
+
+                # Unsuccessful 2PT
+                10, # miss_2pt_from_pass
+                8,  # block_on_2pt_shot
+                8,  # shooting_foul_2pt
+
+                # Unsuccessful 3PT
+                9,  # miss_3pt_from_pass
+                8,  # block_on_3pt_shot
+                7,  # shooting_foul_3pt
             ]
-        
+
+        elif difficulty == "medium":
+            target_events = 600
+            difficulty_max_passes = 3
+            allow_substitutions = False
+            difficulty_sub_chance = 0.25 # 25% chance to substitute players
+            allow_var = False
+            difficulty_var_chance = 0.25 # 25% chance to use VAR
+            EVENT_WEIGHTS = [
+                3,  # turnover_by_bad_pass
+                4,  # steal
+                2,  # timeout
+
+                # Successful 2PT
+                5,  # assist_and_score_2pt
+                5,  # assist_and_score_2pt_layup
+                5,  # assist_and_score_2pt_dunk
+                5,  # assist_and_score_2pt_jump
+                4,  # assist_and_score_2pt_step3
+
+                # Successful 3PT
+                4,  # assist_and_score_3pt
+                4,  # assist_and_score_3pt_corner
+                4,  # assist_and_score_3pt_catch_and_shoot
+                3,  # assist_and_score_3pt_deep
+
+                # Unsuccessful 2PT
+                9,  # miss_2pt_from_pass
+                7,  # block_on_2pt_shot
+                6,  # shooting_foul_2pt
+
+                # Unsuccessful 3PT
+                8,  # miss_3pt_from_pass
+                6,  # block_on_3pt_shot
+                5,  # shooting_foul_3pt
+            ]
+
+        else:  # hard
+            target_events = 700
+            difficulty_max_passes = 1
+            allow_substitutions = False
+            difficulty_sub_chance = 0.10  # 10% chance to substitute players
+            allow_var = False
+            difficulty_var_chance = 0.75  # 75% chance to use VAR
+            EVENT_WEIGHTS = [
+                2,  # turnover_by_bad_pass
+                2,  # steal
+                1,  # timeout
+
+                # Successful 2PT
+                6,  # assist_and_score_2pt
+                6,  # assist_and_score_2pt_layup
+                6,  # assist_and_score_2pt_dunk
+                6,  # assist_and_score_2pt_jump
+                5,  # assist_and_score_2pt_step3
+
+                # Successful 3PT
+                5,  # assist_and_score_3pt
+                5,  # assist_and_score_3pt_corner
+                5,  # assist_and_score_3pt_catch_and_shoot
+                4,  # assist_and_score_3pt_deep
+
+                # Unsuccessful 2PT
+                8,  # miss_2pt_from_pass
+                6,  # block_on_2pt_shot
+                5,  # shooting_foul_2pt
+
+                # Unsuccessful 3PT
+                7,  # miss_3pt_from_pass
+                5,  # block_on_3pt_shot
+                4,  # shooting_foul_3pt
+            ]
+
         # --- 2. Game Setup ---
         # Randomly select two teams to play
         team_names = random.sample(list(self.teams.keys()), 2)

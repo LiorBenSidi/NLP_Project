@@ -22,12 +22,12 @@ EVAL_TYPES = ["field", "fractional_per_block"]
 
 # --- Gemini ---
 #MODEL_TO_TEST = "gemini/gemini-1.5-flash"
-MODEL_TO_TEST = "gemini/gemini-1.5-pro"
+#MODEL_TO_TEST = "gemini/gemini-1.5-pro"
 #MODEL_TO_TEST = "gemini/gemini-2.0-flash-lite"
 #MODEL_TO_TEST = "gemini/gemini-2.0-flash"
 #MODEL_TO_TEST = "gemini/gemini-2.5-flash-lite"
 #MODEL_TO_TEST = "gemini/gemini-2.5-flash"
-#MODEL_TO_TEST = "gemini/gemini-2.5-pro"
+MODEL_TO_TEST = "gemini/gemini-2.5-pro"
 
 # --- OpenAI --- already paid 10$
 #MODEL_TO_TEST = "gpt-4o-nano"
@@ -522,7 +522,7 @@ if __name__ == "__main__":
             for attempt in range(max_retries):
                 messages = construct_litellm_messages(game_narrative_data)
                 raw_response_str = get_litellm_response(MODEL_TO_TEST, messages)
-                time.sleep(15) # Proactively avoid rate limiting
+                time.sleep(60) # Proactively avoid rate limiting
                 
                 if not raw_response_str:
                     print(f"--- ERROR on attempt {attempt + 1}: No response from API. Retrying... ---")
