@@ -8,6 +8,7 @@
 # 1. Support for different types of fouls (not only shooting foul that results in free throws)
 # 2. Give the script of events to people and give them the same task.
 # 3. Think about switching from uniform random sampling to a different distribution (e.g., normal distribution) for certain events.
+# 4. ליצור מהלכים זהים, כשסדר השחקנים באיך שהוא רשום באירוע הפוך (למשל חוסם לפני זורק, וגם זורק לפני חוסם)
 
 import random
 import json
@@ -45,34 +46,42 @@ class BasketballReportGenerator:
 
         # --- Team and Player Data ---
         # Head coaches for each team
-        self.Maccabi_Tel_Aviv_head_coach = "Oded Kattash"
-        self.Hapoel_Tel_Aviv_head_coach = "Dimitrios Itoudis"
-        self.Hapoel_Jerusalem_head_coach = "Yonatan Alon"
-        self.DDS_Dream_Team_head_coach = "Sagi Dvir"
+        self.Israel_head_coach = "Ariel Beit-Halahmy"
+        self.Iceland_head_coach = "Craig Pedersen"
+        self.Poland_head_coach = "Igor Milicic"
+        self.France_head_coach = "Frederic Fauthoux"
+        self.Belgium_head_coach = "Dario Gjergja"
+        self.Slovenia_head_coach = "Aleksander Sekulic"
 
         # Player rosters for each team
-        self.Maccabi_Tel_Aviv_players = ["Tal Brody", "Miki Berkovich", "Motti Aroesti", "Doron Jamchi", "Derrick Sharp",
-                                         "Anthony Parker", "David Blu", "Guy Pnini", "Omri Casspi", "Lior Eliyahu"]
-        #self.Maccabi_Tel_Aviv_players = ["MACCABI_TLV-" + player for player in self.Maccabi_Tel_Aviv_players]
-        self.Hapoel_Tel_Aviv_players = ["Raviv Limonad", "Matan Naor", "Tamir Blatt", "Tomer Ginat", "Nate Robinson",
-                                        "Bar Timor", "Yaniv Green", "Patrick Beverley", "Meir Tapiro", "Yam Madar"]
-        #self.Hapoel_Tel_Aviv_players = ["HAPOEL_TLV-" + player for player in self.Hapoel_Tel_Aviv_players]
-        self.Hapoel_Jerusalem_players = ["Yotam Halperin", "Alex Tyus", "Amar'e Stoudemire", "Will Solomon", "Adi Gordon",
-                                         "Itay Segev", "Nimrod Levi", "Yovel Zoosman", "Adam Ariel", "Rafi Menco"]
-        #self.Hapoel_Jerusalem_players = ["HAPOEL_JER-" + player for player in self.Hapoel_Jerusalem_players]
-        self.DDS_Dream_Team_players = ["Sagi Dvir", "Lior Ben Sidi", "Nir Chauser", "Shahaf Wieder", "Barak Sharon",
-                                       "Gal Ofir", "Yarin Katan", "Alon Krichely", "Ido Avital", "Ofek Bernstein"]
-        #self.DDS_Dream_Team_players = ["DDS-" + player for player in self.DDS_Dream_Team_players]
+        self.Israel_players = ["Khadeen Carrington", "Itay Segev", "Deni Avdija", "Roman Sorkin", "Bar Timor", "Yam Madar", 
+                               "Rafi Menco", "Nimrod Levi", "Ethan Burg", "Tomer Ginat", "Yovel Zoosman", "Guy Palatin"]
+        self.Iceland_players = ["Aegir Steinarsson", "Hilmar Henningsson", "Jon Axel Gudmundsson", "Elvar Fridriksson", "Almar Orri Atlason", "Karl Jonsson", 
+                                "Kristinn Palsson", "Martin Hermannsson", "Orri Gunnarsson", "Tryggvi Hlinason", "Styrmir Thrastarson", "Sigtryggur Bjornsson"]
+        self.Poland_players = ["Andrzej Pluta", "Aleksander Balcerowski", "Michal Sokolowski", "Jordan Loyd", "Mateusz Ponitka", "Szymon Zapala",
+                               "Aleksander Dziewa", "Tomasz Gielo", "Kamil Laczynski", "Dominik Olejniczak", "Michal Michalak", "Przemyslaw Zolnierewicz"]
+        self.France_players = ["Sylvain Francisco", "Elie Okobo", "Nadir Hifi", "Timothe Luwawu-Cabarrot", "Guerschon Yabusele", "Isaia Cordinier",
+                               "Theo Maledon", "Mouhammadou Jaiteh", "Zaccharie Risacher", "Jaylen Hoard", "Alexandre Sarr", "Bilal Coulibaly"]
+        self.Belgium_players = ["Emmanuel Lecomte", "Jean-Marc Mwema", "Hans Vanwijn", "Loic Schwartz", "Kevin Tumba", "Ismael Bako", 
+                                "Andy van Vliet", "Siebe Ledegen", "Niels Van Den Eynde", "Joppe Mennes", "Godwin Tshimanga", "Mamadou Guisse"]
+        self.Slovenia_players = ["Martin Krampelj", "Mark Padjen", "Aleksej Nikolic", "Klemen Prepelic", "Edo Muric", "Rok Radovic", 
+                                 "Robert Jurkovic", "Gregor Hrovat", "Luka Scuka", "Alen Omic", "Leon Stergar", "Luka Doncic"]
 
         # Master dictionary of all teams
-        self.teams = {"Maccabi Tel Aviv": {"head_coach": self.Maccabi_Tel_Aviv_head_coach,
-                                            "players": self.Maccabi_Tel_Aviv_players},
-                      "Hapoel Tel Aviv": {"head_coach": self.Hapoel_Tel_Aviv_head_coach,
-                                            "players": self.Hapoel_Tel_Aviv_players},
-                      "Hapoel Jerusalem": {"head_coach": self.Hapoel_Jerusalem_head_coach,
-                                            "players": self.Hapoel_Jerusalem_players},
-                      "DDS Dream Team": {"head_coach": self.DDS_Dream_Team_head_coach,
-                                        "players": self.DDS_Dream_Team_players}}
+        self.teams = {
+            "Israel": {"head_coach": self.Israel_head_coach,
+                       "players": self.Israel_players},
+            "Iceland": {"head_coach": self.Iceland_head_coach,
+                        "players": self.Iceland_players},
+            "Poland": {"head_coach": self.Poland_head_coach,
+                       "players": self.Poland_players},
+            "France": {"head_coach": self.France_head_coach,
+                       "players": self.France_players},
+            "Belgium": {"head_coach": self.Belgium_head_coach,
+                        "players": self.Belgium_players},
+            "Slovenia": {"head_coach": self.Slovenia_head_coach,
+                         "players": self.Slovenia_players},
+        }
 
         # --- Event Templates ---
         # Each event has a text template and an 'effect' lambda function to update game stats.
@@ -90,8 +99,32 @@ class BasketballReportGenerator:
                     })
                 )
             },
+            "assist_and_score_2pt_opposite": {
+                "template": "{player_B} gets a sharp pass from {player_A}, and finishes with a mid-range jump shot.",
+                "effect": lambda state, pA, pB, team: (
+                    state[team]['stats'].update({'score': state[team]['stats']['score'] + 2, 'assists': state[team]['stats']['assists'] + 1}),
+                    state[team]['players'][pA].update({'assists': state[team]['players'][pA]['assists'] + 1}),
+                    state[team]['players'][pB].update({
+                        'points': state[team]['players'][pB]['points'] + 2,
+                        '2pt_shots_made': state[team]['players'][pB]['2pt_shots_made'] + 1,
+                        '2pt_shots_attempted': state[team]['players'][pB]['2pt_shots_attempted'] + 1,
+                    })
+                )
+            },
             "assist_and_score_3pt": {
                 "template": "{player_A} finds {player_B} open on the perimeter for a successful 3-point shot.",
+                "effect": lambda state, pA, pB, team: (
+                    state[team]['stats'].update({'score': state[team]['stats']['score'] + 3, 'assists': state[team]['stats']['assists'] + 1}),
+                    state[team]['players'][pA].update({'assists': state[team]['players'][pA]['assists'] + 1}),
+                    state[team]['players'][pB].update({
+                        'points': state[team]['players'][pB]['points'] + 3,
+                        '3pt_shots_made': state[team]['players'][pB]['3pt_shots_made'] + 1,
+                        '3pt_shots_attempted': state[team]['players'][pB]['3pt_shots_attempted'] + 1,
+                    })
+                )
+            },
+            "assist_and_score_3pt_opposite": {
+                "template": "{player_B} gets a pass from {player_A}, and makes a successful 3-point shot.",
                 "effect": lambda state, pA, pB, team: (
                     state[team]['stats'].update({'score': state[team]['stats']['score'] + 3, 'assists': state[team]['stats']['assists'] + 1}),
                     state[team]['players'][pA].update({'assists': state[team]['players'][pA]['assists'] + 1}),
@@ -141,7 +174,7 @@ class BasketballReportGenerator:
                 )
             },
             "assist_and_score_2pt_step3": {
-                "template": "{player_A} passes to {player_B}, who attempted a 3-pointer but stepped on the line — counts as a 2-point made.",
+                "template": "{player_A} passes to {player_B}, who attempted a 3-pointer and made it, but stepped on the 3-point line.",
                 "effect": lambda state, pA, pB, team: (
                     state[team]['stats'].update({'score': state[team]['stats']['score'] + 2, 'assists': state[team]['stats']['assists'] + 1}),
                     state[team]['players'][pA].update({'assists': state[team]['players'][pA]['assists'] + 1}),
@@ -245,7 +278,7 @@ class BasketballReportGenerator:
                 )
             },
             "var_overturn_3pt": {
-                "template": "The referees go to the monitor. After review, the 3-point shot by {player_B} is waved off due to a shot clock violation.",
+                "template": "The referees go to the monitor. After VAR review, the 3-point shot by {player_B} is waved off due to a shot clock violation.",
                 "effect": lambda state, pA, pB, team: (
                      # 1. Update Team Stats: reverse score/assist, add turnover
                     state[team]['stats'].update({
@@ -264,6 +297,67 @@ class BasketballReportGenerator:
                         '3pt_shots_attempted': state[team]['players'][pB]['3pt_shots_attempted'] - 1,
                         'turnovers': state[team]['players'][pB]['turnovers'] + 1
                     })
+                )
+            },
+            "var_overturn_3pt_another": {
+                "template": "VAR review: the shot by {player_B} was released after the buzzer. The 3-point basket does not count.",
+                # Params: pA = passer on the made basket, pB = shooter, team = shooter's team
+                "effect": lambda state, pA, pB, team: (
+                    # Team: remove the 3 points and the assist; add a turnover to the offense (late release)
+                    state[team]['stats'].update({
+                        'score': state[team]['stats']['score'] - 3,
+                        'assists': state[team]['stats']['assists'] - 1,
+                        'turnovers': state[team]['stats']['turnovers'] + 1
+                    }),
+                    # Passer: remove the assist
+                    state[team]['players'][pA].update({
+                        'assists': state[team]['players'][pA]['assists'] - 1
+                    }),
+                    # Shooter: remove the 3PT make/attempt; credit a turnover for the violation
+                    state[team]['players'][pB].update({
+                        'points': state[team]['players'][pB]['points'] - 3,
+                        '3pt_shots_made': state[team]['players'][pB]['3pt_shots_made'] - 1,
+                        '3pt_shots_attempted': state[team]['players'][pB]['3pt_shots_attempted'] - 1,
+                        'turnovers': state[team]['players'][pB]['turnovers'] + 1
+                    })
+                )
+            },
+            "var_change_2_to_3": {
+                "template": "After a VAR review, {player_B}'s basket is upgraded from two to three points (foot was behind the arc).",
+                # Params: pA = passer on the made basket, pB = shooter, team = shooter's team
+                "effect": lambda state, pA, pB, team: (
+                    # Team: +1 point (2→3), assist unchanged
+                    state[team]['stats'].update({
+                        'score': state[team]['stats']['score'] + 1
+                    }),
+                    # Shooter: convert a recorded 2PT make to a 3PT make
+                    state[team]['players'][pB].update({
+                        'points': state[team]['players'][pB]['points'] + 1,
+                        '2pt_shots_made': state[team]['players'][pB]['2pt_shots_made'] - 1,
+                        '2pt_shots_attempted': state[team]['players'][pB]['2pt_shots_attempted'] - 1,
+                        '3pt_shots_made': state[team]['players'][pB]['3pt_shots_made'] + 1,
+                        '3pt_shots_attempted': state[team]['players'][pB]['3pt_shots_attempted'] + 1
+                    })
+                    # Note: passer assist stays as-is
+                )
+            },
+            "var_change_3_to_2": {
+                "template": "After a VAR review, {player_B}'s basket is downgraded from three to two points (toe on the line).",
+                # Params: pA = passer on the made basket, pB = shooter, team = shooter's team
+                "effect": lambda state, pA, pB, team: (
+                    # Team: -1 point (3→2), assist unchanged
+                    state[team]['stats'].update({
+                        'score': state[team]['stats']['score'] - 1
+                    }),
+                    # Shooter: convert a recorded 3PT make to a 2PT make
+                    state[team]['players'][pB].update({
+                        'points': state[team]['players'][pB]['points'] - 1,
+                        '3pt_shots_made': state[team]['players'][pB]['3pt_shots_made'] - 1,
+                        '3pt_shots_attempted': state[team]['players'][pB]['3pt_shots_attempted'] - 1,
+                        '2pt_shots_made': state[team]['players'][pB]['2pt_shots_made'] + 1,
+                        '2pt_shots_attempted': state[team]['players'][pB]['2pt_shots_attempted'] + 1
+                    })
+                    # Note: passer assist stays as-is
                 )
             },
 
@@ -548,13 +642,13 @@ class BasketballReportGenerator:
         How: 2 / 2 / 1 — kept low across levels to preserve “end-on-shot” pacing.
 
         4) Assisted 2PT family
-        (assist_and_score_2pt, _layup, _dunk, _jump, _step3 (TODO: need to take into account that "_step3" is a specific type of assisted 2PT shot))
+        (assist_and_score_2pt, _opposite, _layup, _dunk, _jump, _step3 (TODO: need to take into account that "_step3" is a specific type of assisted 2PT shot))
         Observation: “Pass → score” becomes a stereotyped script that’s easy to parse.
         Why: Strong lexical/structural cues (assist frame); low need for inference.
         How: 4,4,4,4,4 in Basic / 5,5,5,5,4 in Medium / 6,6,6,6,5 in Hard — i.e., fewer clean makes in Basic (easiest), most in Hard (harder).
 
         5) Assisted 3PT family
-        (assist_and_score_3pt, _corner, _catch_and_shoot, _deep)
+        (assist_and_score_3pt, _opposite, _corner, _catch_and_shoot, _deep)
         Observation: Same scripted ease as 2PT assisted, with even stronger cueing in corner/catch-and-shoot.
         Why: Stereotype completion; salient lexical frames.
         How: 3,3,3,2 (Basic) / 4,4,4,3 (Medium) / 5,5,5,4 (Hard) — escalate with ease.
@@ -597,8 +691,8 @@ class BasketballReportGenerator:
         # Set parameters based on the chosen difficulty level.
         # EVENT_WEIGHTS order MUST match OFFENSIVE_EVENTS:
         # [ turnover_by_bad_pass, steal, timeout,
-        #   assist_and_score_2pt, assist_and_score_2pt_layup, assist_and_score_2pt_dunk, assist_and_score_2pt_jump, assist_and_score_2pt_step3,
-        #   assist_and_score_3pt, assist_and_score_3pt_corner, assist_and_score_3pt_catch_and_shoot, assist_and_score_3pt_deep,
+        #   assist_and_score_2pt, assist_and_score_2pt_opposite, assist_and_score_2pt_layup, assist_and_score_2pt_dunk, assist_and_score_2pt_jump, assist_and_score_2pt_step3,
+        #   assist_and_score_3pt, assist_and_score_3pt_opposite, assist_and_score_3pt_corner, assist_and_score_3pt_catch_and_shoot, assist_and_score_3pt_deep,
         #   miss_2pt_from_pass, block_on_2pt_shot, shooting_foul_2pt,
         #   miss_3pt_from_pass, block_on_3pt_shot, shooting_foul_3pt ]
         if difficulty == "basic":
@@ -615,6 +709,7 @@ class BasketballReportGenerator:
 
                 # Successful 2PT
                 4,  # assist_and_score_2pt
+                0,  # assist_and_score_2pt_opposite
                 4,  # assist_and_score_2pt_layup
                 4,  # assist_and_score_2pt_dunk
                 4,  # assist_and_score_2pt_jump
@@ -622,6 +717,7 @@ class BasketballReportGenerator:
 
                 # Successful 3PT
                 3,  # assist_and_score_3pt
+                0,  # assist_and_score_3pt_opposite
                 3,  # assist_and_score_3pt_corner
                 3,  # assist_and_score_3pt_catch_and_shoot
                 2,  # assist_and_score_3pt_deep
@@ -651,6 +747,7 @@ class BasketballReportGenerator:
 
                 # Successful 2PT
                 5,  # assist_and_score_2pt
+                3,  # assist_and_score_2pt_opposite
                 5,  # assist_and_score_2pt_layup
                 5,  # assist_and_score_2pt_dunk
                 5,  # assist_and_score_2pt_jump
@@ -658,6 +755,7 @@ class BasketballReportGenerator:
 
                 # Successful 3PT
                 4,  # assist_and_score_3pt
+                2,  # assist_and_score_3pt_opposite
                 4,  # assist_and_score_3pt_corner
                 4,  # assist_and_score_3pt_catch_and_shoot
                 3,  # assist_and_score_3pt_deep
@@ -687,6 +785,7 @@ class BasketballReportGenerator:
 
                 # Successful 2PT
                 6,  # assist_and_score_2pt
+                6,  # assist_and_score_2pt_opposite
                 6,  # assist_and_score_2pt_layup
                 6,  # assist_and_score_2pt_dunk
                 6,  # assist_and_score_2pt_jump
@@ -694,6 +793,7 @@ class BasketballReportGenerator:
 
                 # Successful 3PT
                 5,  # assist_and_score_3pt
+                5,  # assist_and_score_3pt_opposite
                 5,  # assist_and_score_3pt_corner
                 5,  # assist_and_score_3pt_catch_and_shoot
                 4,  # assist_and_score_3pt_deep
@@ -774,11 +874,11 @@ class BasketballReportGenerator:
 
         # --- Event Categories for easier selection ---
         Successful_2pt_events = [
-            "assist_and_score_2pt", "assist_and_score_2pt_layup", "assist_and_score_2pt_dunk", "assist_and_score_2pt_jump", "assist_and_score_2pt_step3",
+            "assist_and_score_2pt", "assist_and_score_2pt_opposite", "assist_and_score_2pt_layup", "assist_and_score_2pt_dunk", "assist_and_score_2pt_jump", "assist_and_score_2pt_step3",
         ]
 
         Successful_3pt_events = [
-            "assist_and_score_3pt", "assist_and_score_3pt_corner", "assist_and_score_3pt_catch_and_shoot", "assist_and_score_3pt_deep"
+            "assist_and_score_3pt", "assist_and_score_3pt_opposite", "assist_and_score_3pt_corner", "assist_and_score_3pt_catch_and_shoot", "assist_and_score_3pt_deep"
         ]
 
         unsuccessful_2pt_events = [
@@ -874,12 +974,14 @@ class BasketballReportGenerator:
                 if allow_var and random.random() < difficulty_var_chance: # Check for VAR
                     last_type = last_score_event_details['type']
                     if last_type in Successful_2pt_events:
-                        var_event_type = "var_overturn_2pt"
-                    else: # last_type in Successful_3pt_events
-                        var_event_type = "var_overturn_3pt"
+                        var_candidates = ["var_overturn_2pt", "var_change_2_to_3"]
+                    else:  # last_type in Successful_3pt_events
+                        var_candidates = ["var_overturn_3pt", "var_overturn_3pt_another", "var_change_3_to_2"]
+                    var_event_type = random.choice(var_candidates)
                     pA_v, pB_v, team_v = last_score_event_details['pA'], last_score_event_details['pB'], last_score_event_details['team']
-                    # Only skip if the VAR would assign an OFFENSIVE FOUL to a team with no bench players
-                    if not (var_event_type == "var_overturn_2pt" and not self._team_can_commit_fouls(team_v, game_lineups)):
+                    # Only skip if this VAR would assign an OFFENSIVE FOUL and the team cannot commit fouls (no bench)
+                    offensive_foul_var = {"var_overturn_2pt"}
+                    if not (var_event_type in offensive_foul_var and not self._team_can_commit_fouls(team_v, game_lineups)):
                         var_event = self.event_templates[var_event_type]
                         var_event["effect"](game_stats, pA_v, pB_v, team_v)
                         # Identify the fouled defender (victim) on the opposing team
@@ -893,8 +995,8 @@ class BasketballReportGenerator:
                                 player_C=victim
                             )
                         })
-                        # If VAR overturned due to an offensive foul, check for foul-out
-                        if var_event_type == "var_overturn_2pt":
+                        # If VAR created an offensive foul, check foul-out and bonus
+                        if var_event_type in offensive_foul_var:
                             self._check_and_handle_foul_out(team_v, pB_v, game_stats, game_lineups, play_by_play, game_participants)
                             # Count team foul for the offensive team
                             team_fouls_in_quarter[team_v] += 1
@@ -1211,7 +1313,7 @@ class BasketballReportGenerator:
 if __name__ == "__main__":
     # --- Configuration ---
     # Define the number of games to generate per difficulty level.
-    GAMES_PER_DIFFICULTY = 10 # Generates 10 games for each level (30 total)
+    GAMES_PER_DIFFICULTY = 50 # Generates 50 games for each level (150 total)
     DIFFICULTY_LEVELS = ["basic", "medium", "hard"]
     
     # --- Initialization ---

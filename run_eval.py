@@ -11,6 +11,7 @@ import os
 import litellm
 import time
 from evaluation import evaluate_reports
+import statistics as stats
 from dotenv import load_dotenv
 load_dotenv(override=True)
 
@@ -87,15 +88,15 @@ Your final output must follow this exact structure. Do not add, remove, or renam
     "teams": {
         "TeamNameA": {
             "coach": "CoachNameA",
-            "roster": ["PlayerName1-A", "PlayerName2-A", "PlayerName3-A", "PlayerName4-A", "PlayerName5-A"],
+            "roster": ["PlayerName1-A", "PlayerName2-A", "PlayerName3-A", "PlayerName4-A", "PlayerName5-A", "PlayerName6-A", "PlayerName7-A", "PlayerName8-A", "PlayerName9-A", "PlayerName10-A", "PlayerName11-A", "PlayerName12-A"],
             "starting_lineup": ["PlayerName1-A", "PlayerName2-A", "PlayerName3-A", "PlayerName4-A", "PlayerName5-A"],
-            "bench": ["PlayerName6-A", "PlayerName7-A", "PlayerName8-A", "PlayerName9-A", "PlayerName10-A"]
+            "bench": ["PlayerName6-A", "PlayerName7-A", "PlayerName8-A", "PlayerName9-A", "PlayerName10-A", "PlayerName11-A", "PlayerName12-A"]
         },
         "TeamNameB": {
             "coach": "CoachNameB",
-            "roster": ["PlayerName1-B", "PlayerName2-B", "PlayerName3-B", "PlayerName4-B", "PlayerName5-B"],
+            "roster": ["PlayerName1-B", "PlayerName2-B", "PlayerName3-B", "PlayerName4-B", "PlayerName5-B", "PlayerName6-B", "PlayerName7-B", "PlayerName8-B", "PlayerName9-B", "PlayerName10-B", "PlayerName11-B", "PlayerName12-B"],
             "starting_lineup": ["PlayerName1-B", "PlayerName2-B", "PlayerName3-B", "PlayerName4-B", "PlayerName5-B"],
-            "bench": ["PlayerName6-B", "PlayerName7-B", "PlayerName8-B", "PlayerName9-B", "PlayerName10-B"]
+            "bench": ["PlayerName6-B", "PlayerName7-B", "PlayerName8-B", "PlayerName9-B", "PlayerName10-B", "PlayerName11-B", "PlayerName12-B"]
         }
     },
     "final_stats": {
@@ -133,6 +134,12 @@ Your final output must follow this exact structure. Do not add, remove, or renam
                 },
                 "PlayerName10-A": {
                     "points": 0, "assists": 0, "rebounds": 0, "fouls": 0, "steals": 0, "blocks": 0, "turnovers": 0, "2pt_shots_made": 0, "2pt_shots_attempted": 0, "3pt_shots_made": 0, "3pt_shots_attempted": 0, "ft_made": 0, "ft_attempted": 0
+                },
+                "PlayerName11-A": {
+                    "points": 0, "assists": 0, "rebounds": 0, "fouls": 0, "steals": 0, "blocks": 0, "turnovers": 0, "2pt_shots_made": 0, "2pt_shots_attempted": 0, "3pt_shots_made": 0, "3pt_shots_attempted": 0, "ft_made": 0, "ft_attempted": 0
+                },
+                "PlayerName12-A": {
+                    "points": 0, "assists": 0, "rebounds": 0, "fouls": 0, "steals": 0, "blocks": 0, "turnovers": 0, "2pt_shots_made": 0, "2pt_shots_attempted": 0, "3pt_shots_made": 0, "3pt_shots_attempted": 0, "ft_made": 0, "ft_attempted": 0
                 }
             }
         },
@@ -169,6 +176,12 @@ Your final output must follow this exact structure. Do not add, remove, or renam
                     "points": 0, "assists": 0, "rebounds": 0, "fouls": 0, "steals": 0, "blocks": 0, "turnovers": 0, "2pt_shots_made": 0, "2pt_shots_attempted": 0, "3pt_shots_made": 0, "3pt_shots_attempted": 0, "ft_made": 0, "ft_attempted": 0
                 },
                 "PlayerName10-B": {
+                    "points": 0, "assists": 0, "rebounds": 0, "fouls": 0, "steals": 0, "blocks": 0, "turnovers": 0, "2pt_shots_made": 0, "2pt_shots_attempted": 0, "3pt_shots_made": 0, "3pt_shots_attempted": 0, "ft_made": 0, "ft_attempted": 0
+                },
+                "PlayerName11-B": {
+                    "points": 0, "assists": 0, "rebounds": 0, "fouls": 0, "steals": 0, "blocks": 0, "turnovers": 0, "2pt_shots_made": 0, "2pt_shots_attempted": 0, "3pt_shots_made": 0, "3pt_shots_attempted": 0, "ft_made": 0, "ft_attempted": 0
+                },
+                "PlayerName12-B": {
                     "points": 0, "assists": 0, "rebounds": 0, "fouls": 0, "steals": 0, "blocks": 0, "turnovers": 0, "2pt_shots_made": 0, "2pt_shots_attempted": 0, "3pt_shots_made": 0, "3pt_shots_attempted": 0, "ft_made": 0, "ft_attempted": 0
                 }
             }
@@ -522,7 +535,10 @@ if __name__ == "__main__":
             for attempt in range(max_retries):
                 messages = construct_litellm_messages(game_narrative_data)
                 raw_response_str = get_litellm_response(MODEL_TO_TEST, messages)
-                time.sleep(60) # Proactively avoid rate limiting
+                minutes = 5
+                time_after_response = 60 * minutes
+                print(f"Waiting {time_after_response} seconds ({minutes} minutes)...")
+                time.sleep(time_after_response) # Proactively avoid rate limiting
                 
                 if not raw_response_str:
                     print(f"--- ERROR on attempt {attempt + 1}: No response from API. Retrying... ---")
@@ -619,28 +635,36 @@ if __name__ == "__main__":
                     acc_list = results["accuracies"].get(et, [])
                     num_games_succeeded = len(acc_list)
                     avg_acc = (sum(acc_list) / num_games_succeeded) if num_games_succeeded > 0 else 0.0
+                    med_acc = stats.median(acc_list) if num_games_succeeded > 0 else 0.0
                     per_type_summary[et] = {
                         "average_accuracy": f"{avg_acc:.2f}%",
+                        "median_accuracy": f"{med_acc:.2f}%",
                         "games_succeeded": num_games_succeeded,
                         "discrepancies": results["discrepancies"].get(et, {})
                     }
                     all_successful_accuracies[et].extend(acc_list)
-                    print(f"  [{et}] Games Succeeded: {num_games_succeeded}  Average: {avg_acc:.2f}%")
+                    print(f"  [{et}] Games Succeeded: {num_games_succeeded}  Average: {avg_acc:.2f}%  |  Median: {med_acc:.2f}%")
 
                 final_summary["results_by_difficulty"][difficulty] = per_type_summary
             
-            # Calculate and print the overall average accuracy
-            # overall averages per evaluation type
-            overall_avgs = {}
+            # Calculate and print the overall average & median accuracy
+            # overall averages / medians per evaluation type
+            overall_avgs, overall_meds = {}, {}
             for et in EVAL_TYPES:
                 lst = all_successful_accuracies.get(et, [])
                 if lst:
-                    overall_avgs[et] = f"{(sum(lst)/len(lst)):.2f}%"
+                    avg = sum(lst) / len(lst)
+                    med = stats.median(lst)
+                    overall_avgs[et] = f"{avg:.2f}%"
+                    overall_meds[et] = f"{med:.2f}%"
                     print(f"\nOVERALL AVERAGE ACCURACY ({et}) (on {len(lst)} successful games): {overall_avgs[et]}")
+                    print(f"OVERALL MEDIAN  ACCURACY ({et}) (on {len(lst)} successful games): {overall_meds[et]}")
                 else:
                     overall_avgs[et] = "N/A"
+                    overall_meds[et]  = "N/A"
 
             final_summary["overall_average_accuracy"] = overall_avgs
+            final_summary["overall_median_accuracy"]  = overall_meds
 
             summary_path = os.path.join(data_dir, "summary.json")
             with open(summary_path, 'w', encoding='utf-8') as f:
