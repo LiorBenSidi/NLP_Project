@@ -535,8 +535,8 @@ if __name__ == "__main__":
             for attempt in range(max_retries):
                 messages = construct_litellm_messages(game_narrative_data)
                 raw_response_str = get_litellm_response(MODEL_TO_TEST, messages)
-                minutes = 5
-                time_after_response = 60 * minutes
+                minutes = 1 # minutes to wait after each API call
+                time_after_response = 60 * minutes # 1 minute
                 print(f"Waiting {time_after_response} seconds ({minutes} minutes)...")
                 time.sleep(time_after_response) # Proactively avoid rate limiting
                 

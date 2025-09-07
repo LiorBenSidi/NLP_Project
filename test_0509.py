@@ -1278,7 +1278,7 @@ if __name__ == "__main__":
         except Exception as e:
             print(f"Error saving to {jsonl_path}: {e}")
 
-    if True: # Save the complete dictionaries to 2 separate JSON file
+    if True: # Save the complete dictionaries to 2 separate JSON files
         output_dir = "data"
         os.makedirs(output_dir, exist_ok=True)
         examples_path = os.path.join(output_dir, "examples.json")
