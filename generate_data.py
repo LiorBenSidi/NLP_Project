@@ -1263,8 +1263,10 @@ if __name__ == "__main__":
     print(f"\n--- Finished generating all games ---\n")
 
     # --- File Output ---
+    
     # Save the generated data to JSON and JSONL files.
-    if True: # Save JSONL with alternating lines: example, then true_report
+    create_jsonl_file = True
+    if create_jsonl_file: # Save JSONL with alternating lines: example, then true_report
         output_dir = "data"
         os.makedirs(output_dir, exist_ok=True)
         jsonl_path = os.path.join(output_dir, "examples.jsonl")
@@ -1278,7 +1280,9 @@ if __name__ == "__main__":
         except Exception as e:
             print(f"Error saving to {jsonl_path}: {e}")
 
-    if True: # Save the complete dictionaries to 2 separate JSON file
+    # Save the complete dictionaries to 2 separate JSON file
+    create_json_files = True
+    if create_json_files:
         output_dir = "data"
         os.makedirs(output_dir, exist_ok=True)
         examples_path = os.path.join(output_dir, "examples.json")
