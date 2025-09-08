@@ -4,6 +4,9 @@
 # 2. Think about compare the JSON output format with LISTs output format.
 # 3. I have notied that the LLM tend to interpret regular passing events as assists, even when they shouldn't be.
 # 4. I have also noticed that the LLM sometimes fails to recognize when a player is attempting a shot.
+# 5. Add an "if" for all models that do not support response_format={"type": "json_object"} in the litellm call.
+# 6. לקצר את הג'ייסון הנדרש מהמודל (למשל, לא צריך פירוט של מי הסגל ומי המאמן ומי פתח על הפרקט ומי על הספסל)
+# 7. לשלוח לצ'אט את האתר הזה כדי לקבל רשימה של מודלים שתומכים בפורמט ג'ייסון וכדי לדייק את הבקשה מהמודל כדי לוודא שהפורמט ג'ייסון שמתקבל הוא תקין: https://docs.litellm.ai/docs/completion/input#translated-openai-params
 
 import json
 import re
@@ -22,35 +25,47 @@ EVAL_TYPES = ["field", "fractional_per_block"]
 # This is the only line you need to change to switch models.
 
 # --- Gemini ---
+Gemini = {"gemini/gemini-1.5-flash", "gemini/gemini-1.5-pro", "gemini/gemini-2.0-flash-lite", "gemini/gemini-2.0-flash", "gemini/gemini-2.5-flash-lite", "gemini/gemini-2.5-flash", "gemini/gemini-2.5-pro"}
 #MODEL_TO_TEST = "gemini/gemini-1.5-flash"
 #MODEL_TO_TEST = "gemini/gemini-1.5-pro"
 #MODEL_TO_TEST = "gemini/gemini-2.0-flash-lite"
 #MODEL_TO_TEST = "gemini/gemini-2.0-flash"
 #MODEL_TO_TEST = "gemini/gemini-2.5-flash-lite"
 #MODEL_TO_TEST = "gemini/gemini-2.5-flash"
-MODEL_TO_TEST = "gemini/gemini-2.5-pro"
+#MODEL_TO_TEST = "gemini/gemini-2.5-pro"
 
 # --- OpenAI --- already paid 10$
+OpenAI = {"gpt-4o-nano", "gpt-4o-mini", "gpt-4o", "gpt-5-mini", "gpt-5"}
 #MODEL_TO_TEST = "gpt-4o-nano"
 #MODEL_TO_TEST = "gpt-4o-mini"
 #MODEL_TO_TEST = "gpt-4o"
 #MODEL_TO_TEST = "gpt-5-mini"
 #MODEL_TO_TEST = "gpt-5"
 
-# --- Anthropic --- need to pay!
+# --- Anthropic --- already paid 15$
+Anthropic = {}
 #MODEL_TO_TEST = "claude-3-haiku-20240307"
-#MODEL_TO_TEST = "claude-opus-4-20250514"
+MODEL_TO_TEST = "claude-3-5-sonnet-20240620"
+#MODEL_TO_TEST = "claude-3-7-sonnet-20250219"
 #MODEL_TO_TEST = "claude-sonnet-4-20250514"
+#MODEL_TO_TEST = "claude-opus-4-20250514"
+#MODEL_TO_TEST = "claude-opus-4-1-20250805"
 
-# --- DeepSeek --- need to pay!
-#MODEL_TO_TEST = "deepseek/deepseek-chat"
-#MODEL_TO_TEST = "deepseek/deepseek-coder"
+# --- Grok --- already paid 5$
+Grok = {"xai/grok-3-mini", "xai/grok-3", "xai/grok-4-0709", "xai/grok-code-fast-1"}
+#MODEL_TO_TEST = "xai/grok-3-mini"
+#MODEL_TO_TEST = "xai/grok-3"
+#MODEL_TO_TEST = "xai/grok-4-0709"
+#MODEL_TO_TEST = "xai/grok-code-fast-1"
 
-# --- Grok ---
-#MODEL_TO_TEST = ""
+# --- HuggingFace --- not checked (need to pay)
+#MODEL_TO_TEST = "huggingface/together/deepseek-ai/DeepSeek-R1"
 
-# --- Meta ---
-#MODEL_TO_TEST = ""
+# --- Meta --- not checked (need to create developer account)
+#MODEL_TO_TEST = "meta_llama/Llama-3.3-8B-Instruct"
+#MODEL_TO_TEST = "meta_llama/Llama-3.3-70B-Instruct"
+#MODEL_TO_TEST = "meta_llama/Llama-4-Maverick-17B-128E-Instruct-FP8"
+#MODEL_TO_TEST = "meta_llama/Llama-4-Scout-17B-16E-Instruct-FP8"
 
 # --- Part 1: Prompt Templates and Static Data ---
 SYSTEM_INSTRUCTIONS_PROMPT = """You are an automated sports data analyst.
@@ -261,14 +276,21 @@ def get_litellm_response(model_name, messages):
         print(f"\nSending request to model: {model_name} via LiteLLM...")
 
         # --- Call the LiteLLM API ---
-        response = litellm.completion(
-            model=model_name,
-            messages=messages,
-            tools=None,  # No tools needed for this task
-            response_format={"type": "json_object"},
-            # Only Gemini needs this extra body param
-            extra_body={"response_mime_type": "application/json"} if model_name.startswith("gemini") else {}
-        )
+        kwargs = {
+            "model": model_name,
+            "messages": messages,
+            "tools": None,  # No tools needed for this task
+        }
+
+        # Only attach provider-specific args when they are supported
+        if model_name in Gemini:
+            kwargs["extra_body"] = {"response_mime_type": "application/json"}
+
+        supported_models_in_response_format = Gemini.union(OpenAI).union(Grok)
+        if model_name in supported_models_in_response_format:
+            kwargs["response_format"] = {"type": "json_object"}
+
+        response = litellm.completion(**kwargs)
 
         print("Response received.")
         return response.choices[0].message.content # type: ignore
@@ -357,14 +379,21 @@ def ask_model_to_fix_json(model_name: str, raw: str) -> str | None:
     ]
     try:
         # --- Call the LiteLLM API ---
-        response = litellm.completion(
-            model=model_name,
-            messages=messages,
-            tools=None,  # No tools needed for this task
-            response_format={"type": "json_object"},
-            # Only Gemini needs this extra body param
-            extra_body={"response_mime_type": "application/json"} if model_name.startswith("gemini") else {}
-        )
+        kwargs = {
+            "model": model_name,
+            "messages": messages,
+            "tools": None,
+        }
+
+        # Only attach provider-specific args when they are supported
+        if model_name in Gemini:
+            kwargs["extra_body"] = {"response_mime_type": "application/json"}
+
+        supported_models_in_response_format = Gemini.union(OpenAI).union(Grok)
+        if model_name in supported_models_in_response_format:
+            kwargs["response_format"] = {"type": "json_object"}
+
+        response = litellm.completion(**kwargs)
             
         print("Response received (for fixing JSON).")
         return response.choices[0].message.content  # type: ignore
@@ -535,8 +564,8 @@ if __name__ == "__main__":
             for attempt in range(max_retries):
                 messages = construct_litellm_messages(game_narrative_data)
                 raw_response_str = get_litellm_response(MODEL_TO_TEST, messages)
-                minutes = 1 # minutes to wait after each API call
-                time_after_response = 60 * minutes # 1 minute
+                minutes = 0.25 # minutes to wait after each API call
+                time_after_response = 60 * minutes # 15 seconds
                 print(f"Waiting {time_after_response} seconds ({minutes} minutes)...")
                 time.sleep(time_after_response) # Proactively avoid rate limiting
                 
