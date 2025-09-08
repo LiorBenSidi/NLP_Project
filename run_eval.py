@@ -12,6 +12,7 @@ import json
 import re
 import os
 import litellm
+from litellm.utils import get_supported_openai_params # type: ignore
 import time
 from evaluation import evaluate_reports
 import statistics as stats
@@ -25,47 +26,56 @@ EVAL_TYPES = ["field", "fractional_per_block"]
 # This is the only line you need to change to switch models.
 
 # --- Gemini ---
-Gemini = {"gemini/gemini-1.5-flash", "gemini/gemini-1.5-pro", "gemini/gemini-2.0-flash-lite", "gemini/gemini-2.0-flash", "gemini/gemini-2.5-flash-lite", "gemini/gemini-2.5-flash", "gemini/gemini-2.5-pro"}
 #MODEL_TO_TEST = "gemini/gemini-1.5-flash"
 #MODEL_TO_TEST = "gemini/gemini-1.5-pro"
 #MODEL_TO_TEST = "gemini/gemini-2.0-flash-lite"
 #MODEL_TO_TEST = "gemini/gemini-2.0-flash"
 #MODEL_TO_TEST = "gemini/gemini-2.5-flash-lite"
 #MODEL_TO_TEST = "gemini/gemini-2.5-flash"
-#MODEL_TO_TEST = "gemini/gemini-2.5-pro"
+MODEL_TO_TEST = "gemini/gemini-2.5-pro"
 
-# --- OpenAI --- already paid 10$
-OpenAI = {"gpt-4o-nano", "gpt-4o-mini", "gpt-4o", "gpt-5-mini", "gpt-5"}
-#MODEL_TO_TEST = "gpt-4o-nano"
+# --- OpenAI --- already paid 10$ - check again (need to pay again)
 #MODEL_TO_TEST = "gpt-4o-mini"
 #MODEL_TO_TEST = "gpt-4o"
+#MODEL_TO_TEST = "gpt-5-nano"
 #MODEL_TO_TEST = "gpt-5-mini"
 #MODEL_TO_TEST = "gpt-5"
+#MODEL_TO_TEST = "o3-mini"
+#MODEL_TO_TEST = "o1"
 
-# --- Anthropic --- already paid 15$
-Anthropic = {}
-#MODEL_TO_TEST = "claude-3-haiku-20240307"
-MODEL_TO_TEST = "claude-3-5-sonnet-20240620"
-#MODEL_TO_TEST = "claude-3-7-sonnet-20250219"
+# --- Anthropic --- already paid 5$ + 10$
 #MODEL_TO_TEST = "claude-sonnet-4-20250514"
 #MODEL_TO_TEST = "claude-opus-4-20250514"
 #MODEL_TO_TEST = "claude-opus-4-1-20250805"
 
-# --- Grok --- already paid 5$
-Grok = {"xai/grok-3-mini", "xai/grok-3", "xai/grok-4-0709", "xai/grok-code-fast-1"}
+# --- Grok --- already paid 5$ - check again (need to pay again)
 #MODEL_TO_TEST = "xai/grok-3-mini"
 #MODEL_TO_TEST = "xai/grok-3"
 #MODEL_TO_TEST = "xai/grok-4-0709"
 #MODEL_TO_TEST = "xai/grok-code-fast-1"
-
-# --- HuggingFace --- not checked (need to pay)
-#MODEL_TO_TEST = "huggingface/together/deepseek-ai/DeepSeek-R1"
 
 # --- Meta --- not checked (need to create developer account)
 #MODEL_TO_TEST = "meta_llama/Llama-3.3-8B-Instruct"
 #MODEL_TO_TEST = "meta_llama/Llama-3.3-70B-Instruct"
 #MODEL_TO_TEST = "meta_llama/Llama-4-Maverick-17B-128E-Instruct-FP8"
 #MODEL_TO_TEST = "meta_llama/Llama-4-Scout-17B-16E-Instruct-FP8"
+
+# --- Check Model Capabilities Once ---
+# Since we only use one model per run, we can check its capabilities once at the start.
+print(f"--- Checking capabilities for the selected model: {MODEL_TO_TEST} ---")
+try:
+    # Query LiteLLM's registry for the model's statically declared capabilities.
+    _supported_params = set(get_supported_openai_params(model=MODEL_TO_TEST) or [])
+    # This global constant will store our initial assumption based on the registry.
+    DOES_MODEL_SUPPORT_JSON = "response_format" in _supported_params
+    print(f"Registry indicates support for 'response_format': {DOES_MODEL_SUPPORT_JSON}")
+except Exception as e:
+    print(f"Warning: Could not check model capabilities. Assuming no JSON support. Error: {e}")
+    DOES_MODEL_SUPPORT_JSON = False
+
+# This global flag will be flipped to True if our initial attempt to use JSON mode fails.
+# This prevents the script from retrying a failing method on every subsequent API call.
+JSON_MODE_FAILED_ONCE = False
 
 # --- Part 1: Prompt Templates and Static Data ---
 SYSTEM_INSTRUCTIONS_PROMPT = """You are an automated sports data analyst.
@@ -83,7 +93,6 @@ Based only on what actually happened in the log, your role is to build the offic
 For each team, you must track and include the following:
 - `matchup`: The matchup of the game in the format "<TeamNameA> vs <TeamNameB>"
 - `final_score`: The final score of the game in the format "<TeamNameA>: <ScoreA>, <TeamNameB>: <ScoreB>"
-- `teams`: The two teams participating in the game, including their coaches, rosters and starting lineups and bench players.
 - `final_stats`: A dictionary containing the stats for each team and their players.
 
 ### OUTPUT FORMAT ###
@@ -100,20 +109,6 @@ Your final output must follow this exact structure. Do not add, remove, or renam
 {
     "matchup": "TeamNameA vs TeamNameB",
     "final_score": "TeamNameA: 0, TeamNameB: 0",
-    "teams": {
-        "TeamNameA": {
-            "coach": "CoachNameA",
-            "roster": ["PlayerName1-A", "PlayerName2-A", "PlayerName3-A", "PlayerName4-A", "PlayerName5-A", "PlayerName6-A", "PlayerName7-A", "PlayerName8-A", "PlayerName9-A", "PlayerName10-A", "PlayerName11-A", "PlayerName12-A"],
-            "starting_lineup": ["PlayerName1-A", "PlayerName2-A", "PlayerName3-A", "PlayerName4-A", "PlayerName5-A"],
-            "bench": ["PlayerName6-A", "PlayerName7-A", "PlayerName8-A", "PlayerName9-A", "PlayerName10-A", "PlayerName11-A", "PlayerName12-A"]
-        },
-        "TeamNameB": {
-            "coach": "CoachNameB",
-            "roster": ["PlayerName1-B", "PlayerName2-B", "PlayerName3-B", "PlayerName4-B", "PlayerName5-B", "PlayerName6-B", "PlayerName7-B", "PlayerName8-B", "PlayerName9-B", "PlayerName10-B", "PlayerName11-B", "PlayerName12-B"],
-            "starting_lineup": ["PlayerName1-B", "PlayerName2-B", "PlayerName3-B", "PlayerName4-B", "PlayerName5-B"],
-            "bench": ["PlayerName6-B", "PlayerName7-B", "PlayerName8-B", "PlayerName9-B", "PlayerName10-B", "PlayerName11-B", "PlayerName12-B"]
-        }
-    },
     "final_stats": {
         "TeamNameA": {
             "stats": {
@@ -271,26 +266,40 @@ def is_report_all_zeros(llm_report):
     return True
 
 def get_litellm_response(model_name, messages):
-    """Calls any LLM using the LiteLLM library and returns the response content."""
+    """
+    Calls an LLM using the LiteLLM library, leveraging a globally-checked capability for JSON mode.
+    It will attempt to use JSON mode if the model is flagged as supporting it, but includes a
+    one-time fallback mechanism if the attempt fails.
+    """
+    global JSON_MODE_FAILED_ONCE  # Declare that we might modify this global flag
     try:
         print(f"\nSending request to model: {model_name} via LiteLLM...")
 
-        # --- Call the LiteLLM API ---
-        kwargs = {
-            "model": model_name,
-            "messages": messages,
-            "tools": None,  # No tools needed for this task
-        }
+        kwargs = { "model": model_name, "messages": messages, "tools": None }
 
-        # Only attach provider-specific args when they are supported
-        if model_name in Gemini:
-            kwargs["extra_body"] = {"response_mime_type": "application/json"}
+        # Decide whether to try JSON mode on this specific call.
+        # Condition: The model is supposed to support it AND we haven't already failed with it.
+        try_json_mode = DOES_MODEL_SUPPORT_JSON and not JSON_MODE_FAILED_ONCE
 
-        supported_models_in_response_format = Gemini.union(OpenAI).union(Grok)
-        if model_name in supported_models_in_response_format:
+        if try_json_mode:
+            print("Attempting to use JSON mode...")
             kwargs["response_format"] = {"type": "json_object"}
+            if model_name.startswith("gemini"):
+                kwargs["extra_body"] = {"response_mime_type": "application/json"}
+                print("Added Gemini-specific 'extra_body' for JSON response.")
 
-        response = litellm.completion(**kwargs)
+        try:
+            response = litellm.completion(**kwargs)
+        except Exception as e:
+            # If the call failed and we were trying JSON mode, it's likely unsupported.
+            if try_json_mode:
+                print(f"Initial call with JSON mode failed. Retrying without it... Error: {e}")
+                JSON_MODE_FAILED_ONCE = True  # Set the flag so we don't try this again.
+                kwargs.pop("response_format", None)
+                kwargs.pop("extra_body", None)
+                response = litellm.completion(**kwargs) # Retry the call
+            else:
+                raise # The error was not related to JSON mode, so re-raise it.
 
         print("Response received.")
         return response.choices[0].message.content # type: ignore
@@ -373,30 +382,42 @@ def repair_json_structure(raw: str) -> str:
 
 # --- model-only JSON fixer ---
 def ask_model_to_fix_json(model_name: str, raw: str) -> str | None:
+    """
+    Asks an LLM to repair a malformed JSON string, using the same global check for JSON mode.
+    """
+    global JSON_MODE_FAILED_ONCE # Declare that we might modify this global flag
     messages = [
         {"role": "system", "content": "You are a formatter. Return only a single valid JSON object. No code fences. No comments. No extra text."},
         {"role": "user", "content": raw},
     ]
     try:
-        # --- Call the LiteLLM API ---
-        kwargs = {
-            "model": model_name,
-            "messages": messages,
-            "tools": None,
-        }
+        print(f"\nSending request to model '{model_name}' to fix JSON...")
+        kwargs = { "model": model_name, "messages": messages, "tools": None }
 
-        # Only attach provider-specific args when they are supported
-        if model_name in Gemini:
-            kwargs["extra_body"] = {"response_mime_type": "application/json"}
+        # Decide whether to try JSON mode, same logic as the main function.
+        try_json_mode = DOES_MODEL_SUPPORT_JSON and not JSON_MODE_FAILED_ONCE
 
-        supported_models_in_response_format = Gemini.union(OpenAI).union(Grok)
-        if model_name in supported_models_in_response_format:
+        if try_json_mode:
+            print("(Fixer) Attempting to use JSON mode...")
             kwargs["response_format"] = {"type": "json_object"}
+            if model_name.startswith("gemini"):
+                kwargs["extra_body"] = {"response_mime_type": "application/json"}
+                print("(Fixer) Added Gemini-specific 'extra_body'.")
 
-        response = litellm.completion(**kwargs)
-            
+        try:
+            response = litellm.completion(**kwargs)
+        except Exception as e:
+            if try_json_mode:
+                print(f"(Fixer) Initial call with JSON mode failed. Retrying without it... Error: {e}")
+                JSON_MODE_FAILED_ONCE = True # Set the global flag
+                kwargs.pop("response_format", None)
+                kwargs.pop("extra_body", None)
+                response = litellm.completion(**kwargs)
+            else:
+                raise
+
         print("Response received (for fixing JSON).")
-        return response.choices[0].message.content  # type: ignore
+        return response.choices[0].message.content # type: ignore
 
     except Exception as e:
         print(f"An unexpected error occurred during LiteLLM API call (for fixing JSON): {e}")
@@ -433,15 +454,23 @@ def repair_and_rebuild_json(llm_dict, ground_truth_template):
     This version specifically handles the case where the LLM incorrectly nests
     one team object inside another.
     """
+    # This block detects if the entire valid JSON is nested inside a single,
+    # unnecessary top-level key (like "data" or "response"), a common LLM behavior.
+    if isinstance(llm_dict, dict) and len(llm_dict) == 1:
+        first_key = next(iter(llm_dict))
+        if isinstance(llm_dict[first_key], dict):
+            print(f"Repair Warning: Detected and unwrapped a single top-level key: '{first_key}'.")
+            llm_dict = llm_dict[first_key]
+
     # Create a new, clean dictionary to return
     rebuilt_dict = {}
 
     # Iterate through the keys of the PERFECT template to define the structure
     for key, gt_value in ground_truth_template.items():
 
-        # --- CRITICAL: Skip the 'participants' and 'difficulty' keys ---
+        # --- CRITICAL: Skip the 'difficulty' and 'teams' keys ---
         # This is evaluation metadata and should NOT be in the LLM's final report.
-        if key in ["participants", "difficulty"]:
+        if key in ["difficulty", "teams"]:
             continue
 
         if key == "final_stats":
