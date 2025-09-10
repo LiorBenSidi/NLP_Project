@@ -9,6 +9,8 @@
 # 2. Give the script of events to people and give them the same task.
 # 3. Think about switching from uniform random sampling to a different distribution (e.g., normal distribution) for certain events.
 # 4. ליצור מהלכים זהים, כשסדר השחקנים באיך שהוא רשום באירוע הפוך (למשל חוסם לפני זורק, וגם זורק לפני חוסם)
+# 5. להוסיף מאורע של סל, לשתי וושלוש נקודות, ועבירה
+# 6. להוסיף בדו''ח נימוקים עבור השפעות של מהלכים (כמו החשבת ניסיון זריקה גם כאשר התבצעה עברה על השחקן), כאשר הנימוקים יכולים להיות מספר חוקים באינטרנט או מתשאול מודל שפה לגבי האם להחשיב ניסיון זריקה, למשל
 
 import random
 import json
@@ -90,46 +92,78 @@ class BasketballReportGenerator:
             "assist_and_score_2pt": {
                 "template": "{player_A} {pass_type} {player_B}, who {shot_description}",
                 "effect": lambda state, pA, pB, team: (
-                    state[team]['stats'].update({'score': state[team]['stats']['score'] + 2,
-                                                 'assists': state[team]['stats']['assists'] + 1}),
-                    state[team]['players'][pA].update({'assists': state[team]['players'][pA]['assists'] + 1}),
-                    state[team]['players'][pB].update({'points': state[team]['players'][pB]['points'] + 2,
-                                                       '2pt_shots_made': state[team]['players'][pB]['2pt_shots_made'] + 1,
-                                                       '2pt_shots_attempted': state[team]['players'][pB]['2pt_shots_attempted'] + 1,})
+                    state[team]['stats'].update({
+                        'score': state[team]['stats']['score'] + 2,
+                        'assists': state[team]['stats']['assists'] + 1,
+                        '2pt_shots_made': state[team]['stats']['2pt_shots_made'] + 1,
+                        '2pt_shots_attempted': state[team]['stats']['2pt_shots_attempted'] + 1,
+                        }),
+                    state[team]['players'][pA].update({
+                        'assists': state[team]['players'][pA]['assists'] + 1
+                        }),
+                    state[team]['players'][pB].update({
+                        'points': state[team]['players'][pB]['points'] + 2,
+                        '2pt_shots_made': state[team]['players'][pB]['2pt_shots_made'] + 1,
+                        '2pt_shots_attempted': state[team]['players'][pB]['2pt_shots_attempted'] + 1
+                        })
                 )
             },
             "assist_and_score_2pt_opposite": {
                 "template": "{player_B} {opposite_pass_type} {player_A}, and {shot_description}",
                 "effect": lambda state, pA, pB, team: (
-                    state[team]['stats'].update({'score': state[team]['stats']['score'] + 2,
-                                                 'assists': state[team]['stats']['assists'] + 1}),
-                    state[team]['players'][pA].update({'assists': state[team]['players'][pA]['assists'] + 1}),
-                    state[team]['players'][pB].update({'points': state[team]['players'][pB]['points'] + 2,
-                                                       '2pt_shots_made': state[team]['players'][pB]['2pt_shots_made'] + 1,
-                                                       '2pt_shots_attempted': state[team]['players'][pB]['2pt_shots_attempted'] + 1,})
+                    state[team]['stats'].update({
+                        'score': state[team]['stats']['score'] + 2,
+                        'assists': state[team]['stats']['assists'] + 1,
+                        '2pt_shots_made': state[team]['stats']['2pt_shots_made'] + 1,
+                        '2pt_shots_attempted': state[team]['stats']['2pt_shots_attempted'] + 1,
+                        }),
+                    state[team]['players'][pA].update({
+                        'assists': state[team]['players'][pA]['assists'] + 1
+                        }),
+                    state[team]['players'][pB].update({
+                        'points': state[team]['players'][pB]['points'] + 2,
+                        '2pt_shots_made': state[team]['players'][pB]['2pt_shots_made'] + 1,
+                        '2pt_shots_attempted': state[team]['players'][pB]['2pt_shots_attempted'] + 1
+                        })
                 )
             },
 
             "assist_and_score_3pt": {
                 "template": "{player_A} {pass_type} {player_B}, who {shot_description}",
                 "effect": lambda state, pA, pB, team: (
-                    state[team]['stats'].update({'score': state[team]['stats']['score'] + 3,
-                                                 'assists': state[team]['stats']['assists'] + 1}),
-                    state[team]['players'][pA].update({'assists': state[team]['players'][pA]['assists'] + 1}),
-                    state[team]['players'][pB].update({'points': state[team]['players'][pB]['points'] + 3,
-                                                       '3pt_shots_made': state[team]['players'][pB]['3pt_shots_made'] + 1,
-                                                       '3pt_shots_attempted': state[team]['players'][pB]['3pt_shots_attempted'] + 1,})
+                    state[team]['stats'].update({
+                        'score': state[team]['stats']['score'] + 3,
+                        'assists': state[team]['stats']['assists'] + 1,
+                        '3pt_shots_made': state[team]['stats']['3pt_shots_made'] + 1,
+                        '3pt_shots_attempted': state[team]['stats']['3pt_shots_attempted'] + 1,
+                        }),
+                    state[team]['players'][pA].update({
+                        'assists': state[team]['players'][pA]['assists'] + 1
+                        }),
+                    state[team]['players'][pB].update({
+                        'points': state[team]['players'][pB]['points'] + 3,
+                        '3pt_shots_made': state[team]['players'][pB]['3pt_shots_made'] + 1,
+                        '3pt_shots_attempted': state[team]['players'][pB]['3pt_shots_attempted'] + 1
+                        })
                 )
             },
             "assist_and_score_3pt_opposite": {
                 "template": "{player_B} {opposite_pass_type} {player_A}, and {shot_description}",
                 "effect": lambda state, pA, pB, team: (
-                    state[team]['stats'].update({'score': state[team]['stats']['score'] + 3,
-                                                 'assists': state[team]['stats']['assists'] + 1}),
-                    state[team]['players'][pA].update({'assists': state[team]['players'][pA]['assists'] + 1}),
-                    state[team]['players'][pB].update({'points': state[team]['players'][pB]['points'] + 3,
-                                                       '3pt_shots_made': state[team]['players'][pB]['3pt_shots_made'] + 1,
-                                                       '3pt_shots_attempted': state[team]['players'][pB]['3pt_shots_attempted'] + 1,})
+                    state[team]['stats'].update({
+                        'score': state[team]['stats']['score'] + 3,
+                        'assists': state[team]['stats']['assists'] + 1,
+                        '3pt_shots_made': state[team]['stats']['3pt_shots_made'] + 1,
+                        '3pt_shots_attempted': state[team]['stats']['3pt_shots_attempted'] + 1,
+                        }),
+                    state[team]['players'][pA].update({
+                        'assists': state[team]['players'][pA]['assists'] + 1
+                        }),
+                    state[team]['players'][pB].update({
+                        'points': state[team]['players'][pB]['points'] + 3,
+                        '3pt_shots_made': state[team]['players'][pB]['3pt_shots_made'] + 1,
+                        '3pt_shots_attempted': state[team]['players'][pB]['3pt_shots_attempted'] + 1
+                        })
                 )
             },
             
@@ -137,6 +171,9 @@ class BasketballReportGenerator:
             "miss_2pt_from_pass": {
                 "template": "{player_A} {pass_type} {player_B}, who {missed_shot_description}",
                 "effect": lambda state, pA, pB, team: (
+                    state[team]['stats'].update({
+                        '2pt_shots_attempted': state[team]['stats']['2pt_shots_attempted'] + 1
+                    }),
                     state[team]['players'][pB].update({
                         '2pt_shots_attempted': state[team]['players'][pB]['2pt_shots_attempted'] + 1,
                     })
@@ -145,6 +182,9 @@ class BasketballReportGenerator:
             "miss_3pt_from_pass": {
                 "template": "{player_A} {pass_type} {player_B}, who {missed_shot_description}",
                 "effect": lambda state, pA, pB, team: (
+                    state[team]['stats'].update({
+                        '3pt_shots_attempted': state[team]['stats']['3pt_shots_attempted'] + 1
+                    }),
                     state[team]['players'][pB].update({
                         '3pt_shots_attempted': state[team]['players'][pB]['3pt_shots_attempted'] + 1,
                     })
@@ -170,7 +210,9 @@ class BasketballReportGenerator:
                         'score': state[team]['stats']['score'] - 2,
                         'assists': state[team]['stats']['assists'] - 1,
                         'fouls': state[team]['stats']['fouls'] + 1,
-                        'turnovers': state[team]['stats']['turnovers'] + 1
+                        'turnovers': state[team]['stats']['turnovers'] + 1,
+                        '2pt_shots_made': state[team]['stats']['2pt_shots_made'] - 1,
+                        '2pt_shots_attempted': state[team]['stats']['2pt_shots_attempted'] - 1
                     }),
                     # 2. Update Passer (pA): just reverse the assist
                     state[team]['players'][pA].update({
@@ -179,10 +221,10 @@ class BasketballReportGenerator:
                     # 3. Update Shooter (pB): reverse the shot, add the foul and turnover
                     state[team]['players'][pB].update({
                         'points': state[team]['players'][pB]['points'] - 2,
-                        '2pt_shots_made': state[team]['players'][pB]['2pt_shots_made'] - 1,
-                        '2pt_shots_attempted': state[team]['players'][pB]['2pt_shots_attempted'] - 1,
                         'fouls': state[team]['players'][pB]['fouls'] + 1,
-                        'turnovers': state[team]['players'][pB]['turnovers'] + 1
+                        'turnovers': state[team]['players'][pB]['turnovers'] + 1,
+                        '2pt_shots_made': state[team]['players'][pB]['2pt_shots_made'] - 1,
+                        '2pt_shots_attempted': state[team]['players'][pB]['2pt_shots_attempted'] - 1
                     })
                 )
             },
@@ -193,7 +235,9 @@ class BasketballReportGenerator:
                     state[team]['stats'].update({
                         'score': state[team]['stats']['score'] - 3,
                         'assists': state[team]['stats']['assists'] - 1,
-                        'turnovers': state[team]['stats']['turnovers'] + 1
+                        'turnovers': state[team]['stats']['turnovers'] + 1,
+                        '3pt_shots_made': state[team]['stats']['3pt_shots_made'] - 1,
+                        '3pt_shots_attempted': state[team]['stats']['3pt_shots_attempted'] - 1
                     }),
                     # 2. Update Passer (pA): just reverse the assist
                     state[team]['players'][pA].update({
@@ -202,9 +246,9 @@ class BasketballReportGenerator:
                     # 3. Update Shooter (pB): reverse the shot, add the turnover
                     state[team]['players'][pB].update({
                         'points': state[team]['players'][pB]['points'] - 3,
+                        'turnovers': state[team]['players'][pB]['turnovers'] + 1,
                         '3pt_shots_made': state[team]['players'][pB]['3pt_shots_made'] - 1,
-                        '3pt_shots_attempted': state[team]['players'][pB]['3pt_shots_attempted'] - 1,
-                        'turnovers': state[team]['players'][pB]['turnovers'] + 1
+                        '3pt_shots_attempted': state[team]['players'][pB]['3pt_shots_attempted'] - 1
                     })
                 )
             },
@@ -216,7 +260,9 @@ class BasketballReportGenerator:
                     state[team]['stats'].update({
                         'score': state[team]['stats']['score'] - 3,
                         'assists': state[team]['stats']['assists'] - 1,
-                        'turnovers': state[team]['stats']['turnovers'] + 1
+                        'turnovers': state[team]['stats']['turnovers'] + 1,
+                        '3pt_shots_made': state[team]['stats']['3pt_shots_made'] - 1,
+                        '3pt_shots_attempted': state[team]['stats']['3pt_shots_attempted'] - 1
                     }),
                     # Passer: remove the assist
                     state[team]['players'][pA].update({
@@ -225,38 +271,24 @@ class BasketballReportGenerator:
                     # Shooter: remove the 3PT make/attempt; credit a turnover for the violation
                     state[team]['players'][pB].update({
                         'points': state[team]['players'][pB]['points'] - 3,
+                        'turnovers': state[team]['players'][pB]['turnovers'] + 1,
                         '3pt_shots_made': state[team]['players'][pB]['3pt_shots_made'] - 1,
-                        '3pt_shots_attempted': state[team]['players'][pB]['3pt_shots_attempted'] - 1,
-                        'turnovers': state[team]['players'][pB]['turnovers'] + 1
+                        '3pt_shots_attempted': state[team]['players'][pB]['3pt_shots_attempted'] - 1
                     })
                 )
             },
-            # "var_change_2_to_3": {
-            #     "template": "After a VAR review, {player_B}'s basket is upgraded from two to three points (foot was behind the arc).",
-            #     # Params: pA = passer on the made basket, pB = shooter, team = shooter's team
-            #     "effect": lambda state, pA, pB, team: (
-            #         # Team: +1 point (2→3), assist unchanged
-            #         state[team]['stats'].update({
-            #             'score': state[team]['stats']['score'] + 1
-            #         }),
-            #         # Shooter: convert a recorded 2PT make to a 3PT make
-            #         state[team]['players'][pB].update({
-            #             'points': state[team]['players'][pB]['points'] + 1,
-            #             '2pt_shots_made': state[team]['players'][pB]['2pt_shots_made'] - 1,
-            #             '2pt_shots_attempted': state[team]['players'][pB]['2pt_shots_attempted'] - 1,
-            #             '3pt_shots_made': state[team]['players'][pB]['3pt_shots_made'] + 1,
-            #             '3pt_shots_attempted': state[team]['players'][pB]['3pt_shots_attempted'] + 1
-            #         })
-            #         # Note: passer assist stays as-is
-            #     )
-            # },
+
             "var_change_3_to_2": {
                 "template": "After a VAR review, {player_B}'s basket is downgraded from three to two points (toe on the line).",
                 # Params: pA = passer on the made basket, pB = shooter, team = shooter's team
                 "effect": lambda state, pA, pB, team: (
                     # Team: -1 point (3→2), assist unchanged
                     state[team]['stats'].update({
-                        'score': state[team]['stats']['score'] - 1
+                        'score': state[team]['stats']['score'] - 1,
+                        '3pt_shots_made': state[team]['stats']['3pt_shots_made'] - 1,
+                        '3pt_shots_attempted': state[team]['stats']['3pt_shots_attempted'] - 1,
+                        '2pt_shots_made': state[team]['stats']['2pt_shots_made'] + 1,
+                        '2pt_shots_attempted': state[team]['stats']['2pt_shots_attempted'] + 1
                     }),
                     # Shooter: convert a recorded 3PT make to a 2PT make
                     state[team]['players'][pB].update({
@@ -275,6 +307,7 @@ class BasketballReportGenerator:
                 "template": "{player_A} is fouled by {player_B} on a 2-point attempt and will go to the line for two shots.",
                 "effect": lambda state, pA, pB, teamA, teamB: (
                     # This event only records the foul and the shot attempt. No points or FTs yet.
+                    state[teamA]['stats'].update({'2pt_shots_attempted': state[teamA]['stats']['2pt_shots_attempted'] + 1}),
                     state[teamA]['players'][pA].update({'2pt_shots_attempted': state[teamA]['players'][pA]['2pt_shots_attempted'] + 1}),
                     state[teamB]['stats'].update({'fouls': state[teamB]['stats']['fouls'] + 1}),
                     state[teamB]['players'][pB].update({'fouls': state[teamB]['players'][pB]['fouls'] + 1})
@@ -284,6 +317,7 @@ class BasketballReportGenerator:
                 "template": "{player_A} is fouled by {player_B} on a 3-point attempt and will go to the line for three shots.",
                 "effect": lambda state, pA, pB, teamA, teamB: (
                     # This event only records the foul and the shot attempt. No points or FTs yet.
+                    state[teamA]['stats'].update({'3pt_shots_attempted': state[teamA]['stats']['3pt_shots_attempted'] + 1}),
                     state[teamA]['players'][pA].update({'3pt_shots_attempted': state[teamA]['players'][pA]['3pt_shots_attempted'] + 1}),
                     state[teamB]['stats'].update({'fouls': state[teamB]['stats']['fouls'] + 1}),
                     state[teamB]['players'][pB].update({'fouls': state[teamB]['players'][pB]['fouls'] + 1})
@@ -292,7 +326,11 @@ class BasketballReportGenerator:
             "ft_made": {
                 "template": "{player_A} makes the {shot_ordinal} free throw.",
                 "effect": lambda state, pA, team: (
-                    state[team]['stats'].update({'score': state[team]['stats']['score'] + 1}),
+                    state[team]['stats'].update({
+                        'score': state[team]['stats']['score'] + 1,
+                        'ft_made': state[team]['stats']['ft_made'] + 1,
+                        'ft_attempted': state[team]['stats']['ft_attempted'] + 1
+                        }),
                     state[team]['players'][pA].update({
                         'points': state[team]['players'][pA]['points'] + 1,
                         'ft_made': state[team]['players'][pA]['ft_made'] + 1,
@@ -303,6 +341,9 @@ class BasketballReportGenerator:
             "ft_missed": {
                 "template": "{player_A} misses the {shot_ordinal} free throw.",
                 "effect": lambda state, pA, team: (
+                    state[team]['stats'].update({
+                        'ft_attempted': state[team]['stats']['ft_attempted'] + 1
+                    }),
                     state[team]['players'][pA].update({
                         'ft_attempted': state[team]['players'][pA]['ft_attempted'] + 1
                     })
@@ -343,9 +384,8 @@ class BasketballReportGenerator:
                 "effect": lambda state, pA, pB, teamA, teamB: (
                     state[teamA]['stats'].update({'blocks': state[teamA]['stats']['blocks'] + 1}),
                     state[teamA]['players'][pA].update({'blocks': state[teamA]['players'][pA]['blocks'] + 1}),
-                    state[teamB]['players'][pB].update({
-                        '2pt_shots_attempted': state[teamB]['players'][pB]['2pt_shots_attempted'] + 1,
-                    })
+                    state[teamB]['stats'].update({'2pt_shots_attempted': state[teamB]['stats']['2pt_shots_attempted'] + 1}),
+                    state[teamB]['players'][pB].update({'2pt_shots_attempted': state[teamB]['players'][pB]['2pt_shots_attempted'] + 1})
                 )
             },
             "block_on_3pt_shot": {
@@ -353,9 +393,8 @@ class BasketballReportGenerator:
                 "effect": lambda state, pA, pB, teamA, teamB: (
                     state[teamA]['stats'].update({'blocks': state[teamA]['stats']['blocks'] + 1}),
                     state[teamA]['players'][pA].update({'blocks': state[teamA]['players'][pA]['blocks'] + 1}),
-                    state[teamB]['players'][pB].update({
-                        '3pt_shots_attempted': state[teamB]['players'][pB]['3pt_shots_attempted'] + 1,
-                    })
+                    state[teamB]['stats'].update({'3pt_shots_attempted': state[teamB]['stats']['3pt_shots_attempted'] + 1}),
+                    state[teamB]['players'][pB].update({'3pt_shots_attempted': state[teamB]['players'][pB]['3pt_shots_attempted'] + 1})
                 )
             },
             
@@ -458,7 +497,12 @@ class BasketballReportGenerator:
         for team_name, team_data in self.teams.items():
             # Initialize team-level stats
             game_state[team_name] = {
-                "stats": {"score": 0, "assists": 0, "rebounds": 0, "fouls": 0, "steals": 0, "blocks": 0, "turnovers": 0},
+                "stats": {
+                    "score": 0, "assists": 0, "rebounds": 0, "fouls": 0, "steals": 0, "blocks": 0, "turnovers": 0,
+                    "2pt_shots_made": 0, "2pt_shots_attempted": 0,
+                    "3pt_shots_made": 0, "3pt_shots_attempted": 0,
+                    "ft_made": 0, "ft_attempted": 0
+                    },
                 "players": {}
             }
             for player in team_data["players"]:
@@ -766,8 +810,8 @@ class BasketballReportGenerator:
                 fmt  = {"player_A": passer, "player_B": receiver}
 
                 if "{pass_type}" in tmpl:
-                    # pick from the per-run lexicon you already built (actual_pass_types)
-                    fmt["pass_type"] = random.choice(actual_pass_types) if actual_pass_types else "passes to"
+                    # Use neutral wording unless we intentionally want assist-scented verbs
+                    fmt["pass_type"] = random.choice(actual_regular_ball_pass_types) if actual_regular_ball_pass_types else "passes to"
 
                 # # (harmless) if you ever add a receiver-centric template:
                 # elif "{opposite_pass_type}" in tmpl:
@@ -1201,7 +1245,7 @@ class BasketballReportGenerator:
 if __name__ == "__main__":
     # --- Configuration ---
     # Define the number of games to generate per difficulty level.
-    GAMES_PER_DIFFICULTY = 1  # Generates 1 game for each level (3 total)
+    GAMES_PER_DIFFICULTY = 5  # Generates 5 game for each level (15 total)
     DIFFICULTY_LEVELS = ["basic", "medium", "hard"]
     #DIFFICULTY_LEVELS = ["medium", "hard"]
     #DIFFICULTY_LEVELS = ["medium"]

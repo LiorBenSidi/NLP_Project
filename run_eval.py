@@ -34,7 +34,7 @@ EVAL_TYPES = ["field", "fractional_per_block"]
 #MODEL_TO_TEST = "gemini/gemini-2.5-flash"
 MODEL_TO_TEST = "gemini/gemini-2.5-pro"
 
-# --- OpenAI --- already paid 10$ - check again (need to pay again)
+# --- OpenAI --- already paid 10$ + 10$
 #MODEL_TO_TEST = "gpt-4o-mini"
 #MODEL_TO_TEST = "gpt-4o"
 #MODEL_TO_TEST = "gpt-5-nano"
@@ -91,9 +91,11 @@ Based only on what actually happened in the log, your role is to build the offic
 
 ### REQUIRED STATS ###
 For each team, you must track and include the following:
-- `matchup`: The matchup of the game in the format "<TeamNameA> vs <TeamNameB>"
-- `final_score`: The final score of the game in the format "<TeamNameA>: <ScoreA>, <TeamNameB>: <ScoreB>"
+- `matchup`: The matchup of the game in the format "<TeamName-A> vs <TeamName-B>"
+- `final_score`: The final score of the game in the format "<TeamName-A>: <ScoreTeamName-A>, <TeamName-B>: <ScoreTeamName-B>"
 - `final_stats`: A dictionary containing the stats for each team and their players.
+    - Team-level `stats`: score, assists, rebounds, fouls, steals, blocks, turnovers, 2pt_shots_made, 2pt_shots_attempted, 3pt_shots_made, 3pt_shots_attempted, ft_made, ft_attempted.
+    - Player-level `players`: each player with points, assists, rebounds, fouls, steals, blocks, turnovers, 2pt_shots_made, 2pt_shots_attempted, 3pt_shots_made, 3pt_shots_attempted, ft_made, ft_attempted.
 
 ### OUTPUT FORMAT ###
 - Your entire response MUST be a single, valid JSON object.
@@ -107,12 +109,12 @@ Your final output must follow this exact structure. Do not add, remove, or renam
 
 ```json
 {
-    "matchup": "TeamNameA vs TeamNameB",
-    "final_score": "TeamNameA: 0, TeamNameB: 0",
+    "matchup": "TeamName-A vs TeamName-B",
+    "final_score": "TeamName-A: 0, TeamName-B: 0",
     "final_stats": {
-        "TeamNameA": {
+        "TeamName-A": {
             "stats": {
-                "score": 0, "assists": 0, "rebounds": 0, "fouls": 0, "steals": 0, "blocks": 0, "turnovers": 0
+                "score": 0, "assists": 0, "rebounds": 0, "fouls": 0, "steals": 0, "blocks": 0, "turnovers": 0, "2pt_shots_made": 0, "2pt_shots_attempted": 0, "3pt_shots_made": 0, "3pt_shots_attempted": 0, "ft_made": 0, "ft_attempted": 0
             },
             "players": {
                 "PlayerName1-A": {
@@ -153,9 +155,9 @@ Your final output must follow this exact structure. Do not add, remove, or renam
                 }
             }
         },
-        "TeamNameB": {
+        "TeamName-B": {
             "stats": {
-                "score": 0, "assists": 0, "rebounds": 0, "fouls": 0, "steals": 0, "blocks": 0, "turnovers": 0
+                "score": 0, "assists": 0, "rebounds": 0, "fouls": 0, "steals": 0, "blocks": 0, "turnovers": 0, "2pt_shots_made": 0, "2pt_shots_attempted": 0, "3pt_shots_made": 0, "3pt_shots_attempted": 0, "ft_made": 0, "ft_attempted": 0
             },
             "players": {
                 "PlayerName1-B": {
@@ -667,7 +669,8 @@ if __name__ == "__main__":
                 total_failed_games += 1
                 print(f"--- FAILURE for {game_key}: Could not get a valid report after {max_retries} attempts. SKIPPING. ---")
                 if difficulty in results_by_difficulty:
-                        results_by_difficulty[difficulty]["discrepancies"][game_key] = [f"Failed after {max_retries} retries. See raw text file for details."]
+                    for et in EVAL_TYPES:
+                        results_by_difficulty[difficulty]["discrepancies"][et][game_key] = [f"Failed after {max_retries} retries. See raw text file for details."]
 
             # --- Final Summary ---
             print(f"\n\n{'='*20} FINAL SUMMARY {'='*20}")
