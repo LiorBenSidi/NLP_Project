@@ -1417,7 +1417,7 @@ class BasketballReportGenerator:
 if __name__ == "__main__":
     # --- Configuration ---
     # Define the number of games to generate per difficulty level.
-    GAMES_PER_DIFFICULTY = 50  # Generates 50 games for each level (150 total)
+    GAMES_PER_DIFFICULTY = 5  # Generates 5 games for each level (15 total)
     DIFFICULTY_LEVELS = ["basic", "medium", "hard"]
 
     # --- Initialization ---
@@ -1478,24 +1478,22 @@ if __name__ == "__main__":
 
     # --- File Output ---
     
-    # Save the generated data to JSON and JSONL files.
-    create_jsonl_file = True
-    if create_jsonl_file: # Save JSONL with alternating lines: example, then true_report
-        output_dir = "data"
-        os.makedirs(output_dir, exist_ok=True)
-        jsonl_path = os.path.join(output_dir, "examples.jsonl")
+    # Save JSONL with alternating lines: example, then true_report
+    output_dir = "data"
+    os.makedirs(output_dir, exist_ok=True)
+    jsonl_path = os.path.join(output_dir, "examples.jsonl")
 
-        try:
-            with open(jsonl_path, "w", encoding="utf-8") as f:
-                for game_key in all_examples_data.keys():
-                    f.write(json.dumps({"game_id": game_key, "type": "example", "data": all_examples_data[game_key]}, ensure_ascii=False) + "\n")
-                    f.write(json.dumps({"game_id": game_key, "type": "true_report", "data": all_true_reports_data[game_key]}, ensure_ascii=False) + "\n")
-            print(f"Successfully saved alternating JSONL to {jsonl_path}")
-        except Exception as e:
-            print(f"Error saving to {jsonl_path}: {e}")
+    try:
+        with open(jsonl_path, "w", encoding="utf-8") as f:
+            for game_key in all_examples_data.keys():
+                f.write(json.dumps({"game_id": game_key, "type": "example", "data": all_examples_data[game_key]}, ensure_ascii=False) + "\n")
+                f.write(json.dumps({"game_id": game_key, "type": "true_report", "data": all_true_reports_data[game_key]}, ensure_ascii=False) + "\n")
+        print(f"Successfully saved alternating JSONL to {jsonl_path}")
+    except Exception as e:
+        print(f"Error saving to {jsonl_path}: {e}")
 
-    # Save the complete dictionaries to 2 separate JSON file
-    create_json_files = True
+    # Optoanal for readability only - Save the complete dictionaries to 2 separate JSON file
+    create_json_files = False
     if create_json_files:
         output_dir = "data"
         os.makedirs(output_dir, exist_ok=True)

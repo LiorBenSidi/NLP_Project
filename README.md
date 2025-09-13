@@ -28,7 +28,7 @@ The pipeline generates synthetic games, prompts an LLM, rebuilds/repairs its JSO
 
 ## 2) Setup
 
-**Python**: 3.10+
+**Python**: 3.10+ (we used 3.11.13)
 
 **Install**:
 - dotenv
@@ -60,7 +60,7 @@ python generate_data.py
 ```
 This creates under `data/`:
 - `examples.jsonl` — pair of game eaxmple and ground true for each 2 lines (Save JSONL with alternating lines: example, then true_report)
-- optional (need to set `create_json_files = True` in `generate_data.py`):
+- optional (Disabled by default - need to set `create_json_files = True` in `generate_data.py`), and those files are only for readability (not useable) :
 - - `examples.json` — the narrative log + metadata sent to the LLM.
 - - `true_report.json` — the simulator’s ground truth.
 
@@ -69,6 +69,8 @@ This creates under `data/`:
 python run_eval.py
 ```
 
+> **Note:** (Optional) Enabled by default - You can set `RETURN_DETAILS = True`  in `run_eval.py` to get more detials regarding the evaluation analysis per-game.
+
 **Per difficulty (basic, medium, hard), artifacts are saved as**:<br/>
 | Path | Description |
 |---|---|
@@ -76,7 +78,6 @@ python run_eval.py
 | `data/llm_responses/<difficulty>/json/<game_id>.json` | Rebuilt JSON that matches the ground-truth schema. |
 | `data/llm_responses/<difficulty>/json/<game_id>__details.json` | Per-game detailed contributions + totals (both modes). |
 | `data/summary.json` | Per-difficulty summary + per-game results. |
-
 
 ---
 
@@ -248,7 +249,8 @@ For every game (under each difficulty) the runner saves:
 
 ## 6) Configuration cheatsheet
 
-This section maps **what you might want to change** to **where in the code** it lives. Items are aligned with the current implementations of `generate_data.py`, `run_eval.py`, and `evaluation.py`.
+This section maps **what you might want to change** to **where in the code** it lives.
+Items are aligned with the current implementations of `generate_data.py`, `run_eval.py`, and `evaluation.py`.
 
 ---
 
@@ -304,6 +306,119 @@ This section maps **what you might want to change** to **where in the code** it 
   ```python
   import random
   random.seed(42)
+
+### 6.2 Orchestration in `run_eval.py`
+
+**Where to change / What it does**
+
+- **Model route**
+  - **Where:** `MODEL_TO_TEST` (top of file)
+  - **Change to:** any LiteLLM route string (e.g., `"gemini/gemini-2.5-pro"`, `"gpt-4o"`, etc.)
+  - **Effect:** selects the single model used for the entire run.
+
+- **Per-game details file**
+  - **Where:** `RETURN_DETAILS = False`
+  - **Set to:** `True` to save `json/<game_id>__details.json` (full contributions + totals for both modes).
+
+- **Evaluation modes list**
+  - **Where:** `EVAL_TYPES = ["field", "fractional_per_block"]`
+  - **Note:** kept for formatting/aggregation. Both modes are always computed from a single pass; usually do **not** change.
+
+- **Rate limiting / sleeps**
+  - **Where:** two places in `__main__` right after API calls:
+    - after the main completion: `minutes = 0.25` → `time.sleep(60 * minutes)`
+    - after the JSON-fixer call: `minutes = 1`
+  - **Change to:** smaller/larger delays if you hit provider rate-limits (or `0` to disable).
+
+- **Retries on malformed output**
+  - **Where:** `max_retries = 2`
+  - **Effect:** number of API attempts per game (repair & fixer are tried within each attempt).
+
+- **JSON-mode detection & fallback**
+  - **Where:** `DOES_MODEL_SUPPORT_JSON`, `JSON_MODE_FAILED_ONCE`, `get_litellm_response(...)`
+  - **Behavior:** checks LiteLLM registry once; tries `response_format={"type":"json_object"}` (and Gemini `extra_body`).  
+    On a single failure, flips `JSON_MODE_FAILED_ONCE=True` and falls back to plain text + local repair for the rest of the run.
+  - **Force plain text:** set `DOES_MODEL_SUPPORT_JSON = False` near the top.
+
+- **Prompt & schema**
+  - **Where:** `SYSTEM_INSTRUCTIONS_PROMPT` (+ embedded **canonical JSON example**)
+  - **Change:** edit only if you add/remove stats; keep the strict “single JSON object” rules.
+
+- **JSON repair**
+  - **Where:** `repair_json_structure(...)`, `ask_model_to_fix_json(...)`
+  - **What:** strips code fences/comments, removes trailing commas, balances braces/brackets; optional second call asks the model to return a valid JSON.
+
+- **Shape rebuild & typing**
+  - **Where:** `repair_and_rebuild_json(...)`, `coerce_numbers_inplace(...)`
+  - **What:** coerces the model output to the **exact** ground-truth shape and types (ints/strings/lists), including moving a wrongly nested team back to the top level.
+
+- **All-zeros guard**
+  - **Where:** `is_report_all_zeros(...)`
+  - **What:** rejects degenerate reports (team points==0 and every player has zeros).  
+    **Disable check:** return `False` from this function.
+
+- **Outputs & summary**
+  - **Where:** main loop under `__main__`
+  - **What:** saves `text/`, rebuilt `json/`, optional `__details.json`, and builds `data/summary.json` with per-game `formula_vars`, `accuracy_pct`, and a single `discrepancies` list.
+
+### 6.3 Evaluator in `evaluation.py`
+
+**Single-pass contributions → two scoring modes**
+
+- **Entry point**
+  - **Where:** `evaluate_reports(llm_report, ground_truth_report, eval_type="both", return_details=False)`
+  - **Note:** `eval_type` is kept for API compatibility; the function always computes **both** modes from the same contributions.
+
+- **What is checked (per game)**
+  - `final_score` (one check, scope `"meta"`).
+  - **Team stats**: for every key under `final_stats[team]["stats"]`.
+  - **Players (participants)**: for every participant × every stat key under `final_stats[team]["players"][player]`.
+  - **Non-participants**: one `"all_zeros"` check per roster member **not** in `participants`.
+
+- **Missing team block policy**
+  - **Where:** early branch inside the team loop.
+  - **Effect:** if LLM is missing an entire team block, **all** team stats and **all** player checks for that team are counted as **incorrect** in both modes (denominator preserved).
+
+- **Weights (how scores are computed)**
+  - **Where:** `_add_contrib(...)` + the loops that call it.
+  - **`field` mode:** each check uses `w_field = 1.0`.
+  - **`fractional_per_block` mode:**
+    - `final_score`: `w_frac = 1.0`
+    - team-stats block (per team): each stat uses `w_frac = 1 / (#team_stats)`
+    - players block (per team): each player-stat and each non-participant zero-check uses  
+      `w_frac = 1 / (participant_stat_checks + non_participants)`
+  - **Display “snap to 1.0”**
+    - **Where:** `_snap1(x, eps=1e-9)`
+    - **What:** only for **display** in `formula_vars` the block weights are shown as `1.0` if `|x-1|<eps`.  
+      Accuracy uses the **raw** sums (no snapping).
+
+- **Non-participant all-zeros test**
+  - **Where:** `is_player_stats_all_zeros(...)`
+  - **Rule:** only a dict with **all zeros** passes; `None`/missing/partial stats → **incorrect**.
+
+- **`formula_vars` (transparent numerators/denominators)**
+  - **`field` → `formula`:** `"correct_fields/total_fields * 100"`  
+    **`formula_vars.breakdown`:**
+    - `final_score` — `{correct,total}`
+    - `team_stats` — `{correct,total, per_team:{...}}`
+    - `player_stats` — `{correct,total, components:{...}}`, where `components` includes:
+      - `participants_total`, `participants_by_team`
+      - `roster_total`, `non_participants_total`
+      - `stats_per_participant_uniform` (if constant) **or** per-team `unique_counts` + `avg_per_player`
+      - `participant_checks_expected_by_team` and the overall `participant_checks_expected_total`
+    - `non_participants` — `{correct,total}`
+  - **`fractional_per_block` → `formula`:** `"weighted_correct_sum/total_weight_sum * 100"`  
+    **`formula_vars.blocks`:**
+    - `final_score` — `{weight, correct_weight}`
+    - `team_stats` — per team: `{weight, matched_stats, total_stats, block_fraction}`
+    - `players` — per team: `{weight, matched_checks, total_checks, block_fraction, components:{participants, non_participants, participant_checks_expected, non_participant_checks_expected, expected_total_checks}}`
+
+- **Return shape**
+  - `(totals_by_type, discrepancies, details_or_none)`  
+    - `totals_by_type["field"|"fractional_per_block"]` → `{accuracy_pct, formula, formula_vars, weighted_sanity}`
+    - `discrepancies` → one list per game
+    - `details_or_none` → only if `return_details=True` (also saved by `run_eval.py` when `RETURN_DETAILS=True`)
+
 ---
 
 ## 7) Deliverables (for course submission)
