@@ -1,0 +1,5820 @@
+{
+    "eval_type": "both",
+    "contributions": [
+        {
+            "scope": "meta",
+            "team": null,
+            "player": null,
+            "stat": "final_score",
+            "gt": "Poland: 14, Israel: 12",
+            "llm": "Poland: 14, Israel: 12",
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 1.0
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 1.0
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 1.000000"
+            },
+            "note": "final_score counts as one full field in both modes"
+        },
+        {
+            "scope": "team",
+            "team": "Poland",
+            "player": null,
+            "stat": "points",
+            "gt": 14,
+            "llm": 14,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.066667"
+            },
+            "note": "team-block: field=1 per stat; fractional=1/15 each"
+        },
+        {
+            "scope": "team",
+            "team": "Poland",
+            "player": null,
+            "stat": "assists",
+            "gt": 3,
+            "llm": 8,
+            "correct": false,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "contribution": {
+                "field": 0.0,
+                "fractional_per_block": 0.0
+            },
+            "formula": {
+                "field": "0 * 1.000000",
+                "fractional_per_block": "0 * 0.066667"
+            },
+            "note": "team-block: field=1 per stat; fractional=1/15 each"
+        },
+        {
+            "scope": "team",
+            "team": "Poland",
+            "player": null,
+            "stat": "rebounds",
+            "gt": 8,
+            "llm": 8,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.066667"
+            },
+            "note": "team-block: field=1 per stat; fractional=1/15 each"
+        },
+        {
+            "scope": "team",
+            "team": "Poland",
+            "player": null,
+            "stat": "defensive_rebounds",
+            "gt": 7,
+            "llm": 7,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.066667"
+            },
+            "note": "team-block: field=1 per stat; fractional=1/15 each"
+        },
+        {
+            "scope": "team",
+            "team": "Poland",
+            "player": null,
+            "stat": "offensive_rebounds",
+            "gt": 1,
+            "llm": 1,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.066667"
+            },
+            "note": "team-block: field=1 per stat; fractional=1/15 each"
+        },
+        {
+            "scope": "team",
+            "team": "Poland",
+            "player": null,
+            "stat": "fouls",
+            "gt": 4,
+            "llm": 4,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.066667"
+            },
+            "note": "team-block: field=1 per stat; fractional=1/15 each"
+        },
+        {
+            "scope": "team",
+            "team": "Poland",
+            "player": null,
+            "stat": "steals",
+            "gt": 1,
+            "llm": 1,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.066667"
+            },
+            "note": "team-block: field=1 per stat; fractional=1/15 each"
+        },
+        {
+            "scope": "team",
+            "team": "Poland",
+            "player": null,
+            "stat": "blocks",
+            "gt": 4,
+            "llm": 4,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.066667"
+            },
+            "note": "team-block: field=1 per stat; fractional=1/15 each"
+        },
+        {
+            "scope": "team",
+            "team": "Poland",
+            "player": null,
+            "stat": "turnovers",
+            "gt": 1,
+            "llm": 1,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.066667"
+            },
+            "note": "team-block: field=1 per stat; fractional=1/15 each"
+        },
+        {
+            "scope": "team",
+            "team": "Poland",
+            "player": null,
+            "stat": "2pt_shots_made",
+            "gt": 1,
+            "llm": 1,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.066667"
+            },
+            "note": "team-block: field=1 per stat; fractional=1/15 each"
+        },
+        {
+            "scope": "team",
+            "team": "Poland",
+            "player": null,
+            "stat": "2pt_shots_attempted",
+            "gt": 6,
+            "llm": 5,
+            "correct": false,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "contribution": {
+                "field": 0.0,
+                "fractional_per_block": 0.0
+            },
+            "formula": {
+                "field": "0 * 1.000000",
+                "fractional_per_block": "0 * 0.066667"
+            },
+            "note": "team-block: field=1 per stat; fractional=1/15 each"
+        },
+        {
+            "scope": "team",
+            "team": "Poland",
+            "player": null,
+            "stat": "3pt_shots_made",
+            "gt": 2,
+            "llm": 2,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.066667"
+            },
+            "note": "team-block: field=1 per stat; fractional=1/15 each"
+        },
+        {
+            "scope": "team",
+            "team": "Poland",
+            "player": null,
+            "stat": "3pt_shots_attempted",
+            "gt": 8,
+            "llm": 5,
+            "correct": false,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "contribution": {
+                "field": 0.0,
+                "fractional_per_block": 0.0
+            },
+            "formula": {
+                "field": "0 * 1.000000",
+                "fractional_per_block": "0 * 0.066667"
+            },
+            "note": "team-block: field=1 per stat; fractional=1/15 each"
+        },
+        {
+            "scope": "team",
+            "team": "Poland",
+            "player": null,
+            "stat": "ft_made",
+            "gt": 6,
+            "llm": 6,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.066667"
+            },
+            "note": "team-block: field=1 per stat; fractional=1/15 each"
+        },
+        {
+            "scope": "team",
+            "team": "Poland",
+            "player": null,
+            "stat": "ft_attempted",
+            "gt": 11,
+            "llm": 11,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.066667"
+            },
+            "note": "team-block: field=1 per stat; fractional=1/15 each"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Aleksander Dziewa",
+            "stat": "points",
+            "gt": 3,
+            "llm": 3,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Aleksander Dziewa",
+            "stat": "assists",
+            "gt": 0,
+            "llm": 1,
+            "correct": false,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 0.0,
+                "fractional_per_block": 0.0
+            },
+            "formula": {
+                "field": "0 * 1.000000",
+                "fractional_per_block": "0 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Aleksander Dziewa",
+            "stat": "rebounds",
+            "gt": 2,
+            "llm": 2,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Aleksander Dziewa",
+            "stat": "defensive_rebounds",
+            "gt": 2,
+            "llm": 2,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Aleksander Dziewa",
+            "stat": "offensive_rebounds",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Aleksander Dziewa",
+            "stat": "fouls",
+            "gt": 1,
+            "llm": 1,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Aleksander Dziewa",
+            "stat": "steals",
+            "gt": 1,
+            "llm": 1,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Aleksander Dziewa",
+            "stat": "blocks",
+            "gt": 2,
+            "llm": 2,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Aleksander Dziewa",
+            "stat": "turnovers",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Aleksander Dziewa",
+            "stat": "2pt_shots_made",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Aleksander Dziewa",
+            "stat": "2pt_shots_attempted",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Aleksander Dziewa",
+            "stat": "3pt_shots_made",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Aleksander Dziewa",
+            "stat": "3pt_shots_attempted",
+            "gt": 2,
+            "llm": 0,
+            "correct": false,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 0.0,
+                "fractional_per_block": 0.0
+            },
+            "formula": {
+                "field": "0 * 1.000000",
+                "fractional_per_block": "0 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Aleksander Dziewa",
+            "stat": "ft_made",
+            "gt": 3,
+            "llm": 3,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Aleksander Dziewa",
+            "stat": "ft_attempted",
+            "gt": 6,
+            "llm": 6,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Andrzej Pluta",
+            "stat": "points",
+            "gt": 3,
+            "llm": 3,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Andrzej Pluta",
+            "stat": "assists",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Andrzej Pluta",
+            "stat": "rebounds",
+            "gt": 1,
+            "llm": 1,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Andrzej Pluta",
+            "stat": "defensive_rebounds",
+            "gt": 1,
+            "llm": 1,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Andrzej Pluta",
+            "stat": "offensive_rebounds",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Andrzej Pluta",
+            "stat": "fouls",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Andrzej Pluta",
+            "stat": "steals",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Andrzej Pluta",
+            "stat": "blocks",
+            "gt": 1,
+            "llm": 1,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Andrzej Pluta",
+            "stat": "turnovers",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Andrzej Pluta",
+            "stat": "2pt_shots_made",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Andrzej Pluta",
+            "stat": "2pt_shots_attempted",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Andrzej Pluta",
+            "stat": "3pt_shots_made",
+            "gt": 1,
+            "llm": 1,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Andrzej Pluta",
+            "stat": "3pt_shots_attempted",
+            "gt": 1,
+            "llm": 1,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Andrzej Pluta",
+            "stat": "ft_made",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Andrzej Pluta",
+            "stat": "ft_attempted",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Jordan Loyd",
+            "stat": "points",
+            "gt": 1,
+            "llm": 1,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Jordan Loyd",
+            "stat": "assists",
+            "gt": 2,
+            "llm": 2,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Jordan Loyd",
+            "stat": "rebounds",
+            "gt": 2,
+            "llm": 2,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Jordan Loyd",
+            "stat": "defensive_rebounds",
+            "gt": 2,
+            "llm": 2,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Jordan Loyd",
+            "stat": "offensive_rebounds",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Jordan Loyd",
+            "stat": "fouls",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Jordan Loyd",
+            "stat": "steals",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Jordan Loyd",
+            "stat": "blocks",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Jordan Loyd",
+            "stat": "turnovers",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Jordan Loyd",
+            "stat": "2pt_shots_made",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Jordan Loyd",
+            "stat": "2pt_shots_attempted",
+            "gt": 2,
+            "llm": 2,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Jordan Loyd",
+            "stat": "3pt_shots_made",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Jordan Loyd",
+            "stat": "3pt_shots_attempted",
+            "gt": 2,
+            "llm": 1,
+            "correct": false,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 0.0,
+                "fractional_per_block": 0.0
+            },
+            "formula": {
+                "field": "0 * 1.000000",
+                "fractional_per_block": "0 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Jordan Loyd",
+            "stat": "ft_made",
+            "gt": 1,
+            "llm": 1,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Jordan Loyd",
+            "stat": "ft_attempted",
+            "gt": 3,
+            "llm": 3,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Kamil Laczynski",
+            "stat": "points",
+            "gt": 5,
+            "llm": 5,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Kamil Laczynski",
+            "stat": "assists",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Kamil Laczynski",
+            "stat": "rebounds",
+            "gt": 1,
+            "llm": 1,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Kamil Laczynski",
+            "stat": "defensive_rebounds",
+            "gt": 1,
+            "llm": 1,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Kamil Laczynski",
+            "stat": "offensive_rebounds",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Kamil Laczynski",
+            "stat": "fouls",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Kamil Laczynski",
+            "stat": "steals",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Kamil Laczynski",
+            "stat": "blocks",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Kamil Laczynski",
+            "stat": "turnovers",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Kamil Laczynski",
+            "stat": "2pt_shots_made",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Kamil Laczynski",
+            "stat": "2pt_shots_attempted",
+            "gt": 2,
+            "llm": 1,
+            "correct": false,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 0.0,
+                "fractional_per_block": 0.0
+            },
+            "formula": {
+                "field": "0 * 1.000000",
+                "fractional_per_block": "0 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Kamil Laczynski",
+            "stat": "3pt_shots_made",
+            "gt": 1,
+            "llm": 1,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Kamil Laczynski",
+            "stat": "3pt_shots_attempted",
+            "gt": 3,
+            "llm": 3,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Kamil Laczynski",
+            "stat": "ft_made",
+            "gt": 2,
+            "llm": 2,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Kamil Laczynski",
+            "stat": "ft_attempted",
+            "gt": 2,
+            "llm": 2,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Mateusz Ponitka",
+            "stat": "points",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Mateusz Ponitka",
+            "stat": "assists",
+            "gt": 0,
+            "llm": 2,
+            "correct": false,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 0.0,
+                "fractional_per_block": 0.0
+            },
+            "formula": {
+                "field": "0 * 1.000000",
+                "fractional_per_block": "0 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Mateusz Ponitka",
+            "stat": "rebounds",
+            "gt": 1,
+            "llm": 1,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Mateusz Ponitka",
+            "stat": "defensive_rebounds",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Mateusz Ponitka",
+            "stat": "offensive_rebounds",
+            "gt": 1,
+            "llm": 1,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Mateusz Ponitka",
+            "stat": "fouls",
+            "gt": 1,
+            "llm": 1,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Mateusz Ponitka",
+            "stat": "steals",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Mateusz Ponitka",
+            "stat": "blocks",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Mateusz Ponitka",
+            "stat": "turnovers",
+            "gt": 1,
+            "llm": 1,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Mateusz Ponitka",
+            "stat": "2pt_shots_made",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Mateusz Ponitka",
+            "stat": "2pt_shots_attempted",
+            "gt": 1,
+            "llm": 1,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Mateusz Ponitka",
+            "stat": "3pt_shots_made",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Mateusz Ponitka",
+            "stat": "3pt_shots_attempted",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Mateusz Ponitka",
+            "stat": "ft_made",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Mateusz Ponitka",
+            "stat": "ft_attempted",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Przemyslaw Zolnierewicz",
+            "stat": "points",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Przemyslaw Zolnierewicz",
+            "stat": "assists",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Przemyslaw Zolnierewicz",
+            "stat": "rebounds",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Przemyslaw Zolnierewicz",
+            "stat": "defensive_rebounds",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Przemyslaw Zolnierewicz",
+            "stat": "offensive_rebounds",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Przemyslaw Zolnierewicz",
+            "stat": "fouls",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Przemyslaw Zolnierewicz",
+            "stat": "steals",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Przemyslaw Zolnierewicz",
+            "stat": "blocks",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Przemyslaw Zolnierewicz",
+            "stat": "turnovers",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Przemyslaw Zolnierewicz",
+            "stat": "2pt_shots_made",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Przemyslaw Zolnierewicz",
+            "stat": "2pt_shots_attempted",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Przemyslaw Zolnierewicz",
+            "stat": "3pt_shots_made",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Przemyslaw Zolnierewicz",
+            "stat": "3pt_shots_attempted",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Przemyslaw Zolnierewicz",
+            "stat": "ft_made",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Przemyslaw Zolnierewicz",
+            "stat": "ft_attempted",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Tomasz Gielo",
+            "stat": "points",
+            "gt": 2,
+            "llm": 2,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Tomasz Gielo",
+            "stat": "assists",
+            "gt": 1,
+            "llm": 3,
+            "correct": false,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 0.0,
+                "fractional_per_block": 0.0
+            },
+            "formula": {
+                "field": "0 * 1.000000",
+                "fractional_per_block": "0 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Tomasz Gielo",
+            "stat": "rebounds",
+            "gt": 1,
+            "llm": 1,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Tomasz Gielo",
+            "stat": "defensive_rebounds",
+            "gt": 1,
+            "llm": 1,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Tomasz Gielo",
+            "stat": "offensive_rebounds",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Tomasz Gielo",
+            "stat": "fouls",
+            "gt": 2,
+            "llm": 2,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Tomasz Gielo",
+            "stat": "steals",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Tomasz Gielo",
+            "stat": "blocks",
+            "gt": 1,
+            "llm": 1,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Tomasz Gielo",
+            "stat": "turnovers",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Tomasz Gielo",
+            "stat": "2pt_shots_made",
+            "gt": 1,
+            "llm": 1,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Tomasz Gielo",
+            "stat": "2pt_shots_attempted",
+            "gt": 1,
+            "llm": 1,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Tomasz Gielo",
+            "stat": "3pt_shots_made",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Tomasz Gielo",
+            "stat": "3pt_shots_attempted",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Tomasz Gielo",
+            "stat": "ft_made",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Tomasz Gielo",
+            "stat": "ft_attempted",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "non_participant",
+            "team": "Poland",
+            "player": "Aleksander Balcerowski",
+            "stat": "all_zeros",
+            "gt": "all zeros expected",
+            "llm": {
+                "points": 0,
+                "assists": 0,
+                "rebounds": 0,
+                "defensive_rebounds": 0,
+                "offensive_rebounds": 0,
+                "fouls": 0,
+                "steals": 0,
+                "blocks": 0,
+                "turnovers": 0,
+                "2pt_shots_made": 0,
+                "2pt_shots_attempted": 0,
+                "3pt_shots_made": 0,
+                "3pt_shots_attempted": 0,
+                "ft_made": 0,
+                "ft_attempted": 0
+            },
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "non-participant all-zeros"
+        },
+        {
+            "scope": "non_participant",
+            "team": "Poland",
+            "player": "Michal Sokolowski",
+            "stat": "all_zeros",
+            "gt": "all zeros expected",
+            "llm": {
+                "points": 0,
+                "assists": 0,
+                "rebounds": 0,
+                "defensive_rebounds": 0,
+                "offensive_rebounds": 0,
+                "fouls": 0,
+                "steals": 0,
+                "blocks": 0,
+                "turnovers": 0,
+                "2pt_shots_made": 0,
+                "2pt_shots_attempted": 0,
+                "3pt_shots_made": 0,
+                "3pt_shots_attempted": 0,
+                "ft_made": 0,
+                "ft_attempted": 0
+            },
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "non-participant all-zeros"
+        },
+        {
+            "scope": "non_participant",
+            "team": "Poland",
+            "player": "Szymon Zapala",
+            "stat": "all_zeros",
+            "gt": "all zeros expected",
+            "llm": {
+                "points": 0,
+                "assists": 0,
+                "rebounds": 0,
+                "defensive_rebounds": 0,
+                "offensive_rebounds": 0,
+                "fouls": 0,
+                "steals": 0,
+                "blocks": 0,
+                "turnovers": 0,
+                "2pt_shots_made": 0,
+                "2pt_shots_attempted": 0,
+                "3pt_shots_made": 0,
+                "3pt_shots_attempted": 0,
+                "ft_made": 0,
+                "ft_attempted": 0
+            },
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "non-participant all-zeros"
+        },
+        {
+            "scope": "non_participant",
+            "team": "Poland",
+            "player": "Dominik Olejniczak",
+            "stat": "all_zeros",
+            "gt": "all zeros expected",
+            "llm": {
+                "points": 0,
+                "assists": 0,
+                "rebounds": 0,
+                "defensive_rebounds": 0,
+                "offensive_rebounds": 0,
+                "fouls": 0,
+                "steals": 0,
+                "blocks": 0,
+                "turnovers": 0,
+                "2pt_shots_made": 0,
+                "2pt_shots_attempted": 0,
+                "3pt_shots_made": 0,
+                "3pt_shots_attempted": 0,
+                "ft_made": 0,
+                "ft_attempted": 0
+            },
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "non-participant all-zeros"
+        },
+        {
+            "scope": "non_participant",
+            "team": "Poland",
+            "player": "Michal Michalak",
+            "stat": "all_zeros",
+            "gt": "all zeros expected",
+            "llm": {
+                "points": 0,
+                "assists": 0,
+                "rebounds": 0,
+                "defensive_rebounds": 0,
+                "offensive_rebounds": 0,
+                "fouls": 0,
+                "steals": 0,
+                "blocks": 0,
+                "turnovers": 0,
+                "2pt_shots_made": 0,
+                "2pt_shots_attempted": 0,
+                "3pt_shots_made": 0,
+                "3pt_shots_attempted": 0,
+                "ft_made": 0,
+                "ft_attempted": 0
+            },
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "non-participant all-zeros"
+        },
+        {
+            "scope": "team",
+            "team": "Israel",
+            "player": null,
+            "stat": "points",
+            "gt": 12,
+            "llm": 12,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.066667"
+            },
+            "note": "team-block: field=1 per stat; fractional=1/15 each"
+        },
+        {
+            "scope": "team",
+            "team": "Israel",
+            "player": null,
+            "stat": "assists",
+            "gt": 3,
+            "llm": 6,
+            "correct": false,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "contribution": {
+                "field": 0.0,
+                "fractional_per_block": 0.0
+            },
+            "formula": {
+                "field": "0 * 1.000000",
+                "fractional_per_block": "0 * 0.066667"
+            },
+            "note": "team-block: field=1 per stat; fractional=1/15 each"
+        },
+        {
+            "scope": "team",
+            "team": "Israel",
+            "player": null,
+            "stat": "rebounds",
+            "gt": 10,
+            "llm": 11,
+            "correct": false,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "contribution": {
+                "field": 0.0,
+                "fractional_per_block": 0.0
+            },
+            "formula": {
+                "field": "0 * 1.000000",
+                "fractional_per_block": "0 * 0.066667"
+            },
+            "note": "team-block: field=1 per stat; fractional=1/15 each"
+        },
+        {
+            "scope": "team",
+            "team": "Israel",
+            "player": null,
+            "stat": "defensive_rebounds",
+            "gt": 8,
+            "llm": 9,
+            "correct": false,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "contribution": {
+                "field": 0.0,
+                "fractional_per_block": 0.0
+            },
+            "formula": {
+                "field": "0 * 1.000000",
+                "fractional_per_block": "0 * 0.066667"
+            },
+            "note": "team-block: field=1 per stat; fractional=1/15 each"
+        },
+        {
+            "scope": "team",
+            "team": "Israel",
+            "player": null,
+            "stat": "offensive_rebounds",
+            "gt": 2,
+            "llm": 2,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.066667"
+            },
+            "note": "team-block: field=1 per stat; fractional=1/15 each"
+        },
+        {
+            "scope": "team",
+            "team": "Israel",
+            "player": null,
+            "stat": "fouls",
+            "gt": 4,
+            "llm": 4,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.066667"
+            },
+            "note": "team-block: field=1 per stat; fractional=1/15 each"
+        },
+        {
+            "scope": "team",
+            "team": "Israel",
+            "player": null,
+            "stat": "steals",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.066667"
+            },
+            "note": "team-block: field=1 per stat; fractional=1/15 each"
+        },
+        {
+            "scope": "team",
+            "team": "Israel",
+            "player": null,
+            "stat": "blocks",
+            "gt": 2,
+            "llm": 2,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.066667"
+            },
+            "note": "team-block: field=1 per stat; fractional=1/15 each"
+        },
+        {
+            "scope": "team",
+            "team": "Israel",
+            "player": null,
+            "stat": "turnovers",
+            "gt": 1,
+            "llm": 1,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.066667"
+            },
+            "note": "team-block: field=1 per stat; fractional=1/15 each"
+        },
+        {
+            "scope": "team",
+            "team": "Israel",
+            "player": null,
+            "stat": "2pt_shots_made",
+            "gt": 1,
+            "llm": 1,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.066667"
+            },
+            "note": "team-block: field=1 per stat; fractional=1/15 each"
+        },
+        {
+            "scope": "team",
+            "team": "Israel",
+            "player": null,
+            "stat": "2pt_shots_attempted",
+            "gt": 8,
+            "llm": 6,
+            "correct": false,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "contribution": {
+                "field": 0.0,
+                "fractional_per_block": 0.0
+            },
+            "formula": {
+                "field": "0 * 1.000000",
+                "fractional_per_block": "0 * 0.066667"
+            },
+            "note": "team-block: field=1 per stat; fractional=1/15 each"
+        },
+        {
+            "scope": "team",
+            "team": "Israel",
+            "player": null,
+            "stat": "3pt_shots_made",
+            "gt": 2,
+            "llm": 2,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.066667"
+            },
+            "note": "team-block: field=1 per stat; fractional=1/15 each"
+        },
+        {
+            "scope": "team",
+            "team": "Israel",
+            "player": null,
+            "stat": "3pt_shots_attempted",
+            "gt": 6,
+            "llm": 4,
+            "correct": false,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "contribution": {
+                "field": 0.0,
+                "fractional_per_block": 0.0
+            },
+            "formula": {
+                "field": "0 * 1.000000",
+                "fractional_per_block": "0 * 0.066667"
+            },
+            "note": "team-block: field=1 per stat; fractional=1/15 each"
+        },
+        {
+            "scope": "team",
+            "team": "Israel",
+            "player": null,
+            "stat": "ft_made",
+            "gt": 4,
+            "llm": 4,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.066667"
+            },
+            "note": "team-block: field=1 per stat; fractional=1/15 each"
+        },
+        {
+            "scope": "team",
+            "team": "Israel",
+            "player": null,
+            "stat": "ft_attempted",
+            "gt": 10,
+            "llm": 10,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.066667"
+            },
+            "note": "team-block: field=1 per stat; fractional=1/15 each"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Guy Palatin",
+            "stat": "points",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Guy Palatin",
+            "stat": "assists",
+            "gt": 1,
+            "llm": 1,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Guy Palatin",
+            "stat": "rebounds",
+            "gt": 2,
+            "llm": 2,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Guy Palatin",
+            "stat": "defensive_rebounds",
+            "gt": 2,
+            "llm": 2,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Guy Palatin",
+            "stat": "offensive_rebounds",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Guy Palatin",
+            "stat": "fouls",
+            "gt": 2,
+            "llm": 2,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Guy Palatin",
+            "stat": "steals",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Guy Palatin",
+            "stat": "blocks",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Guy Palatin",
+            "stat": "turnovers",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Guy Palatin",
+            "stat": "2pt_shots_made",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Guy Palatin",
+            "stat": "2pt_shots_attempted",
+            "gt": 1,
+            "llm": 1,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Guy Palatin",
+            "stat": "3pt_shots_made",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Guy Palatin",
+            "stat": "3pt_shots_attempted",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Guy Palatin",
+            "stat": "ft_made",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Guy Palatin",
+            "stat": "ft_attempted",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Itay Segev",
+            "stat": "points",
+            "gt": 3,
+            "llm": 3,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Itay Segev",
+            "stat": "assists",
+            "gt": 1,
+            "llm": 2,
+            "correct": false,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 0.0,
+                "fractional_per_block": 0.0
+            },
+            "formula": {
+                "field": "0 * 1.000000",
+                "fractional_per_block": "0 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Itay Segev",
+            "stat": "rebounds",
+            "gt": 1,
+            "llm": 1,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Itay Segev",
+            "stat": "defensive_rebounds",
+            "gt": 1,
+            "llm": 1,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Itay Segev",
+            "stat": "offensive_rebounds",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Itay Segev",
+            "stat": "fouls",
+            "gt": 1,
+            "llm": 1,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Itay Segev",
+            "stat": "steals",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Itay Segev",
+            "stat": "blocks",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Itay Segev",
+            "stat": "turnovers",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Itay Segev",
+            "stat": "2pt_shots_made",
+            "gt": 1,
+            "llm": 1,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Itay Segev",
+            "stat": "2pt_shots_attempted",
+            "gt": 2,
+            "llm": 2,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Itay Segev",
+            "stat": "3pt_shots_made",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Itay Segev",
+            "stat": "3pt_shots_attempted",
+            "gt": 1,
+            "llm": 0,
+            "correct": false,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 0.0,
+                "fractional_per_block": 0.0
+            },
+            "formula": {
+                "field": "0 * 1.000000",
+                "fractional_per_block": "0 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Itay Segev",
+            "stat": "ft_made",
+            "gt": 1,
+            "llm": 1,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Itay Segev",
+            "stat": "ft_attempted",
+            "gt": 3,
+            "llm": 3,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Nimrod Levi",
+            "stat": "points",
+            "gt": 4,
+            "llm": 4,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Nimrod Levi",
+            "stat": "assists",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Nimrod Levi",
+            "stat": "rebounds",
+            "gt": 4,
+            "llm": 5,
+            "correct": false,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 0.0,
+                "fractional_per_block": 0.0
+            },
+            "formula": {
+                "field": "0 * 1.000000",
+                "fractional_per_block": "0 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Nimrod Levi",
+            "stat": "defensive_rebounds",
+            "gt": 3,
+            "llm": 4,
+            "correct": false,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 0.0,
+                "fractional_per_block": 0.0
+            },
+            "formula": {
+                "field": "0 * 1.000000",
+                "fractional_per_block": "0 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Nimrod Levi",
+            "stat": "offensive_rebounds",
+            "gt": 1,
+            "llm": 1,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Nimrod Levi",
+            "stat": "fouls",
+            "gt": 1,
+            "llm": 1,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Nimrod Levi",
+            "stat": "steals",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Nimrod Levi",
+            "stat": "blocks",
+            "gt": 2,
+            "llm": 2,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Nimrod Levi",
+            "stat": "turnovers",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Nimrod Levi",
+            "stat": "2pt_shots_made",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Nimrod Levi",
+            "stat": "2pt_shots_attempted",
+            "gt": 2,
+            "llm": 1,
+            "correct": false,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 0.0,
+                "fractional_per_block": 0.0
+            },
+            "formula": {
+                "field": "0 * 1.000000",
+                "fractional_per_block": "0 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Nimrod Levi",
+            "stat": "3pt_shots_made",
+            "gt": 1,
+            "llm": 1,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Nimrod Levi",
+            "stat": "3pt_shots_attempted",
+            "gt": 2,
+            "llm": 1,
+            "correct": false,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 0.0,
+                "fractional_per_block": 0.0
+            },
+            "formula": {
+                "field": "0 * 1.000000",
+                "fractional_per_block": "0 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Nimrod Levi",
+            "stat": "ft_made",
+            "gt": 1,
+            "llm": 1,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Nimrod Levi",
+            "stat": "ft_attempted",
+            "gt": 5,
+            "llm": 5,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Rafi Menco",
+            "stat": "points",
+            "gt": 5,
+            "llm": 5,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Rafi Menco",
+            "stat": "assists",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Rafi Menco",
+            "stat": "rebounds",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Rafi Menco",
+            "stat": "defensive_rebounds",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Rafi Menco",
+            "stat": "offensive_rebounds",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Rafi Menco",
+            "stat": "fouls",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Rafi Menco",
+            "stat": "steals",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Rafi Menco",
+            "stat": "blocks",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Rafi Menco",
+            "stat": "turnovers",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Rafi Menco",
+            "stat": "2pt_shots_made",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Rafi Menco",
+            "stat": "2pt_shots_attempted",
+            "gt": 3,
+            "llm": 2,
+            "correct": false,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 0.0,
+                "fractional_per_block": 0.0
+            },
+            "formula": {
+                "field": "0 * 1.000000",
+                "fractional_per_block": "0 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Rafi Menco",
+            "stat": "3pt_shots_made",
+            "gt": 1,
+            "llm": 1,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Rafi Menco",
+            "stat": "3pt_shots_attempted",
+            "gt": 1,
+            "llm": 1,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Rafi Menco",
+            "stat": "ft_made",
+            "gt": 2,
+            "llm": 2,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Rafi Menco",
+            "stat": "ft_attempted",
+            "gt": 2,
+            "llm": 2,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Roman Sorkin",
+            "stat": "points",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Roman Sorkin",
+            "stat": "assists",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Roman Sorkin",
+            "stat": "rebounds",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Roman Sorkin",
+            "stat": "defensive_rebounds",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Roman Sorkin",
+            "stat": "offensive_rebounds",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Roman Sorkin",
+            "stat": "fouls",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Roman Sorkin",
+            "stat": "steals",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Roman Sorkin",
+            "stat": "blocks",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Roman Sorkin",
+            "stat": "turnovers",
+            "gt": 1,
+            "llm": 1,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Roman Sorkin",
+            "stat": "2pt_shots_made",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Roman Sorkin",
+            "stat": "2pt_shots_attempted",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Roman Sorkin",
+            "stat": "3pt_shots_made",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Roman Sorkin",
+            "stat": "3pt_shots_attempted",
+            "gt": 1,
+            "llm": 1,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Roman Sorkin",
+            "stat": "ft_made",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Roman Sorkin",
+            "stat": "ft_attempted",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Tomer Ginat",
+            "stat": "points",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Tomer Ginat",
+            "stat": "assists",
+            "gt": 1,
+            "llm": 2,
+            "correct": false,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 0.0,
+                "fractional_per_block": 0.0
+            },
+            "formula": {
+                "field": "0 * 1.000000",
+                "fractional_per_block": "0 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Tomer Ginat",
+            "stat": "rebounds",
+            "gt": 2,
+            "llm": 2,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Tomer Ginat",
+            "stat": "defensive_rebounds",
+            "gt": 1,
+            "llm": 1,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Tomer Ginat",
+            "stat": "offensive_rebounds",
+            "gt": 1,
+            "llm": 1,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Tomer Ginat",
+            "stat": "fouls",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Tomer Ginat",
+            "stat": "steals",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Tomer Ginat",
+            "stat": "blocks",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Tomer Ginat",
+            "stat": "turnovers",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Tomer Ginat",
+            "stat": "2pt_shots_made",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Tomer Ginat",
+            "stat": "2pt_shots_attempted",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Tomer Ginat",
+            "stat": "3pt_shots_made",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Tomer Ginat",
+            "stat": "3pt_shots_attempted",
+            "gt": 1,
+            "llm": 1,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Tomer Ginat",
+            "stat": "ft_made",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Tomer Ginat",
+            "stat": "ft_attempted",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Yam Madar",
+            "stat": "points",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Yam Madar",
+            "stat": "assists",
+            "gt": 0,
+            "llm": 1,
+            "correct": false,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 0.0,
+                "fractional_per_block": 0.0
+            },
+            "formula": {
+                "field": "0 * 1.000000",
+                "fractional_per_block": "0 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Yam Madar",
+            "stat": "rebounds",
+            "gt": 1,
+            "llm": 1,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Yam Madar",
+            "stat": "defensive_rebounds",
+            "gt": 1,
+            "llm": 1,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Yam Madar",
+            "stat": "offensive_rebounds",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Yam Madar",
+            "stat": "fouls",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Yam Madar",
+            "stat": "steals",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Yam Madar",
+            "stat": "blocks",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Yam Madar",
+            "stat": "turnovers",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Yam Madar",
+            "stat": "2pt_shots_made",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Yam Madar",
+            "stat": "2pt_shots_attempted",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Yam Madar",
+            "stat": "3pt_shots_made",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Yam Madar",
+            "stat": "3pt_shots_attempted",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Yam Madar",
+            "stat": "ft_made",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Israel",
+            "player": "Yam Madar",
+            "stat": "ft_attempted",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "non_participant",
+            "team": "Israel",
+            "player": "Khadeen Carrington",
+            "stat": "all_zeros",
+            "gt": "all zeros expected",
+            "llm": {
+                "points": 0,
+                "assists": 0,
+                "rebounds": 0,
+                "defensive_rebounds": 0,
+                "offensive_rebounds": 0,
+                "fouls": 0,
+                "steals": 0,
+                "blocks": 0,
+                "turnovers": 0,
+                "2pt_shots_made": 0,
+                "2pt_shots_attempted": 0,
+                "3pt_shots_made": 0,
+                "3pt_shots_attempted": 0,
+                "ft_made": 0,
+                "ft_attempted": 0
+            },
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "non-participant all-zeros"
+        },
+        {
+            "scope": "non_participant",
+            "team": "Israel",
+            "player": "Deni Avdija",
+            "stat": "all_zeros",
+            "gt": "all zeros expected",
+            "llm": {
+                "points": 0,
+                "assists": 0,
+                "rebounds": 0,
+                "defensive_rebounds": 0,
+                "offensive_rebounds": 0,
+                "fouls": 0,
+                "steals": 0,
+                "blocks": 0,
+                "turnovers": 0,
+                "2pt_shots_made": 0,
+                "2pt_shots_attempted": 0,
+                "3pt_shots_made": 0,
+                "3pt_shots_attempted": 0,
+                "ft_made": 0,
+                "ft_attempted": 0
+            },
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "non-participant all-zeros"
+        },
+        {
+            "scope": "non_participant",
+            "team": "Israel",
+            "player": "Bar Timor",
+            "stat": "all_zeros",
+            "gt": "all zeros expected",
+            "llm": {
+                "points": 0,
+                "assists": 0,
+                "rebounds": 0,
+                "defensive_rebounds": 0,
+                "offensive_rebounds": 0,
+                "fouls": 0,
+                "steals": 0,
+                "blocks": 0,
+                "turnovers": 0,
+                "2pt_shots_made": 0,
+                "2pt_shots_attempted": 0,
+                "3pt_shots_made": 0,
+                "3pt_shots_attempted": 0,
+                "ft_made": 0,
+                "ft_attempted": 0
+            },
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "non-participant all-zeros"
+        },
+        {
+            "scope": "non_participant",
+            "team": "Israel",
+            "player": "Ethan Burg",
+            "stat": "all_zeros",
+            "gt": "all zeros expected",
+            "llm": {
+                "points": 0,
+                "assists": 0,
+                "rebounds": 0,
+                "defensive_rebounds": 0,
+                "offensive_rebounds": 0,
+                "fouls": 0,
+                "steals": 0,
+                "blocks": 0,
+                "turnovers": 0,
+                "2pt_shots_made": 0,
+                "2pt_shots_attempted": 0,
+                "3pt_shots_made": 0,
+                "3pt_shots_attempted": 0,
+                "ft_made": 0,
+                "ft_attempted": 0
+            },
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "non-participant all-zeros"
+        },
+        {
+            "scope": "non_participant",
+            "team": "Israel",
+            "player": "Yovel Zoosman",
+            "stat": "all_zeros",
+            "gt": "all zeros expected",
+            "llm": {
+                "points": 0,
+                "assists": 0,
+                "rebounds": 0,
+                "defensive_rebounds": 0,
+                "offensive_rebounds": 0,
+                "fouls": 0,
+                "steals": 0,
+                "blocks": 0,
+                "turnovers": 0,
+                "2pt_shots_made": 0,
+                "2pt_shots_attempted": 0,
+                "3pt_shots_made": 0,
+                "3pt_shots_attempted": 0,
+                "ft_made": 0,
+                "ft_attempted": 0
+            },
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.00909090909090909
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.009091"
+            },
+            "note": "non-participant all-zeros"
+        }
+    ],
+    "totals": {
+        "field": {
+            "accuracy_pct": 90.83665338645417,
+            "formula": "228.0/251.0 * 100",
+            "formula_vars": {
+                "correct_fields": 228.0,
+                "total_fields": 251.0,
+                "breakdown": {
+                    "final_score": {
+                        "correct": 1.0,
+                        "total": 1.0
+                    },
+                    "team_stats": {
+                        "correct": 22.0,
+                        "total": 30.0,
+                        "per_team": {
+                            "Israel": {
+                                "correct": 10.0,
+                                "total": 15.0
+                            },
+                            "Poland": {
+                                "correct": 12.0,
+                                "total": 15.0
+                            }
+                        }
+                    },
+                    "player_stats": {
+                        "correct": 195.0,
+                        "total": 210.0,
+                        "components": {
+                            "participants_total": 14,
+                            "participants_by_team": {
+                                "Israel": 7,
+                                "Poland": 7
+                            },
+                            "roster_total": 24,
+                            "non_participants_total": 10,
+                            "stats_per_participant_uniform": 15,
+                            "stats_per_participant_by_team": {
+                                "Israel": {
+                                    "unique_counts": [
+                                        15
+                                    ],
+                                    "avg_per_player": 15.0
+                                },
+                                "Poland": {
+                                    "unique_counts": [
+                                        15
+                                    ],
+                                    "avg_per_player": 15.0
+                                }
+                            },
+                            "participant_checks_expected_by_team": {
+                                "Israel": 105,
+                                "Poland": 105
+                            },
+                            "participant_checks_expected_total": 210
+                        }
+                    },
+                    "non_participants": {
+                        "correct": 10.0,
+                        "total": 10.0
+                    }
+                }
+            },
+            "weighted_sanity": {
+                "sum_weights": 251.0,
+                "sum_contributions": 228.0
+            }
+        },
+        "fractional_per_block": {
+            "accuracy_pct": 86.60606060606108,
+            "formula": "4.330303030303046/5.0 * 100",
+            "formula_vars": {
+                "weighted_correct_sum": 4.330303030303046,
+                "total_weight_sum": 5.0,
+                "blocks": {
+                    "final_score": {
+                        "weight": 1.0,
+                        "correct_weight": 1.0
+                    },
+                    "team_stats": {
+                        "Israel": {
+                            "weight": 1.0,
+                            "matched_stats": 10,
+                            "total_stats": 15,
+                            "block_fraction": 0.6666666666666667
+                        },
+                        "Poland": {
+                            "weight": 1.0,
+                            "matched_stats": 12,
+                            "total_stats": 15,
+                            "block_fraction": 0.8
+                        }
+                    },
+                    "players": {
+                        "Israel": {
+                            "weight": 1.0,
+                            "matched_checks": 101,
+                            "total_checks": 110,
+                            "block_fraction": 0.9181818181818184,
+                            "components": {
+                                "participants": 7,
+                                "non_participants": 5,
+                                "stats_per_participant_uniform": 15,
+                                "participant_checks_expected": 105,
+                                "non_participant_checks_expected": 5,
+                                "expected_total_checks": 110
+                            }
+                        },
+                        "Poland": {
+                            "weight": 1.0,
+                            "matched_checks": 104,
+                            "total_checks": 110,
+                            "block_fraction": 0.9454545454545457,
+                            "components": {
+                                "participants": 7,
+                                "non_participants": 5,
+                                "stats_per_participant_uniform": 15,
+                                "participant_checks_expected": 105,
+                                "non_participant_checks_expected": 5,
+                                "expected_total_checks": 110
+                            }
+                        }
+                    }
+                }
+            },
+            "weighted_sanity": {
+                "sum_weights": 4.999999999999991,
+                "sum_contributions": 4.330303030303046
+            }
+        }
+    }
+}

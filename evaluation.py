@@ -264,7 +264,9 @@ def evaluate_reports(llm_report, ground_truth_report, eval_type='both', return_d
     discrepancies = []
     details = _init_details(eval_type)
 
-    # 1) Final score (counts as its own field/block in both modes)
+    # ---------------------------------------------------------------------
+    # 1) Final score — one contribution used by both scoring modes
+    # ---------------------------------------------------------------------
     llm_value = llm_report.get("final_score")
     gt_value  = ground_truth_report.get("final_score")
     ok = (llm_value == gt_value)
@@ -277,16 +279,20 @@ def evaluate_reports(llm_report, ground_truth_report, eval_type='both', return_d
         note="final_score counts as one full field in both modes"
     )
 
+    # ---------------------------------------------------------------------
     # 2) Team + player stats
+    # ---------------------------------------------------------------------
     gt_stats_block  = ground_truth_report.get("final_stats", {})
     llm_stats_block = llm_report.get("final_stats", {})
 
     for team_name, gt_team_data in gt_stats_block.items():
+
+        # ---- 2a) Missing team block: count all checks as incorrect (preserve denominator) ----
         if team_name not in llm_stats_block:
             discrepancies.append(f"MISSING STATS BLOCK for team: {team_name}")
-            llm_team_data = {}  # נשתמש בערכים ריקים כדי להוסיף תרומות שגויות במקום לדלג
+            llm_team_data = {}  # empty values just to emit incorrect contributions
 
-            # --- Team aggregate stats (treat as all incorrect) ---
+            # team aggregate stats → all incorrect
             gt_agg_stats = gt_team_data.get("stats", {}) or {}
             num_team_stats = len(gt_agg_stats)
             w_frac_team = (1.0 / num_team_stats) if num_team_stats else 0.0
@@ -299,7 +305,7 @@ def evaluate_reports(llm_report, ground_truth_report, eval_type='both', return_d
                     note="missing team stats block – counted as incorrect"
                 )
 
-            # --- Players (participants counted as incorrect; non-participants must be all zeros but missing ≠ zeros) ---
+            # players → participants (all incorrect per stat), non-participants (all-zeros check incorrect)
             participants = ground_truth_report.get("teams", {}).get(team_name, {}).get("participants", []) or []
             full_roster  = ground_truth_report.get("teams", {}).get(team_name, {}).get("roster", []) or []
 
@@ -312,7 +318,6 @@ def evaluate_reports(llm_report, ground_truth_report, eval_type='both', return_d
 
             w_frac_players = (1.0 / total_player_checks) if total_player_checks > 0 else 0.0
 
-            # participants → incorrect per stat
             for player_name in participants:
                 gt_player_stats = gt_team_data.get("players", {}).get(player_name, {}) or {}
                 for stat, gt_v in gt_player_stats.items():
@@ -323,7 +328,6 @@ def evaluate_reports(llm_report, ground_truth_report, eval_type='both', return_d
                         note="missing team block → player stat incorrect"
                     )
 
-            # non-participants → expect all zeros; missing stats are NOT zeros → incorrect
             for player_name in non_participants:
                 _add_contrib(
                     details, scope="non_participant", team=team_name, player=player_name, stat="all_zeros",
@@ -332,13 +336,12 @@ def evaluate_reports(llm_report, ground_truth_report, eval_type='both', return_d
                     note="missing team block → non-participant not verified as zeros"
                 )
 
-            # המשך ללולאה הבאה (בלי continue למעלה)
-            continue
+            continue  # proceed to next team
 
-
+        # ---- 2b) Team block present: compare per stat and per player ----
         llm_team_data = llm_stats_block.get(team_name, {})
 
-        # --- Team aggregate stats (unified) ---
+        # team aggregate stats (one contribution per stat)
         gt_agg_stats  = gt_team_data.get("stats", {}) or {}
         llm_agg_stats = llm_team_data.get("stats", {}) or {}
 
@@ -357,11 +360,11 @@ def evaluate_reports(llm_report, ground_truth_report, eval_type='both', return_d
                 note=f"team-block: field=1 per stat; fractional=1/{num_team_stats or 1} each"
             )
 
-        # --- Player stats (unified) ---
+        # player stats (participants per stat; non-participants all-zeros)
         participants = ground_truth_report.get("teams", {}).get(team_name, {}).get("participants", []) or []
         full_roster  = ground_truth_report.get("teams", {}).get(team_name, {}).get("roster", []) or []
 
-        # fractional normalization for players: sum to 1 over all checks
+        # fractional normalization for player checks
         total_player_checks = 0
         for player_name in participants:
             gt_player_stats = gt_team_data.get("players", {}).get(player_name, {}) or {}
@@ -371,7 +374,7 @@ def evaluate_reports(llm_report, ground_truth_report, eval_type='both', return_d
 
         w_frac_players = (1.0 / total_player_checks) if total_player_checks > 0 else 0.0
 
-        # participating players
+        # participants: per-stat comparison
         for player_name in participants:
             gt_player_stats  = gt_team_data.get("players", {}).get(player_name, {}) or {}
             llm_player_stats = (llm_team_data.get("players", {}) or {}).get(player_name)
@@ -398,7 +401,7 @@ def evaluate_reports(llm_report, ground_truth_report, eval_type='both', return_d
                     note="player stat"
                 )
 
-        # non-participants must be all zeros
+        # non-participants: must be all zeros
         for player_name in non_participants:
             llm_player_stats = (llm_team_data.get("players", {}) or {}).get(player_name)
             ok = is_player_stats_all_zeros(llm_player_stats)
@@ -413,13 +416,15 @@ def evaluate_reports(llm_report, ground_truth_report, eval_type='both', return_d
                 note="non-participant all-zeros"
             )
 
-    # --- Totals for both evaluation types (from unified contributions) ---
+    # ---------------------------------------------------------------------
+    # 3) Aggregate contributions → totals and detailed formula variables
+    # ---------------------------------------------------------------------
     sum_w_field = sum(c["weights"]["field"] for c in details["contributions"])
     sum_c_field = sum(c["contribution"]["field"] for c in details["contributions"])
     sum_w_frac  = sum(c["weights"]["fractional_per_block"] for c in details["contributions"])
     sum_c_frac  = sum(c["contribution"]["fractional_per_block"] for c in details["contributions"])
 
-    # helpers to aggregate by scope/team from contributions
+    # helper: aggregate by scope/team using selected weight key
     def _agg(scopes, *, team=None, wkey="field"):
         w_sum = c_sum = 0.0
         count = matched = 0
@@ -437,15 +442,14 @@ def evaluate_reports(llm_report, ground_truth_report, eval_type='both', return_d
                 matched += 1
         return w_sum, c_sum, count, matched
 
-    # teams seen in contributions
+    # teams present in contributions
     teams_seen = sorted({c.get("team") for c in details["contributions"] if c.get("team")})
 
-    # --- Gather explicit counts from GT for explanations ---
+    # ----- explicit GT-derived counts for explanations (participants, rosters, etc.) -----
     participants_by_team = {}
     roster_size_by_team = {}
     non_participants_by_team = {}
-    # per-team counts of stats per participating player
-    stats_counts_by_team = {}              # {team: {"per_player_counts":[...], "unique_counts":[...], "avg_per_player":float}}
+    stats_counts_by_team = {}                 # {team: {"per_player_counts":[...], "unique_counts":[...], "avg_per_player":float}}
     participant_checks_expected_by_team = {}  # {team: int}
 
     for t in teams_seen:
@@ -475,14 +479,14 @@ def evaluate_reports(llm_report, ground_truth_report, eval_type='both', return_d
     non_participants_total = sum(non_participants_by_team.values())
     participant_checks_expected_total = sum(participant_checks_expected_by_team.values())
 
-    # Try to detect a uniform stats-per-participant across all participants (e.g., 15)
+    # detect uniform stats-per-participant across all participants (e.g., 15), if any
     _all_counts = []
     for t in teams_seen:
         _all_counts.extend(stats_counts_by_team[t]["per_player_counts"])
     unique_stats_per_participant = sorted(list(set(_all_counts))) if _all_counts else []
     uniform_stats_per_participant = unique_stats_per_participant[0] if len(unique_stats_per_participant) == 1 else None
 
-    # ---- FIELD breakdown (counts) ----
+    # ----- FIELD breakdown (counts) -----
     fs_w_fld, fs_c_fld, _, _      = _agg({"meta"}, wkey="field")
     team_w_fld, team_c_fld, _, _  = _agg({"team"}, wkey="field")
     plyr_w_fld, plyr_c_fld, _, _  = _agg({"player"}, wkey="field")
@@ -490,10 +494,10 @@ def evaluate_reports(llm_report, ground_truth_report, eval_type='both', return_d
 
     field_per_team = {}
     for t in teams_seen:
-        tw, tc, tcount, tmatched = _agg({"team"}, team=t, wkey="field")
+        tw, tc, _, _ = _agg({"team"}, team=t, wkey="field")
         field_per_team[t] = {
-            "correct": float(tc),     # כמה סטטי-קבוצה נכונים (count)
-            "total":   float(tw)      # כמה סטטי-קבוצה נבדקו (count)
+            "correct": float(tc),   # how many team stats were correct (count)
+            "total":   float(tw)    # how many team stats were checked (count)
         }
 
     field_formula_vars = {
@@ -502,16 +506,17 @@ def evaluate_reports(llm_report, ground_truth_report, eval_type='both', return_d
         "breakdown": {
             "final_score":      {"correct": float(fs_c_fld),  "total": float(fs_w_fld)},
             "team_stats":       {"correct": float(team_c_fld),"total": float(team_w_fld), "per_team": field_per_team},
-            # כאן מוסיפים הסבר מפורש ל-player_stats: total = Σ (סטט' לשחקן) עבור כל המשתתפים
             "player_stats": {
                 "correct": float(plyr_c_fld),
-                "total":   float(plyr_w_fld),  # אמור להיות participant_checks_expected_total
+                "total":   float(plyr_w_fld),  # equals participant_checks_expected_total
                 "components": {
                     "participants_total": int(participants_total),
                     "participants_by_team": {t: int(v) for t, v in participants_by_team.items()},
                     "roster_total": int(roster_total),
                     "non_participants_total": int(non_participants_total),
-                    "stats_per_participant_uniform": int(uniform_stats_per_participant) if uniform_stats_per_participant is not None else None,
+                    "stats_per_participant_uniform": (
+                        int(uniform_stats_per_participant) if uniform_stats_per_participant is not None else None
+                    ),
                     "stats_per_participant_by_team": {
                         t: {
                             "unique_counts": [int(x) for x in stats_counts_by_team[t]["unique_counts"]],
@@ -526,10 +531,10 @@ def evaluate_reports(llm_report, ground_truth_report, eval_type='both', return_d
         }
     }
 
-    # ---- FRACTIONAL breakdown (per-block) ----
+    # ----- FRACTIONAL breakdown (per-block) -----
     fs_w_fr, fs_c_fr, _, _ = _agg({"meta"}, wkey="fractional_per_block")
 
-    # snap-to-1 helper for display (לא משנה את החישוב, רק את ההצגה)
+    # display helper: snap ~1.0 to exactly 1.0 (affects presentation only)
     def _snap1(x, eps=1e-9):
         x = float(x)
         return 1.0 if abs(x - 1.0) < eps else x
@@ -540,37 +545,41 @@ def evaluate_reports(llm_report, ground_truth_report, eval_type='both', return_d
         # team-stats block
         tw, tc, tcount, tmatched = _agg({"team"}, team=t, wkey="fractional_per_block")
         team_blocks[t] = {
-            "weight":          _snap1(tw),                       # מציג 1.0 במקום 0.999...
+            "weight":          _snap1(tw),
             "matched_stats":   int(tmatched),
             "total_stats":     int(tcount),
             "block_fraction":  float(tc / max(1e-9, tw))
         }
-        # players block (participants + non_participants for this team)
+        # players block (participants + non_participants)
         pw, pc, pcount, pmatched = _agg({"player","non_participant"}, team=t, wkey="fractional_per_block")
         players_blocks[t] = {
-            "weight":          _snap1(pw),                       # מציג 1.0 במקום 0.999...
+            "weight":          _snap1(pw),
             "matched_checks":  int(pmatched),
             "total_checks":    int(pcount),
             "block_fraction":  float(pc / max(1e-9, pw)) if pw > 0 else 0.0,
             "components": {
                 "participants": int(participants_by_team.get(t, 0)),
                 "non_participants": int(non_participants_by_team.get(t, 0)),
-                "stats_per_participant_uniform": int(uniform_stats_per_participant) if uniform_stats_per_participant is not None else None,
+                "stats_per_participant_uniform": (
+                    int(uniform_stats_per_participant) if uniform_stats_per_participant is not None else None
+                ),
                 "participant_checks_expected": int(participant_checks_expected_by_team.get(t, 0)),
                 "non_participant_checks_expected": int(non_participants_by_team.get(t, 0)),
-                "expected_total_checks": int(participant_checks_expected_by_team.get(t, 0) + non_participants_by_team.get(t, 0))
+                "expected_total_checks": int(
+                    participant_checks_expected_by_team.get(t, 0) + non_participants_by_team.get(t, 0)
+                )
             }
         }
 
-    # סכום משקלים להצגה (בדיוק 5.0 כשיש את כל הבלוקים)
+    # display denominator as a clean sum of snapped block weights (≈5.0 → 5.0)
     fs_display = _snap1(fs_w_fr)
     team_display_sum = sum(_snap1(tb["weight"]) for tb in team_blocks.values())
     players_display_sum = sum(_snap1(pb["weight"]) for pb in players_blocks.values())
     total_weight_sum_display = float(fs_display + team_display_sum + players_display_sum)
 
     fractional_formula_vars = {
-        "weighted_correct_sum": float(sum_c_frac),               # החישוב האמיתי (לא מעוגל)
-        "total_weight_sum":     total_weight_sum_display,        # מוצג כסכום בלוקים "נקי"
+        "weighted_correct_sum": float(sum_c_frac),      # raw summed correct weights
+        "total_weight_sum":     total_weight_sum_display,
         "blocks": {
             "final_score": {"weight": fs_display, "correct_weight": float(fs_c_fr)},
             "team_stats":  team_blocks,
@@ -578,6 +587,9 @@ def evaluate_reports(llm_report, ground_truth_report, eval_type='both', return_d
         }
     }
 
+    # ---------------------------------------------------------------------
+    # 4) Compose totals_by_type and return (always a triplet)
+    # ---------------------------------------------------------------------
     totals_by_type = {
         "field": {
             "accuracy_pct": 100.0 * (sum_c_field / max(1e-9, sum_w_field)),
@@ -587,7 +599,7 @@ def evaluate_reports(llm_report, ground_truth_report, eval_type='both', return_d
         },
         "fractional_per_block": {
             "accuracy_pct": 100.0 * (sum_c_frac / max(1e-9, sum_w_frac)),
-            "formula": f"{sum_c_frac}/{total_weight_sum_display} * 100",
+            "formula": f"{sum_c_frac}/{total_weight_sum_display} * 100",  # display denominator is snapped
             "formula_vars": fractional_formula_vars,
             "weighted_sanity": {"sum_weights": float(sum_w_frac), "sum_contributions": float(sum_c_frac)},
         },
