@@ -1,98 +1,16 @@
-"""
-generate_data.py
-================
+# generate_data.py
 
-Purpose
--------
-Simulate a basketball game and produce two kinds of data:
+# TODO: Assumptions for simplicity:
+# 
+# 
 
-1) Model input (play-by-play + team metadata without "participants") — saved to
-   `data/examples.json` and `data/examples.jsonl`.
-
-2) Ground-truth report with final box scores, full rosters, and "participants" (Optioanl)
-   — saved to `data/true_report.json` and `data/examples.jsonl`.
-
-The script generates games across difficulty levels ("basic", "medium", "hard"),
-randomizes in-game events, updates team/player statistics, and returns fully structured JSONL.
-At the end of a run it writes:
-- `data/examples.json` and `data/true_report.json` (Optioanl)
-- `data/examples.jsonl` — line-delimited: an {"type":"example"} row followed by an {"type":"true_report"} row for the same game_id (this layout is convenient for training/evaluation).
-
-Game example schema
--------------------
-{
-  "matchup": "<TeamA> vs <TeamB>",
-  "teams": {
-    "<TeamA>": {
-      "coach": "...",
-      "roster": [12 names],
-      "starting_lineup": [5 names],
-      "bench": [7 names],
-    },
-    "<TeamB>": { ... }
-  },
-  "play_by_play": [
-    {"event_id": "..." , "description": "..."},
-    ... assorted plays (passes, shots, fouls, VAR, rebounds, substitutions) ...
-  ],
-}
-
-Game true report schema
------------------------
-{
-  "matchup": "<TeamA> vs <TeamB>",
-  "difficulty": "...",
-  "final_score": "<TeamA>: ..., <TeamB>: ...",
-  "teams": {
-    "<TeamA>": {
-      "coach": "...",
-      "roster": [12 names],
-      "starting_lineup": [5 names],
-      "bench": [7 names],
-      "participants": [players who actually played]
-    },
-    "<TeamB>": { ... }
-  },
-  "final_stats": {
-    "<TeamA>": {
-      "stats": { "points": ..., "assists": ..., "rebounds": ..., "ft_made": ..., ... },
-      "players": {
-        "<PlayerName>": { "points": ..., "assists": ..., "rebounds": ..., "ft_made": ..., ... },
-        ...
-      }
-    },
-    "<TeamB>": { ... }
-  }
-}
-
-
-
-  "final_stats": {
-    "<TeamA>": {
-      "stats": { "points": ..., "assists": ..., "rebounds": ..., "ft_made": ..., ... },
-      "players": {
-        "<PlayerName>": { "points": ..., "assists": ..., "rebounds": ..., "ft_made": ..., ... },
-        ...
-      }
-    },
-    "<TeamB>": { ... }
-  }
-}
-
-* Team and player stat objects share the same fields (points/assists/rebounds/...
-  including attempts/made for 2pt/3pt and free throws).
-* VAR events can “undo” or modify shots (e.g., revert a made shot, convert a 3pt
-  to a 2pt) and the code keeps attempts ≥ made consistent.
-
-Run configuration
------------------------
-- GAMES_PER_DIFFICULTY: number of games per difficulty level
-- DIFFICULTY_LEVELS: which levels to generate (["basic", "medium", "hard"])
-- Outputs written at the end:
-  - `data/examples.json` — all examples in one dict (Optioanl)
-  - `data/true_report.json` — all ground-truth reports in one dict (Optioanl)
-  - `data/examples.jsonl` — line-wise: example then true_report for each game_id
-"""
+# TODO: Need to add:
+# 1. Support for different types of fouls (not only shooting foul that results in free throws)
+# 2. Give the script of events to people and give them the same task.
+# 3. Think about switching from uniform random sampling to a different distribution (e.g., normal distribution) for certain events.
+# 4. ליצור מהלכים זהים, כשסדר השחקנים באיך שהוא רשום באירוע הפוך (למשל חוסם לפני זורק, וגם זורק לפני חוסם)
+# 5. להוסיף מאורע של סל, לשתי וושלוש נקודות, ועבירה
+# 6. להוסיף בדו''ח נימוקים עבור השפעות של מהלכים (כמו החשבת ניסיון זריקה גם כאשר התבצעה עברה על השחקן), כאשר הנימוקים יכולים להיות מספר חוקים באינטרנט או מתשאול מודל שפה לגבי האם להחשיב ניסיון זריקה, למשל
 
 import random
 import json
@@ -100,32 +18,21 @@ import os
 
 class BasketballReportGenerator:
     """
-    Generates simulated basketball game data, including play-by-play commentary and detailed final statistics.
+    Generates simulated basketball game data, including play-by-play commentary
+    and detailed final statistics.
 
-    This class simulates a basketball game between two randomly chosen teams, generating a sequence of events based on configurable difficulty levels.
-    It tracks player and team stats throughout the game and produces a structured JSONL output containing the full game report.
+    This class simulates a basketball game between two randomly chosen teams,
+    generating a sequence of events based on configurable difficulty levels.
+    It tracks player and team stats throughout the game and produces a
+    structured JSON output containing the full game report.
 
     Key features:
-    -------------
     - Dynamic generation of play-by-play events.
     - Statistical tracking for players and teams (points, assists, rebounds, etc.).
     - Configurable difficulty levels ("basic", "medium", "hard") that affect
       game complexity (e.g., substitutions, VAR reviews, event frequency).
     - Management of player substitutions, foul-outs, and team foul bonuses.
-    - Output of a comprehensive game summary in JSONL format.
-
-    Typical usage
-    -------------
-        generator = BasketballReportGenerator()
-        game_data = generator.generate_report(difficulty="medium")
-
-    Configuration knobs
-    -------------------
-    - FOUL_LIMIT (default 5): personal foul-out threshold.
-    - TEAM_FOUL_LIMIT (default 5): team foul tracking per quarter (bonus FT — optional/disabled by default).
-    - DEBUG_TEAM_FOULS: extra logging for team fouls.
-    - create_jsonl_file: Save JSONL with alternating lines: example, then true_report
-    - create_json_files: Save the complete dictionaries to 2 separate JSON file
+    - Output of a comprehensive game summary in JSON format.
     """
 
     def __init__(self):
@@ -546,37 +453,16 @@ class BasketballReportGenerator:
         }
     
     def _available_players_count(self, team_name, game_lineups):
-        """Count available players (active + bench) for a team.
-
-        Args:
-            team_name (str): Team name.
-            game_lineups (dict): Lineup state:
-                {'Team': {'active': [...], 'bench': [...], 'disqualified': [...]}}
-
-        Returns:
-            int: Number of available (non-disqualified) players.
-        """
+        """Count players still eligible to play (active + bench)."""
         team = game_lineups[team_name]
         return len(team.get('active', [])) + len(team.get('bench', []))
 
     def _team_can_commit_fouls(self, team_name, game_lineups):
-        """Check whether the team can still commit fouls (at least one bench player).
-
-        Rationale:
-            Fouls can lead to foul-outs and require a substitution path.
-        """
+        """A team can commit fouls only if it has at least one eligible sub on the bench."""
         return bool(game_lineups[team_name].get('bench'))
 
     def _force_foul_out_substitution(self, team_name, player_out, game_lineups, play_by_play, game_participants):
-        """Force a substitution for a player who fouled out (FOUL_LIMIT reached).
-
-        Effects:
-            - Marks the player as 'disqualified' (cannot return).
-            - If the player was on court: replaces them from the bench, or logs a short-handed state if no bench is available.
-
-        Side effects:
-            Mutates `game_lineups`, `play_by_play`, and `game_participants` in place.
-        """
+        """Remove a player who reached FOUL_LIMIT and ensure they can't return."""
         # Ensure the 'disqualified' list exists for the team
         game_lineups[team_name].setdefault('disqualified', [])
 
@@ -622,11 +508,7 @@ class BasketballReportGenerator:
                 })
 
     def _check_and_handle_foul_out(self, team_name, player_name, game_stats, game_lineups, play_by_play, game_participants):
-        """Check if a player has reached FOUL_LIMIT and, if so, trigger foul-out handling.
-
-        Returns:
-            bool: True if the player was disqualified and processed now; False otherwise.
-        """
+        """If player reached FOUL_LIMIT, disqualify and sub immediately. Returns True if foul-out occurred."""
         # Already disqualified -> Nothing to do.
         if player_name in game_lineups[team_name].get('disqualified', []):
             return False
@@ -637,14 +519,7 @@ class BasketballReportGenerator:
         return False
 
     def _initialize_stats(self):
-        """Create a zeroed stats skeleton for all teams/players defined by the class.
-
-        Returns:
-            dict: Stats structure with keys per team and nested 'stats'/'players' maps of zeros.
-
-        Note:
-            Later, the final game summary narrows to the two selected teams.
-        """
+        """Helper to create the complex nested dictionary for tracking ground truth."""
         game_state = {}
         for team_name, team_data in self.teams.items():
             # Initialize team-level stats
@@ -668,15 +543,7 @@ class BasketballReportGenerator:
         return game_state
 
     def _handle_substitution(self, head_coach, team_name, game_lineups, play_by_play, game_participants, sub_chance=0.0, cant_sub_player=None):
-        """Attempt a random substitution according to probability.
-
-        Conditions:
-            - Requires at least one bench player.
-            - If `cant_sub_player` is provided, avoid swapping that player in/out.
-
-        Side effects:
-            - Updates active/bench groups, adds a new participant if someone enters from the bench, and appends a human-readable event.
-        """
+        """Randomly performs a substitution for a team if conditions are met."""
         # Decide whether to substitute based on probability
         if random.random() < sub_chance:
             active_players = game_lineups[team_name]['active']
@@ -708,24 +575,22 @@ class BasketballReportGenerator:
         """
         Generates a full basketball game report based on a specified difficulty.
 
-        Flow
-        ----
-        1) Pick two random teams and build starting lineups/benches.
-        2) Simulate quarters (and OT if needed) with assorted events: passes,
-           shots, misses, fouls, VAR, rebounds, substitutions.
-        3) Track personal/team fouls, including foul-out with forced substitutions.
-        4) Update team/player stats consistently (attempts ≥ made), including after VAR.
-        5) Assemble the `game_summary` with:
-           - "teams": roster/starting lineup/bench/participants
-           - "play_by_play": ordered event descriptions with incremental event_id
-           - "final_stats": final team and per-player box scores
+        This method simulates a complete game, from the initial jump ball to the
+        final buzzer. It orchestrates the game flow quarter by quarter, generating
+        events, updating stats, and handling game logic like substitutions and fouls.
 
         Args:
             difficulty (str): The difficulty level of the game to generate.
-                Accepts "basic", "medium", or "hard". This controls the complexity of the game simulation.
+                Accepts "basic", "medium", or "hard". This controls the complexity
+                of the game simulation.
 
         Returns:
-            dict: A dictionary containing the complete game summary.
+            dict: A dictionary containing the complete game summary, including:
+                - "matchup": A string describing the two teams playing.
+                - "teams": A dictionary with details for each team (roster, coach, etc.).
+                - "play_by_play": A list of event dictionaries.
+                - "final_stats": A dictionary of the final aggregated stats for
+                  teams and players.
         """
         # --- generate lexicons for varied wording ---        
         pass_types = ["passed the ball to", "dished it to", "fed", "kicked it out to", "delivered the ball to", "lobbed it to", "swung it over to", "found", "dropped it off to", "set up"]
@@ -751,8 +616,8 @@ class BasketballReportGenerator:
         #   miss_2pt_from_pass, block_on_2pt_shot, shooting_foul_2pt,
         #   miss_3pt_from_pass, block_on_3pt_shot, shooting_foul_3pt ]
         if difficulty == "basic":
-            target_events = 150
-            difficulty_max_passes = 5
+            target_events = 100
+            difficulty_max_passes = 6
             adversarial_assist_bias  = False
             allow_substitutions = True
             difficulty_sub_chance = 0.05  # 5% chance to substitute players
@@ -768,12 +633,12 @@ class BasketballReportGenerator:
                 # General Events
                 4,  # turnover_by_bad_pass
                 5,  # steal
-                4,  # timeout
+                2,  # timeout
                 # Successful 2PT
-                3,  # assist_and_score_2pt
+                4,  # assist_and_score_2pt
                 0,  # assist_and_score_2pt_opposite
                 # Successful 3PT
-                3,  # assist_and_score_3pt
+                4,  # assist_and_score_3pt
                 0,  # assist_and_score_3pt_opposite
                 # Unsuccessful 2PT
                 10, # miss_2pt_from_pass
@@ -786,13 +651,13 @@ class BasketballReportGenerator:
             ]
 
         elif difficulty == "medium":
-            target_events = 600
+            target_events = 500
             difficulty_max_passes = 3
             adversarial_assist_bias  = True
             allow_substitutions = True
             difficulty_sub_chance = 0.1  # 10% chance to substitute players
             allow_var = True
-            difficulty_var_chance = 0.05  # 5% chance to use VAR
+            difficulty_var_chance = 0.01  # 1% chance to use VAR
             num_pass_types = max(4, len(pass_types)//2)
             num_opposite_pass_types = max(4, len(opposite_pass_types)//2)
             num_2pt_types = max(4, len(Successful_2pt_types)//2)
@@ -801,14 +666,14 @@ class BasketballReportGenerator:
             num_missed_3pt_types = max(4, len(Missed_3pt_types)//2)
             EVENT_WEIGHTS = [
                 # General Events
-                3,  # turnover_by_bad_pass
-                5,  # steal
-                3,  # timeout
+                2,  # turnover_by_bad_pass
+                3,  # steal
+                1,  # timeout
                 # Successful 2PT
-                7,  # assist_and_score_2pt
+                5,  # assist_and_score_2pt
                 5,  # assist_and_score_2pt_opposite
                 # Successful 3PT
-                7,  # assist_and_score_3pt
+                5,  # assist_and_score_3pt
                 5,  # assist_and_score_3pt_opposite
                 # Unsuccessful 2PT
                 8,  # miss_2pt_from_pass
@@ -821,13 +686,13 @@ class BasketballReportGenerator:
             ]
 
         else:  # hard
-            target_events = 900
+            target_events = 1000
             difficulty_max_passes = 1
             adversarial_assist_bias = True
             allow_substitutions = True
             difficulty_sub_chance = 0.15  # 15% chance to substitute players
             allow_var = True
-            difficulty_var_chance = 0.1  # 10% chance to use VAR
+            difficulty_var_chance = 0.05  # 5% chance to use VAR
             num_pass_types = len(pass_types)
             num_opposite_pass_types = len(opposite_pass_types)
             num_2pt_types = len(Successful_2pt_types)
@@ -837,13 +702,13 @@ class BasketballReportGenerator:
             EVENT_WEIGHTS = [
                 # General Events
                 2,  # turnover_by_bad_pass
-                5,  # steal
-                2,  # timeout
+                2,  # steal
+                1,  # timeout
                 # Successful 2PT
-                9,  # assist_and_score_2pt
+                7,  # assist_and_score_2pt
                 7,  # assist_and_score_2pt_opposite
                 # Successful 3PT
-                9,  # assist_and_score_3pt
+                7,  # assist_and_score_3pt
                 7,  # assist_and_score_3pt_opposite
                 # Unsuccessful 2PT
                 6,  # miss_2pt_from_pass
@@ -975,7 +840,7 @@ class BasketballReportGenerator:
                     # Use neutral wording unless we intentionally want assist-scented verbs
                     fmt["pass_type"] = random.choice(actual_regular_ball_pass_types) if actual_regular_ball_pass_types else "passes to"
 
-                # # (harmless) if we ever add a receiver-centric template:
+                # # (harmless) if you ever add a receiver-centric template:
                 # elif "{opposite_pass_type}" in tmpl:
                 #     fmt["opposite_pass_type"] = random.choice(actual_opposite_pass_types) if actual_opposite_pass_types else "receives a pass from"
 
@@ -1134,12 +999,10 @@ class BasketballReportGenerator:
             elif event_type == "timeout":
                 coach_name = self.teams[offensive_team]['head_coach']
                 play_by_play.append({"event_id": len(play_by_play) + 1, "description": event["template"].format(coach=coach_name)})
-
                 # Allow both teams to make substitutions after a timeout
                 if allow_substitutions:
                     self._handle_substitution(self.teams[teamA_name]['head_coach'], teamA_name, game_lineups, play_by_play, game_participants, sub_chance=difficulty_sub_chance)
                     self._handle_substitution(self.teams[teamB_name]['head_coach'], teamB_name, game_lineups, play_by_play, game_participants, sub_chance=difficulty_sub_chance)
-
                 # After timeout, play resumes with an inbound pass
                 resume_event = self.event_templates.get("game_resume")
                 if resume_event:
@@ -1157,7 +1020,6 @@ class BasketballReportGenerator:
             elif event_type in ["miss_2pt_from_pass", "miss_3pt_from_pass"]:
                 passer = action_player
                 shooter_options = [p for p in active_players if p != action_player]
-
                 if not shooter_options:
                     # Selection filter should avoid this; safe fallback (not possible situation, but just in case)
                     shooter_options = [action_player]
@@ -1209,11 +1071,9 @@ class BasketballReportGenerator:
                         "description": event["template"].format(player_A=turnover_player)
                     })
                     possession = defensive_team
-
                     # Substitutions are allowed after this kind of turnover
                     if allow_substitutions:
                         self._handle_substitution(self.teams[offensive_team]['head_coach'], offensive_team, game_lineups, play_by_play, game_participants, sub_chance=difficulty_sub_chance)
-
                     # The ball is dead, so the next possession will start with an inbound
                     player_with_ball = None
 
@@ -1233,18 +1093,14 @@ class BasketballReportGenerator:
 
             elif "shooting_foul" in event_type:
                 shooter, defender = action_player, random.choice(game_lineups[defensive_team]['active'])
-
                 # Safety: if defensive team can't commit fouls, skip (should be filtered above)
                 if not self._team_can_commit_fouls(defensive_team, game_lineups):
                      continue
-                
                 event["effect"](game_stats, shooter, defender, offensive_team, defensive_team)
                 play_by_play.append({"event_id": len(play_by_play) + 1, "description": event["template"].format(player_A=shooter, player_B=defender)})
                 ended_with_shot_attempt = True  # shooting foul counts as a shot attempt
-
                 # Immediate foul-out check for the defender
                 self._check_and_handle_foul_out(defensive_team, defender, game_stats, game_lineups, play_by_play, game_participants)
-                
                 # Count team foul for the defensive team
                 team_fouls_in_quarter[defensive_team] += 1
                 if self.DEBUG_TEAM_FOULS:
@@ -1329,7 +1185,6 @@ class BasketballReportGenerator:
                 pointsB = game_stats[teamB_name]['stats']['points']
                 if pointsA == pointsB:
                     next_ot = ot_num + 1
-
                     if quarter == 4:
                         # Close regulation and announce tie → OT1
                         if not any(ev.get("description") == "End of Q4." for ev in play_by_play):
@@ -1337,6 +1192,7 @@ class BasketballReportGenerator:
                         play_by_play.append({
                             "event_id": len(play_by_play) + 1,
                             "description": f"Q4 ends in a tie. Going to OT{next_ot}."
+                            #"description": f"Q4 ends in a tie, {pointsA}-{pointsB}. Going to OT{next_ot}."
                         })
                     else:
                         # Close previous OT and announce tie → next OT
@@ -1345,8 +1201,8 @@ class BasketballReportGenerator:
                         play_by_play.append({
                             "event_id": len(play_by_play) + 1,
                             "description": f"OT{ot_num} ends in a tie. Going to OT{next_ot}."
+                            #"description": f"OT{ot_num} ends in a tie, {pointsA}-{pointsB}. Going to OT{next_ot}."
                         })                    
-
                     # Create a new OT “period” with half a quarter’s cap (min 1)
                     ot_num += 1
                     ot_cap = max(1, quarter_targets[0] // 2)
@@ -1376,11 +1232,9 @@ class BasketballReportGenerator:
         # Ensure the end of Q4 is logged if not already present.
         if quarter == 4 and not any(ev.get("description") == "End of Q4." for ev in play_by_play):
             play_by_play.append({"event_id": len(play_by_play) + 1, "description": "End of Q4."})
-
         # If we had OT(s), close the last one
         if ot_num > 0 and not any(ev.get("description") == f"End of OT{ot_num}." for ev in play_by_play):
             play_by_play.append({"event_id": len(play_by_play) + 1, "description": f"End of OT{ot_num}."})
-
         # Add the final end-of-game event.
         end_event = self.event_templates["end_of_game"]
         play_by_play.append({
@@ -1417,9 +1271,11 @@ class BasketballReportGenerator:
 if __name__ == "__main__":
     # --- Configuration ---
     # Define the number of games to generate per difficulty level.
-    GAMES_PER_DIFFICULTY = 50  # Generates 50 games for each level (150 total)
+    GAMES_PER_DIFFICULTY = 3  # Generates 10 game for each level (30 total)
     DIFFICULTY_LEVELS = ["basic", "medium", "hard"]
-
+    DIFFICULTY_LEVELS = ["medium", "hard"]
+    #DIFFICULTY_LEVELS = ["medium"]
+    
     # --- Initialization ---
     generator = BasketballReportGenerator()
     
@@ -1445,7 +1301,7 @@ if __name__ == "__main__":
             game_data = generator.generate_report(difficulty=difficulty)
             
             # --- Data Structuring ---
-            # 1. `examples.json`: Data for the model's input.
+            # 1. `examples.json`: Data for the model's input (play-by-play, rosters).
             #    Participants are excluded as they are part of the ground truth.
             teams_no_participants = {
                 team: {k: v for k, v in team_data.items() if k != "participants"}

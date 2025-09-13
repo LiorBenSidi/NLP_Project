@@ -1,53 +1,13 @@
-"""
-run_eval.py
-===========
+# run_eval.py
 
-Purpose
--------
-Runs end-to-end evaluation of an LLM that converts a basketball game log
-(play-by-play + team metadata) into a final box-score JSON. For each game:
-
-1) Build an instruction+context prompt and call the selected model.
-2) Repair and normalize the model’s JSON into the exact ground-truth schema.
-3) Evaluate accuracy in two modes from a *single* pass:
-   • "field" — per-field counting (each check counts as 1)
-   • "fractional_per_block" — per-block normalization (final_score, team A, team B, players A, players B each sum to 1.0)
-4) Saves raw text, rebuilt JSON, a single per-game details file, and a summary.
-
-Key outputs
------------
-- data/llm_responses/<difficulty>/text/<game_id>.txt
-- data/llm_responses/<difficulty>/json/<game_id>.json
-- data/llm_responses/<difficulty>/json/<game_id>__details.json
-- data/summary.json
-
-Evaluation summary
-------------------
-For each difficulty ("basic", "medium", "hard") the script records per-game results and aggregates per-type accuracy lists to compute average/median.
-Per-game items also include:
-- discrepancies: a single list per game (not per eval type)
-- field/fractional objects: { "accuracy_pct", "formula", "formula_vars" },
-  where "formula_vars" carries all variables that compose the formula (e.g., counts, per-block weights, per-team breakdowns).
-
-Model selection & JSON mode
----------------------------
-- A single MODEL_TO_TEST is used per run.
-- The script checks LiteLLM’s registry once for "response_format" support.
-- If JSON mode fails once for the chosen provider, future calls fall back to plain text + local JSON repair.
-
-Data sources
-------------
-- Reads `data/examples.jsonl` with interleaved lines per game_id: {"type": "example"} then {"type": "true_report"}.
-- Expects perfect ground-truth shape in the "true_report" entries and coerces the model output to that shape prior to evaluation.
-
-Environment
------------
-- .env is loaded (dotenv) for provider credentials and LiteLLM config.
-
-See also
---------
-- evaluation.py: implements evaluate_reports(...) returning (totals_by_type, discrepancies, details|None).
-"""
+#TODO:
+# 2. Think about compare the JSON output format with LISTs output format.
+# 3. I have notied that the LLM tend to interpret regular passing events as assists, even when they shouldn't be.
+# 4. I have also noticed that the LLM sometimes fails to recognize when a player is attempting a shot.
+# 5. Add an "if" for all models that do not support response_format={"type": "json_object"} in the litellm call.
+# 6. לקצר את הג'ייסון הנדרש מהמודל (למשל, לא צריך פירוט של מי הסגל ומי המאמן ומי פתח על הפרקט ומי על הספסל)
+# 7. לשלוח לצ'אט את האתר הזה כדי לקבל רשימה של מודלים שתומכים בפורמט ג'ייסון וכדי לדייק את הבקשה מהמודל כדי לוודא שהפורמט ג'ייסון שמתקבל הוא תקין: https://docs.litellm.ai/docs/completion/input#translated-openai-params
+# 8. לעדכן סוגי ריבאונדים
 
 import json
 import re
@@ -63,10 +23,6 @@ load_dotenv(override=True)
 # Support computing multiple evaluation types in the same run
 EVAL_TYPES = ["field", "fractional_per_block"]
 
-# Enable details
-RETURN_DETAILS = True
-
-# -------------------------------------------------------------------
 # --- Define the model you want to test here ---
 # This is the only line you need to change to switch models.
 
@@ -98,7 +54,12 @@ MODEL_TO_TEST = "gemini/gemini-2.5-pro"
 #MODEL_TO_TEST = "xai/grok-3"
 #MODEL_TO_TEST = "xai/grok-4-0709"
 #MODEL_TO_TEST = "xai/grok-code-fast-1"
-# -------------------------------------------------------------------
+
+# --- Meta --- not checked (need to create developer account)
+#MODEL_TO_TEST = "meta_llama/Llama-3.3-8B-Instruct"
+#MODEL_TO_TEST = "meta_llama/Llama-3.3-70B-Instruct"
+#MODEL_TO_TEST = "meta_llama/Llama-4-Maverick-17B-128E-Instruct-FP8"
+#MODEL_TO_TEST = "meta_llama/Llama-4-Scout-17B-16E-Instruct-FP8"
 
 # --- Check Model Capabilities Once ---
 # Since we only use one model per run, we can check its capabilities once at the start.
@@ -134,8 +95,8 @@ For each team, you must track and include the following:
 - `matchup`: The matchup of the game in the format "<TeamName-A> vs <TeamName-B>"
 - `final_score`: The final score of the game in the format "<TeamName-A>: <PointsTeamName-A>, <TeamName-B>: <PointsTeamName-B>"
 - `final_stats`: A dictionary containing the stats for each team and their players.
-    - Team-level `stats`: points, assists, rebounds, defensive_rebounds, offensive_rebounds, fouls, steals, blocks, turnovers, 2pt_shots_made, 2pt_shots_attempted, 3pt_shots_made, 3pt_shots_attempted, ft_made, ft_attempted.
-    - Player-level `players`: each player with points, assists, rebounds, defensive_rebounds, offensive_rebounds, fouls, steals, blocks, turnovers, 2pt_shots_made, 2pt_shots_attempted, 3pt_shots_made, 3pt_shots_attempted, ft_made, ft_attempted.
+    - Team-level `stats`: points, assists, rebounds, defensive_rebounds, offensive_rebounds, fouls, steals, blocks, turnovers, ft_made, ft_attempted.
+    - Player-level `players`: each player with points, assists, rebounds, defensive_rebounds, offensive_rebounds, fouls, steals, blocks, turnovers, ft_made, ft_attempted.
 
 ### OUTPUT FORMAT ###
 - Your entire response MUST be a single, valid JSON object.
@@ -154,87 +115,87 @@ Your final output must follow this exact structure. Do not add, remove, or renam
     "final_stats": {
         "TeamName-A": {
             "stats": {
-                "points": 0, "assists": 0, "rebounds": 0, "defensive_rebounds": 0, "offensive_rebounds": 0, "fouls": 0, "steals": 0, "blocks": 0, "turnovers": 0, "2pt_shots_made": 0, "2pt_shots_attempted": 0, "3pt_shots_made": 0, "3pt_shots_attempted": 0, "ft_made": 0, "ft_attempted": 0
+                "points": 0, "assists": 0, "rebounds": 0, "defensive_rebounds": 0, "offensive_rebounds": 0, "fouls": 0, "steals": 0, "blocks": 0, "turnovers": 0, "ft_made": 0, "ft_attempted": 0
             },
             "players": {
                 "PlayerName1-A": {
-                    "points": 0, "assists": 0, "rebounds": 0, "defensive_rebounds": 0, "offensive_rebounds": 0, "fouls": 0, "steals": 0, "blocks": 0, "turnovers": 0, "2pt_shots_made": 0, "2pt_shots_attempted": 0, "3pt_shots_made": 0, "3pt_shots_attempted": 0, "ft_made": 0, "ft_attempted": 0
+                    "points": 0, "assists": 0, "rebounds": 0, "defensive_rebounds": 0, "offensive_rebounds": 0, "fouls": 0, "steals": 0, "blocks": 0, "turnovers": 0, "ft_made": 0, "ft_attempted": 0
                 },
                 "PlayerName2-A": {
-                    "points": 0, "assists": 0, "rebounds": 0, "defensive_rebounds": 0, "offensive_rebounds": 0, "fouls": 0, "steals": 0, "blocks": 0, "turnovers": 0, "2pt_shots_made": 0, "2pt_shots_attempted": 0, "3pt_shots_made": 0, "3pt_shots_attempted": 0, "ft_made": 0, "ft_attempted": 0
+                    "points": 0, "assists": 0, "rebounds": 0, "defensive_rebounds": 0, "offensive_rebounds": 0, "fouls": 0, "steals": 0, "blocks": 0, "turnovers": 0, "ft_made": 0, "ft_attempted": 0
                 },
                 "PlayerName3-A": {
-                    "points": 0, "assists": 0, "rebounds": 0, "defensive_rebounds": 0, "offensive_rebounds": 0, "fouls": 0, "steals": 0, "blocks": 0, "turnovers": 0, "2pt_shots_made": 0, "2pt_shots_attempted": 0, "3pt_shots_made": 0, "3pt_shots_attempted": 0, "ft_made": 0, "ft_attempted": 0
+                    "points": 0, "assists": 0, "rebounds": 0, "defensive_rebounds": 0, "offensive_rebounds": 0, "fouls": 0, "steals": 0, "blocks": 0, "turnovers": 0, "ft_made": 0, "ft_attempted": 0
                 },
                 "PlayerName4-A": {
-                    "points": 0, "assists": 0, "rebounds": 0, "defensive_rebounds": 0, "offensive_rebounds": 0, "fouls": 0, "steals": 0, "blocks": 0, "turnovers": 0, "2pt_shots_made": 0, "2pt_shots_attempted": 0, "3pt_shots_made": 0, "3pt_shots_attempted": 0, "ft_made": 0, "ft_attempted": 0
+                    "points": 0, "assists": 0, "rebounds": 0, "defensive_rebounds": 0, "offensive_rebounds": 0, "fouls": 0, "steals": 0, "blocks": 0, "turnovers": 0, "ft_made": 0, "ft_attempted": 0
                 },
                 "PlayerName5-A": {
-                    "points": 0, "assists": 0, "rebounds": 0, "defensive_rebounds": 0, "offensive_rebounds": 0, "fouls": 0, "steals": 0, "blocks": 0, "turnovers": 0, "2pt_shots_made": 0, "2pt_shots_attempted": 0, "3pt_shots_made": 0, "3pt_shots_attempted": 0, "ft_made": 0, "ft_attempted": 0
+                    "points": 0, "assists": 0, "rebounds": 0, "defensive_rebounds": 0, "offensive_rebounds": 0, "fouls": 0, "steals": 0, "blocks": 0, "turnovers": 0, "ft_made": 0, "ft_attempted": 0
                 },
                 "PlayerName6-A": {
-                    "points": 0, "assists": 0, "rebounds": 0, "defensive_rebounds": 0, "offensive_rebounds": 0, "fouls": 0, "steals": 0, "blocks": 0, "turnovers": 0, "2pt_shots_made": 0, "2pt_shots_attempted": 0, "3pt_shots_made": 0, "3pt_shots_attempted": 0, "ft_made": 0, "ft_attempted": 0
+                    "points": 0, "assists": 0, "rebounds": 0, "defensive_rebounds": 0, "offensive_rebounds": 0, "fouls": 0, "steals": 0, "blocks": 0, "turnovers": 0, "ft_made": 0, "ft_attempted": 0
                 },
                 "PlayerName7-A": {
-                    "points": 0, "assists": 0, "rebounds": 0, "defensive_rebounds": 0, "offensive_rebounds": 0, "fouls": 0, "steals": 0, "blocks": 0, "turnovers": 0, "2pt_shots_made": 0, "2pt_shots_attempted": 0, "3pt_shots_made": 0, "3pt_shots_attempted": 0, "ft_made": 0, "ft_attempted": 0
+                    "points": 0, "assists": 0, "rebounds": 0, "defensive_rebounds": 0, "offensive_rebounds": 0, "fouls": 0, "steals": 0, "blocks": 0, "turnovers": 0, "ft_made": 0, "ft_attempted": 0
                 },
                 "PlayerName8-A": {
-                    "points": 0, "assists": 0, "rebounds": 0, "defensive_rebounds": 0, "offensive_rebounds": 0, "fouls": 0, "steals": 0, "blocks": 0, "turnovers": 0, "2pt_shots_made": 0, "2pt_shots_attempted": 0, "3pt_shots_made": 0, "3pt_shots_attempted": 0, "ft_made": 0, "ft_attempted": 0
+                    "points": 0, "assists": 0, "rebounds": 0, "defensive_rebounds": 0, "offensive_rebounds": 0, "fouls": 0, "steals": 0, "blocks": 0, "turnovers": 0, "ft_made": 0, "ft_attempted": 0
                 },
                 "PlayerName9-A": {
-                    "points": 0, "assists": 0, "rebounds": 0, "defensive_rebounds": 0, "offensive_rebounds": 0, "fouls": 0, "steals": 0, "blocks": 0, "turnovers": 0, "2pt_shots_made": 0, "2pt_shots_attempted": 0, "3pt_shots_made": 0, "3pt_shots_attempted": 0, "ft_made": 0, "ft_attempted": 0
+                    "points": 0, "assists": 0, "rebounds": 0, "defensive_rebounds": 0, "offensive_rebounds": 0, "fouls": 0, "steals": 0, "blocks": 0, "turnovers": 0, "ft_made": 0, "ft_attempted": 0
                 },
                 "PlayerName10-A": {
-                    "points": 0, "assists": 0, "rebounds": 0, "defensive_rebounds": 0, "offensive_rebounds": 0, "fouls": 0, "steals": 0, "blocks": 0, "turnovers": 0, "2pt_shots_made": 0, "2pt_shots_attempted": 0, "3pt_shots_made": 0, "3pt_shots_attempted": 0, "ft_made": 0, "ft_attempted": 0
+                    "points": 0, "assists": 0, "rebounds": 0, "defensive_rebounds": 0, "offensive_rebounds": 0, "fouls": 0, "steals": 0, "blocks": 0, "turnovers": 0, "ft_made": 0, "ft_attempted": 0
                 },
                 "PlayerName11-A": {
-                    "points": 0, "assists": 0, "rebounds": 0, "defensive_rebounds": 0, "offensive_rebounds": 0, "fouls": 0, "steals": 0, "blocks": 0, "turnovers": 0, "2pt_shots_made": 0, "2pt_shots_attempted": 0, "3pt_shots_made": 0, "3pt_shots_attempted": 0, "ft_made": 0, "ft_attempted": 0
+                    "points": 0, "assists": 0, "rebounds": 0, "defensive_rebounds": 0, "offensive_rebounds": 0, "fouls": 0, "steals": 0, "blocks": 0, "turnovers": 0, "ft_made": 0, "ft_attempted": 0
                 },
                 "PlayerName12-A": {
-                    "points": 0, "assists": 0, "rebounds": 0, "defensive_rebounds": 0, "offensive_rebounds": 0, "fouls": 0, "steals": 0, "blocks": 0, "turnovers": 0, "2pt_shots_made": 0, "2pt_shots_attempted": 0, "3pt_shots_made": 0, "3pt_shots_attempted": 0, "ft_made": 0, "ft_attempted": 0
+                    "points": 0, "assists": 0, "rebounds": 0, "defensive_rebounds": 0, "offensive_rebounds": 0, "fouls": 0, "steals": 0, "blocks": 0, "turnovers": 0, "ft_made": 0, "ft_attempted": 0
                 }
             }
         },
         "TeamName-B": {
             "stats": {
-                "points": 0, "assists": 0, "rebounds": 0, "defensive_rebounds": 0, "offensive_rebounds": 0, "fouls": 0, "steals": 0, "blocks": 0, "turnovers": 0, "2pt_shots_made": 0, "2pt_shots_attempted": 0, "3pt_shots_made": 0, "3pt_shots_attempted": 0, "ft_made": 0, "ft_attempted": 0
+                "points": 0, "assists": 0, "rebounds": 0, "defensive_rebounds": 0, "offensive_rebounds": 0, "fouls": 0, "steals": 0, "blocks": 0, "turnovers": 0, "ft_made": 0, "ft_attempted": 0
             },
             "players": {
                 "PlayerName1-B": {
-                    "points": 0, "assists": 0, "rebounds": 0, "defensive_rebounds": 0, "offensive_rebounds": 0, "fouls": 0, "steals": 0, "blocks": 0, "turnovers": 0, "2pt_shots_made": 0, "2pt_shots_attempted": 0, "3pt_shots_made": 0, "3pt_shots_attempted": 0, "ft_made": 0, "ft_attempted": 0
+                    "points": 0, "assists": 0, "rebounds": 0, "defensive_rebounds": 0, "offensive_rebounds": 0, "fouls": 0, "steals": 0, "blocks": 0, "turnovers": 0, "ft_made": 0, "ft_attempted": 0
                 },
                 "PlayerName2-B": {
-                    "points": 0, "assists": 0, "rebounds": 0, "defensive_rebounds": 0, "offensive_rebounds": 0, "fouls": 0, "steals": 0, "blocks": 0, "turnovers": 0, "2pt_shots_made": 0, "2pt_shots_attempted": 0, "3pt_shots_made": 0, "3pt_shots_attempted": 0, "ft_made": 0, "ft_attempted": 0
+                    "points": 0, "assists": 0, "rebounds": 0, "defensive_rebounds": 0, "offensive_rebounds": 0, "fouls": 0, "steals": 0, "blocks": 0, "turnovers": 0, "ft_made": 0, "ft_attempted": 0
                 },
                 "PlayerName3-B": {
-                    "points": 0, "assists": 0, "rebounds": 0, "defensive_rebounds": 0, "offensive_rebounds": 0, "fouls": 0, "steals": 0, "blocks": 0, "turnovers": 0, "2pt_shots_made": 0, "2pt_shots_attempted": 0, "3pt_shots_made": 0, "3pt_shots_attempted": 0, "ft_made": 0, "ft_attempted": 0
+                    "points": 0, "assists": 0, "rebounds": 0, "defensive_rebounds": 0, "offensive_rebounds": 0, "fouls": 0, "steals": 0, "blocks": 0, "turnovers": 0, "ft_made": 0, "ft_attempted": 0
                 },
                 "PlayerName4-B": {
-                    "points": 0, "assists": 0, "rebounds": 0, "defensive_rebounds": 0, "offensive_rebounds": 0, "fouls": 0, "steals": 0, "blocks": 0, "turnovers": 0, "2pt_shots_made": 0, "2pt_shots_attempted": 0, "3pt_shots_made": 0, "3pt_shots_attempted": 0, "ft_made": 0, "ft_attempted": 0
+                    "points": 0, "assists": 0, "rebounds": 0, "defensive_rebounds": 0, "offensive_rebounds": 0, "fouls": 0, "steals": 0, "blocks": 0, "turnovers": 0, "ft_made": 0, "ft_attempted": 0
                 },
                 "PlayerName5-B": {
-                    "points": 0, "assists": 0, "rebounds": 0, "defensive_rebounds": 0, "offensive_rebounds": 0, "fouls": 0, "steals": 0, "blocks": 0, "turnovers": 0, "2pt_shots_made": 0, "2pt_shots_attempted": 0, "3pt_shots_made": 0, "3pt_shots_attempted": 0, "ft_made": 0, "ft_attempted": 0
+                    "points": 0, "assists": 0, "rebounds": 0, "defensive_rebounds": 0, "offensive_rebounds": 0, "fouls": 0, "steals": 0, "blocks": 0, "turnovers": 0, "ft_made": 0, "ft_attempted": 0
                 },
                 "PlayerName6-B": {
-                    "points": 0, "assists": 0, "rebounds": 0, "defensive_rebounds": 0, "offensive_rebounds": 0, "fouls": 0, "steals": 0, "blocks": 0, "turnovers": 0, "2pt_shots_made": 0, "2pt_shots_attempted": 0, "3pt_shots_made": 0, "3pt_shots_attempted": 0, "ft_made": 0, "ft_attempted": 0
+                    "points": 0, "assists": 0, "rebounds": 0, "defensive_rebounds": 0, "offensive_rebounds": 0, "fouls": 0, "steals": 0, "blocks": 0, "turnovers": 0, "ft_made": 0, "ft_attempted": 0
                 },
                 "PlayerName7-B": {
-                    "points": 0, "assists": 0, "rebounds": 0, "defensive_rebounds": 0, "offensive_rebounds": 0, "fouls": 0, "steals": 0, "blocks": 0, "turnovers": 0, "2pt_shots_made": 0, "2pt_shots_attempted": 0, "3pt_shots_made": 0, "3pt_shots_attempted": 0, "ft_made": 0, "ft_attempted": 0
+                    "points": 0, "assists": 0, "rebounds": 0, "defensive_rebounds": 0, "offensive_rebounds": 0, "fouls": 0, "steals": 0, "blocks": 0, "turnovers": 0, "ft_made": 0, "ft_attempted": 0
                 },
                 "PlayerName8-B": {
-                    "points": 0, "assists": 0, "rebounds": 0, "defensive_rebounds": 0, "offensive_rebounds": 0, "fouls": 0, "steals": 0, "blocks": 0, "turnovers": 0, "2pt_shots_made": 0, "2pt_shots_attempted": 0, "3pt_shots_made": 0, "3pt_shots_attempted": 0, "ft_made": 0, "ft_attempted": 0
+                    "points": 0, "assists": 0, "rebounds": 0, "defensive_rebounds": 0, "offensive_rebounds": 0, "fouls": 0, "steals": 0, "blocks": 0, "turnovers": 0, "ft_made": 0, "ft_attempted": 0
                 },
                 "PlayerName9-B": {
-                    "points": 0, "assists": 0, "rebounds": 0, "defensive_rebounds": 0, "offensive_rebounds": 0, "fouls": 0, "steals": 0, "blocks": 0, "turnovers": 0, "2pt_shots_made": 0, "2pt_shots_attempted": 0, "3pt_shots_made": 0, "3pt_shots_attempted": 0, "ft_made": 0, "ft_attempted": 0
+                    "points": 0, "assists": 0, "rebounds": 0, "defensive_rebounds": 0, "offensive_rebounds": 0, "fouls": 0, "steals": 0, "blocks": 0, "turnovers": 0, "ft_made": 0, "ft_attempted": 0
                 },
                 "PlayerName10-B": {
-                    "points": 0, "assists": 0, "rebounds": 0, "defensive_rebounds": 0, "offensive_rebounds": 0, "fouls": 0, "steals": 0, "blocks": 0, "turnovers": 0, "2pt_shots_made": 0, "2pt_shots_attempted": 0, "3pt_shots_made": 0, "3pt_shots_attempted": 0, "ft_made": 0, "ft_attempted": 0
+                    "points": 0, "assists": 0, "rebounds": 0, "defensive_rebounds": 0, "offensive_rebounds": 0, "fouls": 0, "steals": 0, "blocks": 0, "turnovers": 0, "ft_made": 0, "ft_attempted": 0
                 },
                 "PlayerName11-B": {
-                    "points": 0, "assists": 0, "rebounds": 0, "defensive_rebounds": 0, "offensive_rebounds": 0, "fouls": 0, "steals": 0, "blocks": 0, "turnovers": 0, "2pt_shots_made": 0, "2pt_shots_attempted": 0, "3pt_shots_made": 0, "3pt_shots_attempted": 0, "ft_made": 0, "ft_attempted": 0
+                    "points": 0, "assists": 0, "rebounds": 0, "defensive_rebounds": 0, "offensive_rebounds": 0, "fouls": 0, "steals": 0, "blocks": 0, "turnovers": 0, "ft_made": 0, "ft_attempted": 0
                 },
                 "PlayerName12-B": {
-                    "points": 0, "assists": 0, "rebounds": 0, "defensive_rebounds": 0, "offensive_rebounds": 0, "fouls": 0, "steals": 0, "blocks": 0, "turnovers": 0, "2pt_shots_made": 0, "2pt_shots_attempted": 0, "3pt_shots_made": 0, "3pt_shots_attempted": 0, "ft_made": 0, "ft_attempted": 0
+                    "points": 0, "assists": 0, "rebounds": 0, "defensive_rebounds": 0, "offensive_rebounds": 0, "fouls": 0, "steals": 0, "blocks": 0, "turnovers": 0, "ft_made": 0, "ft_attempted": 0
                 }
             }
         }
@@ -251,30 +212,7 @@ MODEL_ACKNOWLEDGEMENT = "Understood. I am ready to process the game log. I will 
 # --- Part 2: Core Functions ---
 
 def construct_litellm_messages(game_data):
-    """Build the messages array for LiteLLM/OpenAI-style chat completion.
-
-    Steps
-    -----
-    1) Extract team metadata (coach, starting lineup, bench) for both teams.
-    2) Clean play-by-play descriptions from ANSI escapes and join as a numbered log.
-    3) Assemble a 'system' instruction (strict JSON contract + schema) and a single 'user' message containing roster info + the game log.
-
-    Args
-    ----
-    game_data : dict
-        One game's "example" object (teams metadata + play_by_play) as produced by generate_data.py.
-
-    Returns
-    -------
-    list[dict]
-        A list of messages in the format expected by LiteLLM/OpenAI chat APIs:
-        [{"role":"system","content":...}, {"role":"user","content":...}].
-
-    Notes
-    -----
-    The system prompt includes a canonical JSON schema example and a strict reminder to output
-    only a JSON object (no prose, no code fences).
-    """
+    """Constructs the 'messages' list required by the litellm.completion API."""
     team_a_name, team_b_name = list(game_data["teams"].keys())
     roster_info = f"""
                     ### TEAM METADATA & ROSTERS ###
@@ -303,29 +241,9 @@ def construct_litellm_messages(game_data):
     return messages
 
 def is_report_all_zeros(llm_report):
-    """Validation that the rebuilt model output is not a degenerate all-zeros report.
-
-    Definition
-    ----------
-    Returns True only if every team has team points == 0 *and* every player has zero in all
-    tracked counting stats (points/assists/rebounds/.../ft_attempted).
-    Any non-zero breaks the check.
-
-    Args
-    ----
-    llm_report : dict
-        The model report after structure repair and shape rebuild.
-
-    Returns
-    -------
-    bool
-        True if the report is all-zeros (invalid), False otherwise.
-
-    Robustness
-    ----------
-    If the structure is malformed (TypeError/AttributeError),
-    returns False (i.e., “not all zeros”),
-    so upstream can decide based on parsing success rather than this validation.
+    """
+    Checks if all key statistics in the LLM report are zero.
+    This is a sign that the LLM has failed to process the data.
     """
     try:
         for team_data in llm_report.get("final_stats", {}).values():
@@ -341,8 +259,6 @@ def is_report_all_zeros(llm_report):
                     or player_stats.get("steals", 0) != 0
                     or player_stats.get("blocks", 0) != 0
                     or player_stats.get("turnovers", 0) != 0
-                    or player_stats.get("2pt_shots_attempted", 0) != 0
-                    or player_stats.get("3pt_shots_attempted", 0) != 0
                     or player_stats.get("ft_attempted", 0) != 0):
                     return False # Found a player with points, report is likely valid
     except (TypeError, AttributeError):
@@ -353,31 +269,10 @@ def is_report_all_zeros(llm_report):
     return True
 
 def get_litellm_response(model_name, messages):
-    """Call the chosen model via LiteLLM with a one-time JSON-mode fallback.
-
-    Behavior
-    --------
-    - If registry indicates JSON support and we haven’t failed JSON mode yet:
-      * set response_format={"type": "json_object"}; for Gemini also set extra_body MIME.
-    - If the call fails in JSON mode: record the failure globally and retry without JSON mode.
-    - Return the message content (string) or None on unrecoverable error.
-
-    Args
-    ----
-    model_name : str
-        Provider/model identifier (e.g., "gemini/gemini-2.5-pro").
-    messages : list[dict]
-        Chat messages built by construct_litellm_messages(...).
-
-    Returns
-    -------
-    str | None
-        Raw model content (string) or None if the call failed.
-
-    Side Effects
-    ------------
-    Mutates the global flag JSON_MODE_FAILED_ONCE after a single JSON-mode failure to avoid
-    retrying the same failing path on subsequent calls.
+    """
+    Calls an LLM using the LiteLLM library, leveraging a globally-checked capability for JSON mode.
+    It will attempt to use JSON mode if the model is flagged as supporting it, but includes a
+    one-time fallback mechanism if the attempt fails.
     """
     global JSON_MODE_FAILED_ONCE  # Declare that we might modify this global flag
     try:
@@ -441,31 +336,19 @@ def _remove_trailing_commas(s: str) -> str:
     return re.sub(r",(\s*[\}\]])", r"\1", s)
 
 def repair_json_structure(raw: str) -> str:
-    """Structure-safe, provider-agnostic JSON “repair” for slightly malformed outputs.
-
-    Pipeline
-    --------
-    1) Strip markdown fences, control chars, and JSONC-style comments.
-    2) Remove trailing commas (", ]", ", }").
-    3) Walk characters; track string state; drop unexpected closers; append missing closers.
-    4) Return a syntactically valid JSON string (best-effort) without changing semantics.
-
-    Args
-    ----
-    raw : str
-        The model’s raw output string.
-
-    Returns
-    -------
-    str
-        A repaired JSON string that is typically parseable by json.loads.
+    """
+    Structure-safe repair:
+    - strip fences / noise / comments / trailing commas
+    - walk chars, ignore braces inside strings
+    - drop unexpected closers
+    - append missing closers in correct order
     """
     s = _strip_noise(raw)
     s = _remove_jsonc_comments(s)
     s = _remove_trailing_commas(s)
 
     result = []
-    stack = []
+    stack = []  # holds expected closers: '}' or ']'
     in_str = False
     esc = False
 
@@ -502,25 +385,8 @@ def repair_json_structure(raw: str) -> str:
 
 # --- model-only JSON fixer ---
 def ask_model_to_fix_json(model_name: str, raw: str) -> str | None:
-    """Last-resort JSON repair: ask the model to return a single valid JSON object.
-
-    Approach
-    --------
-    Uses the same JSON-mode decision logic as the main call.
-    If JSON mode fails once globally, retries without it.
-    The system prompt explicitly forbids code fences/comments.
-
-    Args
-    ----
-    model_name : str
-        Provider/model identifier.
-    raw : str
-        The original malformed JSON (as text) to be “fixed”.
-
-    Returns
-    -------
-    str | None
-        The model’s repaired JSON string or None if call/parse fails again.
+    """
+    Asks an LLM to repair a malformed JSON string, using the same global check for JSON mode.
     """
     global JSON_MODE_FAILED_ONCE # Declare that we might modify this global flag
     messages = [
@@ -562,28 +428,6 @@ def ask_model_to_fix_json(model_name: str, raw: str) -> str | None:
 
 # --- Type coercion after rebuild ---
 def coerce_numbers_inplace(report: dict, template: dict):
-    """Coerce values in-place to match the ground-truth template’s types.
-
-    Rules
-    -----
-    - dict -> recurse by template keys (missing keys become neutral defaults)
-    - list -> keep list if type matches, else []
-    - (int|float) -> best-effort int cast (fallback 0)
-    - str -> coerce to string ("" if None)
-    - others -> fallback neutral (0 or empty)
-
-    Args
-    ----
-    report : dict
-        The to-be-coerced model report (already shape-rebuilt).
-    template : dict
-        The ground-truth object for the same game (perfect shape).
-
-    Returns
-    -------
-    dict
-        A new structure with all fields coerced to expected types.
-    """
     def walk(rv, tv):
         if isinstance(tv, dict):
             out = {}
@@ -606,31 +450,12 @@ def coerce_numbers_inplace(report: dict, template: dict):
     return walk(report, template)
 
 def repair_and_rebuild_json(llm_dict, ground_truth_template):
-    """Rebuild the model output to perfectly match the ground-truth schema.
+    """
+    Intelligently rebuilds a dictionary from the LLM to match the exact structure
+    of a ground_truth_template.
 
-    Features
-    --------
-    - Removes spurious single top-level nesting (e.g., {"data": {...}} -> {...}).
-    - Reconstructs the object by walking the ground-truth template keys.
-    - Special handling for 'final_stats': if a team object is missing at the top level,
-      it searches for the team nested under another team and reattaches it correctly.
-
-    Args
-    ----
-    llm_dict : dict
-        Parsed JSON from the model (after structural repair).
-    ground_truth_template : dict
-        The perfect per-game ground truth.
-
-    Returns
-    -------
-    dict
-        A dict conforming exactly to the ground-truth schema, with missing keys filled
-        by neutral defaults ({} / [] / "" / 0).
-
-    Notes
-    -----
-    After this step, the report is safe to pass to `coerce_numbers_inplace(...)` and then to `evaluate_reports(...)`.
+    This version specifically handles the case where the LLM incorrectly nests
+    one team object inside another.
     """
     # This block detects if the entire valid JSON is nested inside a single,
     # unnecessary top-level key (like "data" or "response"), a common LLM behavior.
@@ -691,20 +516,6 @@ def repair_and_rebuild_json(llm_dict, ground_truth_template):
             
     return rebuilt_dict
 
-# =============================================================================
-# Main pipeline (when run as a script)
-# -----------------------------------------------------------------------------
-# 1) Read data/examples.jsonl and split per game_id into "example" and "true_report".
-# 2) For each game:
-#    a) Build messages and call the model (with JSON mode detection and fallback).
-#    b) Repair -> parse -> (optionally) ask model to fix -> parse again.
-#    c) Rebuild to exact ground-truth shape and coerce number types.
-#    d) Save raw text and rebuilt JSON to disk.
-#    e) Evaluate once (eval_type="both"), persist a single details file per game,
-#       and record per-game results under results_by_difficulty[...]["per_game"].
-# 3) Aggregate per-difficulty stats: average/median per eval type.
-# 4) Save data/summary.json with a clean per-game and per-type view.
-# =============================================================================
 if __name__ == "__main__":
     
     data_dir = "data"
@@ -746,6 +557,18 @@ if __name__ == "__main__":
             print(f"WARNING: mismatched game_ids. "
                 f"Missing in examples: {sorted(missing_in_examples)}; "
                 f"missing in true_report: {sorted(missing_in_truth)}")
+
+    # data_dir = "data"
+    # examples_path = os.path.join(data_dir, "examples.json")
+    # true_report_path = os.path.join(data_dir, "true_report.json")
+
+    # if not os.path.exists(examples_path) or not os.path.exists(true_report_path):
+    #     print("Error: Data files not found.")
+    # else:
+    #     with open(examples_path, 'r', encoding='utf-8') as f:
+    #         all_examples_data = json.load(f)
+    #     with open(true_report_path, 'r', encoding='utf-8') as f:
+    #         all_true_reports_data = json.load(f)
         
         results_base_dir = os.path.join(data_dir, "llm_responses")
         for difficulty_level in ["basic", "medium", "hard"]:
@@ -757,11 +580,11 @@ if __name__ == "__main__":
         for lvl in ["basic", "medium", "hard"]:
             results_by_difficulty[lvl] = {
                 "accuracies": {et: [] for et in EVAL_TYPES},
-                "per_game": {}
+                "discrepancies": {et: {} for et in EVAL_TYPES}
             }
         total_successful_games, total_failed_games = 0, 0
         
-        for game_key, game_narrative_data in all_examples_data.items(): 
+        for game_key, game_narrative_data in all_examples_data.items():
             print(f"\n{'='*20} PROCESSING {game_key.upper()} {'='*20}")
             ground_truth_data = all_true_reports_data[game_key]
             difficulty = ground_truth_data.get("difficulty", "unknown")
@@ -774,7 +597,7 @@ if __name__ == "__main__":
                 messages = construct_litellm_messages(game_narrative_data)
                 raw_response_str = get_litellm_response(MODEL_TO_TEST, messages)
                 minutes = 0.25 # minutes to wait after each API call
-                time_after_response = 60 * minutes
+                time_after_response = 60 * minutes # 15 seconds
                 print(f"Waiting {time_after_response} seconds ({minutes} minutes)...")
                 time.sleep(time_after_response) # Proactively avoid rate limiting
                 
@@ -792,10 +615,7 @@ if __name__ == "__main__":
                 except json.JSONDecodeError:
                     # Last resort: ask model to fix JSON only
                     fixed_by_model = ask_model_to_fix_json(MODEL_TO_TEST, raw_response_str)
-                    minutes = 1 # minutes to wait after each API call
-                    time_after_response = 60 * minutes
-                    print(f"Waiting {time_after_response} seconds ({minutes} minutes)...")
-                    time.sleep(time_after_response) # Proactively avoid rate limiting
+                    time.sleep(60) # Proactively avoid rate limiting
 
                     if fixed_by_model:
                         try:
@@ -826,12 +646,6 @@ if __name__ == "__main__":
                 f.write(raw_response_str or "")
             print(f"Saved original raw response to: {raw_output_path}")
 
-            # Saves the path of the LLM's response
-            results_by_difficulty[difficulty]["per_game"].setdefault(game_key, {})
-            results_by_difficulty[difficulty]["per_game"][game_key]["paths"] = {
-                "raw_text": raw_output_path
-            }
-
             # --- Process, save, and evaluate the final, rebuilt report ---
             if llm_report:
                 total_successful_games += 1
@@ -840,66 +654,24 @@ if __name__ == "__main__":
                     json.dump(llm_report, f, indent=4, ensure_ascii=False)
                 print(f"Saved rebuilt report to: {json_output_path}")
 
-                # Saves the path of the fixed JSON of the LLM's response
-                results_by_difficulty[difficulty]["per_game"][game_key]["paths"]["rebuilt_json"] = json_output_path
-
-                # === unified evaluation once for both types ===
-                results_by_difficulty[difficulty]["per_game"].setdefault(game_key, {})
-
-                totals_by_type, disc, det = evaluate_reports(
-                    llm_report, ground_truth_data, eval_type="both", return_details=RETURN_DETAILS
-                )
-
-                # discrepancies — Saves once per game
-                results_by_difficulty[difficulty]["per_game"][game_key]["discrepancies"] = disc
-
-                # details — Saves once per game, if we have choosen to see detials
-                if det is not None:
-                    details_path = os.path.join(results_base_dir, difficulty, "json", f"{game_key}__details.json")
-                    with open(details_path, "w", encoding="utf-8") as fdet:
-                        json.dump(det, fdet, indent=4, ensure_ascii=False)
-                    results_by_difficulty[difficulty]["per_game"][game_key].setdefault("paths", {})
-                    results_by_difficulty[difficulty]["per_game"][game_key]["paths"]["details"] = details_path
-
-                # Filling in the results for both methods (to maintain consistency with the summaries) + the variable values
-                for et in EVAL_TYPES:  # ["field", "fractional_per_block"]
-                    et_totals = totals_by_type[et]
-                    acc_pct   = et_totals["accuracy_pct"]
-                    formula   = et_totals["formula"]
-                    vars_obj  = et_totals.get("formula_vars", {})  # מגיע מ-evaluation.py
-
-                    # Aggregated statistics for summary
-                    results_by_difficulty[difficulty]["accuracies"][et].append(acc_pct)
-
-                    # Save per game for display (including variable values)
-                    results_by_difficulty[difficulty]["per_game"][game_key][et] = {
-                        "accuracy_pct": acc_pct,
-                        "formula": formula,
-                        "formula_vars": vars_obj
-                    }
-
-                # --- RESULT printout (from totals_by_type; no correct_fields/total_fields anymore) ---
+                # compute all evaluation types and store per-type results
+                per_type_results = {}
                 for et in EVAL_TYPES:
-                    totals = totals_by_type.get(et, {}) or {}
-                    acc_pct = totals.get("accuracy_pct", 0.0)
-                    formula = totals.get("formula", "?")
-                    extra = ""
-                    if et == "fractional_per_block":
-                        ws = totals.get("weighted_sanity", {}) or {}
-                        sw = ws.get("sum_weights")
-                        sc = ws.get("sum_contributions")
-                        if isinstance(sw, (int, float)) and isinstance(sc, (int, float)):
-                            extra = f" | weights(sum)={sw:.3f}, contributions(sum)={sc:.3f}"
-                    print(f"--- RESULT for {game_key} ({et}): Accuracy = {acc_pct:.2f}% | calc: {formula}{extra} ---")
+                    acc, disc = evaluate_reports(llm_report, ground_truth_data, eval_type=et)
+                    per_type_results[et] = (acc, disc)
+                    if difficulty in results_by_difficulty:
+                        results_by_difficulty[difficulty]["accuracies"][et].append(acc)
+                        if disc:
+                            results_by_difficulty[difficulty]["discrepancies"][et][game_key] = disc
 
+                for et, (acc, disc) in per_type_results.items():
+                    print(f"--- RESULT for {game_key} ({et}): Accuracy = {acc:.2f}% ---")
             else:
                 total_failed_games += 1
                 print(f"--- FAILURE for {game_key}: Could not get a valid report after {max_retries} attempts. SKIPPING. ---")
                 if difficulty in results_by_difficulty:
-                    results_by_difficulty[difficulty]["per_game"].setdefault(game_key, {})
-                    results_by_difficulty[difficulty]["per_game"][game_key]["discrepancies"] = [
-                        f"Failed after {max_retries} retries. See raw text file for details."
-                    ]
+                    for et in EVAL_TYPES:
+                        results_by_difficulty[difficulty]["discrepancies"][et][game_key] = [f"Failed after {max_retries} retries. See raw text file for details."]
 
             # --- Final Summary ---
             print(f"\n\n{'='*20} FINAL SUMMARY {'='*20}")
@@ -929,16 +701,13 @@ if __name__ == "__main__":
                     per_type_summary[et] = {
                         "average_accuracy": f"{avg_acc:.2f}%",
                         "median_accuracy": f"{med_acc:.2f}%",
-                        "games_succeeded": num_games_succeeded
+                        "games_succeeded": num_games_succeeded,
+                        "discrepancies": results["discrepancies"].get(et, {})
                     }
-
                     all_successful_accuracies[et].extend(acc_list)
                     print(f"  [{et}] Games Succeeded: {num_games_succeeded}  Average: {avg_acc:.2f}%  |  Median: {med_acc:.2f}%")
 
-                final_summary["results_by_difficulty"][difficulty] = {
-                    **per_type_summary,
-                    "per_game": results_by_difficulty[difficulty].get("per_game", {})
-                }
+                final_summary["results_by_difficulty"][difficulty] = per_type_summary
             
             # Calculate and print the overall average & median accuracy
             # overall averages / medians per evaluation type
