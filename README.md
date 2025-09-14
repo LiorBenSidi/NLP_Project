@@ -326,7 +326,7 @@ Items are aligned with the current implementations of `generate_data.py`, `run_e
 
 - **Rate limiting / sleeps**
   - **Where:** two places in `__main__` right after API calls:
-    - after the main completion: `minutes = 0.25` → `time.sleep(60 * minutes)`
+    - after the main completion: `minutes = 0.5` → `time.sleep(60 * minutes)` (30 seconds)
     - after the JSON-fixer call: `minutes = 1`
   - **Change to:** smaller/larger delays if you hit provider rate-limits (or `0` to disable).
 

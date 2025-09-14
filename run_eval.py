@@ -79,19 +79,12 @@ MODEL_TO_TEST = "gemini/gemini-2.5-pro"
 # --- OpenAI --- already paid 10$ + 10$
 #MODEL_TO_TEST = "gpt-4o-mini"
 #MODEL_TO_TEST = "gpt-4o"
-#MODEL_TO_TEST = "gpt-5-mini"
-#MODEL_TO_TEST = "gpt-5"
 
-# --- Anthropic --- already paid 5$ + 10$
+# --- Anthropic --- already paid 5$ + 10$  - Out of Credits
 #MODEL_TO_TEST = "claude-sonnet-4-20250514"
 #MODEL_TO_TEST = "claude-opus-4-20250514"
 #MODEL_TO_TEST = "claude-opus-4-1-20250805"
 
-# --- Grok --- already paid 5$ - check again (need to pay again)
-#MODEL_TO_TEST = "xai/grok-3-mini"
-#MODEL_TO_TEST = "xai/grok-3"
-#MODEL_TO_TEST = "xai/grok-4-0709"
-#MODEL_TO_TEST = "xai/grok-code-fast-1"
 # -------------------------------------------------------------------
 
 # --- Check Model Capabilities Once ---
@@ -767,7 +760,7 @@ if __name__ == "__main__":
             for attempt in range(max_retries):
                 messages = construct_litellm_messages(game_narrative_data)
                 raw_response_str = get_litellm_response(MODEL_TO_TEST, messages)
-                minutes = 0.25 # minutes to wait after each API call
+                minutes = 0.5 # minutes to wait after each API call
                 time_after_response = 60 * minutes
                 print(f"Waiting {time_after_response} seconds ({minutes} minutes)...")
                 time.sleep(time_after_response) # Proactively avoid rate limiting
