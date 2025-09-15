@@ -233,7 +233,7 @@ Accuracy = `weighted_correct_sum / total_weight_sum * 100`.
 ### 5.5 Per-game artifacts & summary fields
 For every game (under each difficulty) the runner saves:
 - **Raw text** → `data/llm_responses/<difficulty>/text/<game_id>.txt`
-- **Rebuilt JSON** → `data/llm_responses/<difficulty>/json/<game_id>.json`
+- **JSON** → `data/llm_responses/<difficulty>/json/<game_id>.json`
 - **Details** (all contributions + totals) → `data/llm_responses/<difficulty>/json/<game_id>__details.json`
 
 `data/summary.json` includes, per difficulty:
@@ -245,6 +245,7 @@ For every game (under each difficulty) the runner saves:
 - Aggregates:
   - `average_accuracy` and `median_accuracy` per type.
 
+> **Note:** Full raw outputs, per-game details, and cross-model comparisons are provided in the Appendices (see Section 7.3).
 ---
 
 ## 6) Configuration cheatsheet
@@ -421,35 +422,35 @@ Items are aligned with the current implementations of `generate_data.py`, `run_e
 
 ---
 
-## 7) Deliverables (for course submission)
+## 7) Deliverables & Appendices
 
-Baseline zip (after **data generation**):
+We provide both a baseline zip (after data generation), and evaluation artifacts (after running `run_eval.py`).
+Full raw results and comparisons appear in the Appendices.
+
+### 7.1 Baseline zip (after **data generation**):
 ```
 nlp_final_project_ID1_ID2.zip
-├── data/examples.jsonl
-├── generate_data.py
-├── run_eval.py
-├── evaluation.py
-└── README.md
+├─ data/
+│  └─ examples.jsonl                 # Synthetic games (prompt + ground truth)
+├─ generate_data.py
+├─ run_eval.py
+├─ evaluation.py
+├─ README.md
+└─ Appendices/                       # See below
 ```
 
-If you **also run** `run_eval.py`, you will have additional artifacts:
+### 7.2 After running evaluation (run_eval.py)
+If you run `run_eval.py`, you will have additional artifacts:
 ```
 data/
-  llm_responses/
-    basic/
-      text/<game_id>.txt
-      json/<game_id>.json
-      json/<game_id>__details.json
-    medium/
-      text/<game_id>.txt
-      json/<game_id>.json
-      json/<game_id>__details.json
-    hard/
-      text/<game_id>.txt
-      json/<game_id>.json
-      json/<game_id>__details.json
-  summary.json
+├─ llm_responses/
+│  ├─ basic/
+│  │  ├─ text/<game_id>.txt
+│  │  ├─ json/<game_id>.json
+│  │  └─ json/<game_id>__details.json
+│  ├─ medium/ (same layout)
+│  └─ hard/   (same layout)
+└─ summary.json
 ```
 
 - `text/<game_id>.txt` — raw model output (useful for debugging malformed JSON).
@@ -457,9 +458,35 @@ data/
 - `json/<game_id>__details.json` — full per-check contributions + totals (both modes) for that game.
 - `summary.json` — per-difficulty summary with per-game `accuracy_pct`, `formula`, and **`formula_vars`**.
 
----
+### 7.3 Appendices (raw data + comparisons)
+```
+Appendices/
+├─ 17082025-data_given_the_examples_to_people/
+│  ├─ examples.jsonl
+│  ├─ examples.json
+│  └─ true_report.json               # Human baseline: reported vs. ground-truth
+├─ data-details/
+│  ├─ llm_responses/                 # Full per-game artifacts (text/json/details)
+│  ├─ examples.jsonl
+│  └─ summary.json
+└─ Performance Comparison/
+   ├─ examples.jsonl
+   ├─ Anthropic - 15 examples/
+   │  └─ claude-sonnet-4-20250514-15_examples/
+   │     ├─ llm_responses/
+   │     └─ summary.json
+   ├─ Gemini - 15 examples/
+   │  ├─ 1_5_flash-15_examples/   (same layout)
+   │  ├─ 1_5_pro-15_examples/     (same layout)
+   │  ├─ 2_5_flash-15_examples/   (same layout)
+   │  └─ 2_5_pro-15_examples/     (same layout)
+   └─ OpenAI - 15 examples/
+      ├─ gpt-4o-15_examples/      (same layout)
+      └─ gpt-4o-mini-15_examples/ (same layout)
+```
 
 ---
+
 ## 8) Teams & rosters (EuroBasket 2025) — provenance & disclaimers
 
 The simulator ships with **named teams, head coaches, and 12‑player rosters** inspired by EuroBasket 2025 national teams. These appear as **constants** in `generate_data.py` (see the `self.<Team>_head_coach`, `self.<Team>_players`, and the `self.teams` mapping). Example (abbreviated):
