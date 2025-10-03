@@ -1,0 +1,4652 @@
+{
+    "eval_type": "both",
+    "contributions": [
+        {
+            "scope": "meta",
+            "team": null,
+            "player": null,
+            "stat": "final_score",
+            "gt": "Poland: 5, Slovenia: 8",
+            "llm": "Poland: 5, Slovenia: 8",
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 1.0
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 1.0
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 1.000000"
+            },
+            "note": "final_score counts as one full field in both modes"
+        },
+        {
+            "scope": "team",
+            "team": "Poland",
+            "player": null,
+            "stat": "points",
+            "gt": 5,
+            "llm": 5,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.066667"
+            },
+            "note": "team-block: field=1 per stat; fractional=1/15 each"
+        },
+        {
+            "scope": "team",
+            "team": "Poland",
+            "player": null,
+            "stat": "assists",
+            "gt": 0,
+            "llm": 3,
+            "correct": false,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "contribution": {
+                "field": 0.0,
+                "fractional_per_block": 0.0
+            },
+            "formula": {
+                "field": "0 * 1.000000",
+                "fractional_per_block": "0 * 0.066667"
+            },
+            "note": "team-block: field=1 per stat; fractional=1/15 each"
+        },
+        {
+            "scope": "team",
+            "team": "Poland",
+            "player": null,
+            "stat": "rebounds",
+            "gt": 9,
+            "llm": 9,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.066667"
+            },
+            "note": "team-block: field=1 per stat; fractional=1/15 each"
+        },
+        {
+            "scope": "team",
+            "team": "Poland",
+            "player": null,
+            "stat": "defensive_rebounds",
+            "gt": 7,
+            "llm": 7,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.066667"
+            },
+            "note": "team-block: field=1 per stat; fractional=1/15 each"
+        },
+        {
+            "scope": "team",
+            "team": "Poland",
+            "player": null,
+            "stat": "offensive_rebounds",
+            "gt": 2,
+            "llm": 2,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.066667"
+            },
+            "note": "team-block: field=1 per stat; fractional=1/15 each"
+        },
+        {
+            "scope": "team",
+            "team": "Poland",
+            "player": null,
+            "stat": "fouls",
+            "gt": 5,
+            "llm": 5,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.066667"
+            },
+            "note": "team-block: field=1 per stat; fractional=1/15 each"
+        },
+        {
+            "scope": "team",
+            "team": "Poland",
+            "player": null,
+            "stat": "steals",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.066667"
+            },
+            "note": "team-block: field=1 per stat; fractional=1/15 each"
+        },
+        {
+            "scope": "team",
+            "team": "Poland",
+            "player": null,
+            "stat": "blocks",
+            "gt": 3,
+            "llm": 3,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.066667"
+            },
+            "note": "team-block: field=1 per stat; fractional=1/15 each"
+        },
+        {
+            "scope": "team",
+            "team": "Poland",
+            "player": null,
+            "stat": "turnovers",
+            "gt": 2,
+            "llm": 2,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.066667"
+            },
+            "note": "team-block: field=1 per stat; fractional=1/15 each"
+        },
+        {
+            "scope": "team",
+            "team": "Poland",
+            "player": null,
+            "stat": "2pt_shots_made",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.066667"
+            },
+            "note": "team-block: field=1 per stat; fractional=1/15 each"
+        },
+        {
+            "scope": "team",
+            "team": "Poland",
+            "player": null,
+            "stat": "2pt_shots_attempted",
+            "gt": 5,
+            "llm": 5,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.066667"
+            },
+            "note": "team-block: field=1 per stat; fractional=1/15 each"
+        },
+        {
+            "scope": "team",
+            "team": "Poland",
+            "player": null,
+            "stat": "3pt_shots_made",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.066667"
+            },
+            "note": "team-block: field=1 per stat; fractional=1/15 each"
+        },
+        {
+            "scope": "team",
+            "team": "Poland",
+            "player": null,
+            "stat": "3pt_shots_attempted",
+            "gt": 5,
+            "llm": 5,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.066667"
+            },
+            "note": "team-block: field=1 per stat; fractional=1/15 each"
+        },
+        {
+            "scope": "team",
+            "team": "Poland",
+            "player": null,
+            "stat": "ft_made",
+            "gt": 5,
+            "llm": 5,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.066667"
+            },
+            "note": "team-block: field=1 per stat; fractional=1/15 each"
+        },
+        {
+            "scope": "team",
+            "team": "Poland",
+            "player": null,
+            "stat": "ft_attempted",
+            "gt": 13,
+            "llm": 13,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.066667"
+            },
+            "note": "team-block: field=1 per stat; fractional=1/15 each"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Aleksander Balcerowski",
+            "stat": "points",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Aleksander Balcerowski",
+            "stat": "assists",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Aleksander Balcerowski",
+            "stat": "rebounds",
+            "gt": 2,
+            "llm": 2,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Aleksander Balcerowski",
+            "stat": "defensive_rebounds",
+            "gt": 2,
+            "llm": 2,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Aleksander Balcerowski",
+            "stat": "offensive_rebounds",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Aleksander Balcerowski",
+            "stat": "fouls",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Aleksander Balcerowski",
+            "stat": "steals",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Aleksander Balcerowski",
+            "stat": "blocks",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Aleksander Balcerowski",
+            "stat": "turnovers",
+            "gt": 1,
+            "llm": 1,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Aleksander Balcerowski",
+            "stat": "2pt_shots_made",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Aleksander Balcerowski",
+            "stat": "2pt_shots_attempted",
+            "gt": 1,
+            "llm": 1,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Aleksander Balcerowski",
+            "stat": "3pt_shots_made",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Aleksander Balcerowski",
+            "stat": "3pt_shots_attempted",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Aleksander Balcerowski",
+            "stat": "ft_made",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Aleksander Balcerowski",
+            "stat": "ft_attempted",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Aleksander Dziewa",
+            "stat": "points",
+            "gt": 3,
+            "llm": 3,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Aleksander Dziewa",
+            "stat": "assists",
+            "gt": 0,
+            "llm": 2,
+            "correct": false,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 0.0,
+                "fractional_per_block": 0.0
+            },
+            "formula": {
+                "field": "0 * 1.000000",
+                "fractional_per_block": "0 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Aleksander Dziewa",
+            "stat": "rebounds",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Aleksander Dziewa",
+            "stat": "defensive_rebounds",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Aleksander Dziewa",
+            "stat": "offensive_rebounds",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Aleksander Dziewa",
+            "stat": "fouls",
+            "gt": 1,
+            "llm": 1,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Aleksander Dziewa",
+            "stat": "steals",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Aleksander Dziewa",
+            "stat": "blocks",
+            "gt": 1,
+            "llm": 1,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Aleksander Dziewa",
+            "stat": "turnovers",
+            "gt": 1,
+            "llm": 1,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Aleksander Dziewa",
+            "stat": "2pt_shots_made",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Aleksander Dziewa",
+            "stat": "2pt_shots_attempted",
+            "gt": 2,
+            "llm": 2,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Aleksander Dziewa",
+            "stat": "3pt_shots_made",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Aleksander Dziewa",
+            "stat": "3pt_shots_attempted",
+            "gt": 1,
+            "llm": 1,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Aleksander Dziewa",
+            "stat": "ft_made",
+            "gt": 3,
+            "llm": 3,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Aleksander Dziewa",
+            "stat": "ft_attempted",
+            "gt": 5,
+            "llm": 5,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Jordan Loyd",
+            "stat": "points",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Jordan Loyd",
+            "stat": "assists",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Jordan Loyd",
+            "stat": "rebounds",
+            "gt": 2,
+            "llm": 2,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Jordan Loyd",
+            "stat": "defensive_rebounds",
+            "gt": 2,
+            "llm": 2,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Jordan Loyd",
+            "stat": "offensive_rebounds",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Jordan Loyd",
+            "stat": "fouls",
+            "gt": 1,
+            "llm": 1,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Jordan Loyd",
+            "stat": "steals",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Jordan Loyd",
+            "stat": "blocks",
+            "gt": 1,
+            "llm": 1,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Jordan Loyd",
+            "stat": "turnovers",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Jordan Loyd",
+            "stat": "2pt_shots_made",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Jordan Loyd",
+            "stat": "2pt_shots_attempted",
+            "gt": 1,
+            "llm": 1,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Jordan Loyd",
+            "stat": "3pt_shots_made",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Jordan Loyd",
+            "stat": "3pt_shots_attempted",
+            "gt": 1,
+            "llm": 1,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Jordan Loyd",
+            "stat": "ft_made",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Jordan Loyd",
+            "stat": "ft_attempted",
+            "gt": 3,
+            "llm": 3,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Kamil Laczynski",
+            "stat": "points",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Kamil Laczynski",
+            "stat": "assists",
+            "gt": 0,
+            "llm": 1,
+            "correct": false,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 0.0,
+                "fractional_per_block": 0.0
+            },
+            "formula": {
+                "field": "0 * 1.000000",
+                "fractional_per_block": "0 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Kamil Laczynski",
+            "stat": "rebounds",
+            "gt": 2,
+            "llm": 2,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Kamil Laczynski",
+            "stat": "defensive_rebounds",
+            "gt": 1,
+            "llm": 1,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Kamil Laczynski",
+            "stat": "offensive_rebounds",
+            "gt": 1,
+            "llm": 1,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Kamil Laczynski",
+            "stat": "fouls",
+            "gt": 3,
+            "llm": 3,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Kamil Laczynski",
+            "stat": "steals",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Kamil Laczynski",
+            "stat": "blocks",
+            "gt": 1,
+            "llm": 1,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Kamil Laczynski",
+            "stat": "turnovers",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Kamil Laczynski",
+            "stat": "2pt_shots_made",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Kamil Laczynski",
+            "stat": "2pt_shots_attempted",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Kamil Laczynski",
+            "stat": "3pt_shots_made",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Kamil Laczynski",
+            "stat": "3pt_shots_attempted",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Kamil Laczynski",
+            "stat": "ft_made",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Kamil Laczynski",
+            "stat": "ft_attempted",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Michal Sokolowski",
+            "stat": "points",
+            "gt": 2,
+            "llm": 2,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Michal Sokolowski",
+            "stat": "assists",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Michal Sokolowski",
+            "stat": "rebounds",
+            "gt": 3,
+            "llm": 3,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Michal Sokolowski",
+            "stat": "defensive_rebounds",
+            "gt": 2,
+            "llm": 2,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Michal Sokolowski",
+            "stat": "offensive_rebounds",
+            "gt": 1,
+            "llm": 1,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Michal Sokolowski",
+            "stat": "fouls",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Michal Sokolowski",
+            "stat": "steals",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Michal Sokolowski",
+            "stat": "blocks",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Michal Sokolowski",
+            "stat": "turnovers",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Michal Sokolowski",
+            "stat": "2pt_shots_made",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Michal Sokolowski",
+            "stat": "2pt_shots_attempted",
+            "gt": 1,
+            "llm": 1,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Michal Sokolowski",
+            "stat": "3pt_shots_made",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Michal Sokolowski",
+            "stat": "3pt_shots_attempted",
+            "gt": 3,
+            "llm": 2,
+            "correct": false,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 0.0,
+                "fractional_per_block": 0.0
+            },
+            "formula": {
+                "field": "0 * 1.000000",
+                "fractional_per_block": "0 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Michal Sokolowski",
+            "stat": "ft_made",
+            "gt": 2,
+            "llm": 2,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Poland",
+            "player": "Michal Sokolowski",
+            "stat": "ft_attempted",
+            "gt": 5,
+            "llm": 5,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "non_participant",
+            "team": "Poland",
+            "player": "Andrzej Pluta",
+            "stat": "all_zeros",
+            "gt": "all zeros expected",
+            "llm": {
+                "points": 0,
+                "assists": 0,
+                "rebounds": 0,
+                "defensive_rebounds": 0,
+                "offensive_rebounds": 0,
+                "fouls": 0,
+                "steals": 0,
+                "blocks": 0,
+                "turnovers": 0,
+                "2pt_shots_made": 0,
+                "2pt_shots_attempted": 0,
+                "3pt_shots_made": 0,
+                "3pt_shots_attempted": 0,
+                "ft_made": 0,
+                "ft_attempted": 0
+            },
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "non-participant all-zeros"
+        },
+        {
+            "scope": "non_participant",
+            "team": "Poland",
+            "player": "Mateusz Ponitka",
+            "stat": "all_zeros",
+            "gt": "all zeros expected",
+            "llm": {
+                "points": 0,
+                "assists": 0,
+                "rebounds": 0,
+                "defensive_rebounds": 0,
+                "offensive_rebounds": 0,
+                "fouls": 0,
+                "steals": 0,
+                "blocks": 0,
+                "turnovers": 0,
+                "2pt_shots_made": 0,
+                "2pt_shots_attempted": 0,
+                "3pt_shots_made": 0,
+                "3pt_shots_attempted": 0,
+                "ft_made": 0,
+                "ft_attempted": 0
+            },
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "non-participant all-zeros"
+        },
+        {
+            "scope": "non_participant",
+            "team": "Poland",
+            "player": "Szymon Zapala",
+            "stat": "all_zeros",
+            "gt": "all zeros expected",
+            "llm": {
+                "points": 0,
+                "assists": 0,
+                "rebounds": 0,
+                "defensive_rebounds": 0,
+                "offensive_rebounds": 0,
+                "fouls": 0,
+                "steals": 0,
+                "blocks": 0,
+                "turnovers": 0,
+                "2pt_shots_made": 0,
+                "2pt_shots_attempted": 0,
+                "3pt_shots_made": 0,
+                "3pt_shots_attempted": 0,
+                "ft_made": 0,
+                "ft_attempted": 0
+            },
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "non-participant all-zeros"
+        },
+        {
+            "scope": "non_participant",
+            "team": "Poland",
+            "player": "Tomasz Gielo",
+            "stat": "all_zeros",
+            "gt": "all zeros expected",
+            "llm": {
+                "points": 0,
+                "assists": 0,
+                "rebounds": 0,
+                "defensive_rebounds": 0,
+                "offensive_rebounds": 0,
+                "fouls": 0,
+                "steals": 0,
+                "blocks": 0,
+                "turnovers": 0,
+                "2pt_shots_made": 0,
+                "2pt_shots_attempted": 0,
+                "3pt_shots_made": 0,
+                "3pt_shots_attempted": 0,
+                "ft_made": 0,
+                "ft_attempted": 0
+            },
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "non-participant all-zeros"
+        },
+        {
+            "scope": "non_participant",
+            "team": "Poland",
+            "player": "Dominik Olejniczak",
+            "stat": "all_zeros",
+            "gt": "all zeros expected",
+            "llm": {
+                "points": 0,
+                "assists": 0,
+                "rebounds": 0,
+                "defensive_rebounds": 0,
+                "offensive_rebounds": 0,
+                "fouls": 0,
+                "steals": 0,
+                "blocks": 0,
+                "turnovers": 0,
+                "2pt_shots_made": 0,
+                "2pt_shots_attempted": 0,
+                "3pt_shots_made": 0,
+                "3pt_shots_attempted": 0,
+                "ft_made": 0,
+                "ft_attempted": 0
+            },
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "non-participant all-zeros"
+        },
+        {
+            "scope": "non_participant",
+            "team": "Poland",
+            "player": "Michal Michalak",
+            "stat": "all_zeros",
+            "gt": "all zeros expected",
+            "llm": {
+                "points": 0,
+                "assists": 0,
+                "rebounds": 0,
+                "defensive_rebounds": 0,
+                "offensive_rebounds": 0,
+                "fouls": 0,
+                "steals": 0,
+                "blocks": 0,
+                "turnovers": 0,
+                "2pt_shots_made": 0,
+                "2pt_shots_attempted": 0,
+                "3pt_shots_made": 0,
+                "3pt_shots_attempted": 0,
+                "ft_made": 0,
+                "ft_attempted": 0
+            },
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "non-participant all-zeros"
+        },
+        {
+            "scope": "non_participant",
+            "team": "Poland",
+            "player": "Przemyslaw Zolnierewicz",
+            "stat": "all_zeros",
+            "gt": "all zeros expected",
+            "llm": {
+                "points": 0,
+                "assists": 0,
+                "rebounds": 0,
+                "defensive_rebounds": 0,
+                "offensive_rebounds": 0,
+                "fouls": 0,
+                "steals": 0,
+                "blocks": 0,
+                "turnovers": 0,
+                "2pt_shots_made": 0,
+                "2pt_shots_attempted": 0,
+                "3pt_shots_made": 0,
+                "3pt_shots_attempted": 0,
+                "ft_made": 0,
+                "ft_attempted": 0
+            },
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "non-participant all-zeros"
+        },
+        {
+            "scope": "team",
+            "team": "Slovenia",
+            "player": null,
+            "stat": "points",
+            "gt": 8,
+            "llm": 8,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.066667"
+            },
+            "note": "team-block: field=1 per stat; fractional=1/15 each"
+        },
+        {
+            "scope": "team",
+            "team": "Slovenia",
+            "player": null,
+            "stat": "assists",
+            "gt": 0,
+            "llm": 5,
+            "correct": false,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "contribution": {
+                "field": 0.0,
+                "fractional_per_block": 0.0
+            },
+            "formula": {
+                "field": "0 * 1.000000",
+                "fractional_per_block": "0 * 0.066667"
+            },
+            "note": "team-block: field=1 per stat; fractional=1/15 each"
+        },
+        {
+            "scope": "team",
+            "team": "Slovenia",
+            "player": null,
+            "stat": "rebounds",
+            "gt": 9,
+            "llm": 10,
+            "correct": false,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "contribution": {
+                "field": 0.0,
+                "fractional_per_block": 0.0
+            },
+            "formula": {
+                "field": "0 * 1.000000",
+                "fractional_per_block": "0 * 0.066667"
+            },
+            "note": "team-block: field=1 per stat; fractional=1/15 each"
+        },
+        {
+            "scope": "team",
+            "team": "Slovenia",
+            "player": null,
+            "stat": "defensive_rebounds",
+            "gt": 6,
+            "llm": 6,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.066667"
+            },
+            "note": "team-block: field=1 per stat; fractional=1/15 each"
+        },
+        {
+            "scope": "team",
+            "team": "Slovenia",
+            "player": null,
+            "stat": "offensive_rebounds",
+            "gt": 3,
+            "llm": 4,
+            "correct": false,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "contribution": {
+                "field": 0.0,
+                "fractional_per_block": 0.0
+            },
+            "formula": {
+                "field": "0 * 1.000000",
+                "fractional_per_block": "0 * 0.066667"
+            },
+            "note": "team-block: field=1 per stat; fractional=1/15 each"
+        },
+        {
+            "scope": "team",
+            "team": "Slovenia",
+            "player": null,
+            "stat": "fouls",
+            "gt": 5,
+            "llm": 5,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.066667"
+            },
+            "note": "team-block: field=1 per stat; fractional=1/15 each"
+        },
+        {
+            "scope": "team",
+            "team": "Slovenia",
+            "player": null,
+            "stat": "steals",
+            "gt": 2,
+            "llm": 2,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.066667"
+            },
+            "note": "team-block: field=1 per stat; fractional=1/15 each"
+        },
+        {
+            "scope": "team",
+            "team": "Slovenia",
+            "player": null,
+            "stat": "blocks",
+            "gt": 2,
+            "llm": 2,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.066667"
+            },
+            "note": "team-block: field=1 per stat; fractional=1/15 each"
+        },
+        {
+            "scope": "team",
+            "team": "Slovenia",
+            "player": null,
+            "stat": "turnovers",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.066667"
+            },
+            "note": "team-block: field=1 per stat; fractional=1/15 each"
+        },
+        {
+            "scope": "team",
+            "team": "Slovenia",
+            "player": null,
+            "stat": "2pt_shots_made",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.066667"
+            },
+            "note": "team-block: field=1 per stat; fractional=1/15 each"
+        },
+        {
+            "scope": "team",
+            "team": "Slovenia",
+            "player": null,
+            "stat": "2pt_shots_attempted",
+            "gt": 5,
+            "llm": 5,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.066667"
+            },
+            "note": "team-block: field=1 per stat; fractional=1/15 each"
+        },
+        {
+            "scope": "team",
+            "team": "Slovenia",
+            "player": null,
+            "stat": "3pt_shots_made",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.066667"
+            },
+            "note": "team-block: field=1 per stat; fractional=1/15 each"
+        },
+        {
+            "scope": "team",
+            "team": "Slovenia",
+            "player": null,
+            "stat": "3pt_shots_attempted",
+            "gt": 8,
+            "llm": 8,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.066667"
+            },
+            "note": "team-block: field=1 per stat; fractional=1/15 each"
+        },
+        {
+            "scope": "team",
+            "team": "Slovenia",
+            "player": null,
+            "stat": "ft_made",
+            "gt": 8,
+            "llm": 8,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.066667"
+            },
+            "note": "team-block: field=1 per stat; fractional=1/15 each"
+        },
+        {
+            "scope": "team",
+            "team": "Slovenia",
+            "player": null,
+            "stat": "ft_attempted",
+            "gt": 14,
+            "llm": 14,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.06666666666666667
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.066667"
+            },
+            "note": "team-block: field=1 per stat; fractional=1/15 each"
+        },
+        {
+            "scope": "player",
+            "team": "Slovenia",
+            "player": "Aleksej Nikolic",
+            "stat": "points",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Slovenia",
+            "player": "Aleksej Nikolic",
+            "stat": "assists",
+            "gt": 0,
+            "llm": 2,
+            "correct": false,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 0.0,
+                "fractional_per_block": 0.0
+            },
+            "formula": {
+                "field": "0 * 1.000000",
+                "fractional_per_block": "0 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Slovenia",
+            "player": "Aleksej Nikolic",
+            "stat": "rebounds",
+            "gt": 3,
+            "llm": 2,
+            "correct": false,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 0.0,
+                "fractional_per_block": 0.0
+            },
+            "formula": {
+                "field": "0 * 1.000000",
+                "fractional_per_block": "0 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Slovenia",
+            "player": "Aleksej Nikolic",
+            "stat": "defensive_rebounds",
+            "gt": 2,
+            "llm": 2,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Slovenia",
+            "player": "Aleksej Nikolic",
+            "stat": "offensive_rebounds",
+            "gt": 1,
+            "llm": 0,
+            "correct": false,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 0.0,
+                "fractional_per_block": 0.0
+            },
+            "formula": {
+                "field": "0 * 1.000000",
+                "fractional_per_block": "0 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Slovenia",
+            "player": "Aleksej Nikolic",
+            "stat": "fouls",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Slovenia",
+            "player": "Aleksej Nikolic",
+            "stat": "steals",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Slovenia",
+            "player": "Aleksej Nikolic",
+            "stat": "blocks",
+            "gt": 1,
+            "llm": 1,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Slovenia",
+            "player": "Aleksej Nikolic",
+            "stat": "turnovers",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Slovenia",
+            "player": "Aleksej Nikolic",
+            "stat": "2pt_shots_made",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Slovenia",
+            "player": "Aleksej Nikolic",
+            "stat": "2pt_shots_attempted",
+            "gt": 2,
+            "llm": 2,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Slovenia",
+            "player": "Aleksej Nikolic",
+            "stat": "3pt_shots_made",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Slovenia",
+            "player": "Aleksej Nikolic",
+            "stat": "3pt_shots_attempted",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Slovenia",
+            "player": "Aleksej Nikolic",
+            "stat": "ft_made",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Slovenia",
+            "player": "Aleksej Nikolic",
+            "stat": "ft_attempted",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Slovenia",
+            "player": "Edo Muric",
+            "stat": "points",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Slovenia",
+            "player": "Edo Muric",
+            "stat": "assists",
+            "gt": 0,
+            "llm": 1,
+            "correct": false,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 0.0,
+                "fractional_per_block": 0.0
+            },
+            "formula": {
+                "field": "0 * 1.000000",
+                "fractional_per_block": "0 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Slovenia",
+            "player": "Edo Muric",
+            "stat": "rebounds",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Slovenia",
+            "player": "Edo Muric",
+            "stat": "defensive_rebounds",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Slovenia",
+            "player": "Edo Muric",
+            "stat": "offensive_rebounds",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Slovenia",
+            "player": "Edo Muric",
+            "stat": "fouls",
+            "gt": 2,
+            "llm": 2,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Slovenia",
+            "player": "Edo Muric",
+            "stat": "steals",
+            "gt": 1,
+            "llm": 1,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Slovenia",
+            "player": "Edo Muric",
+            "stat": "blocks",
+            "gt": 1,
+            "llm": 1,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Slovenia",
+            "player": "Edo Muric",
+            "stat": "turnovers",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Slovenia",
+            "player": "Edo Muric",
+            "stat": "2pt_shots_made",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Slovenia",
+            "player": "Edo Muric",
+            "stat": "2pt_shots_attempted",
+            "gt": 1,
+            "llm": 1,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Slovenia",
+            "player": "Edo Muric",
+            "stat": "3pt_shots_made",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Slovenia",
+            "player": "Edo Muric",
+            "stat": "3pt_shots_attempted",
+            "gt": 1,
+            "llm": 1,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Slovenia",
+            "player": "Edo Muric",
+            "stat": "ft_made",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Slovenia",
+            "player": "Edo Muric",
+            "stat": "ft_attempted",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Slovenia",
+            "player": "Leon Stergar",
+            "stat": "points",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Slovenia",
+            "player": "Leon Stergar",
+            "stat": "assists",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Slovenia",
+            "player": "Leon Stergar",
+            "stat": "rebounds",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Slovenia",
+            "player": "Leon Stergar",
+            "stat": "defensive_rebounds",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Slovenia",
+            "player": "Leon Stergar",
+            "stat": "offensive_rebounds",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Slovenia",
+            "player": "Leon Stergar",
+            "stat": "fouls",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Slovenia",
+            "player": "Leon Stergar",
+            "stat": "steals",
+            "gt": 1,
+            "llm": 1,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Slovenia",
+            "player": "Leon Stergar",
+            "stat": "blocks",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Slovenia",
+            "player": "Leon Stergar",
+            "stat": "turnovers",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Slovenia",
+            "player": "Leon Stergar",
+            "stat": "2pt_shots_made",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Slovenia",
+            "player": "Leon Stergar",
+            "stat": "2pt_shots_attempted",
+            "gt": 1,
+            "llm": 1,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Slovenia",
+            "player": "Leon Stergar",
+            "stat": "3pt_shots_made",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Slovenia",
+            "player": "Leon Stergar",
+            "stat": "3pt_shots_attempted",
+            "gt": 2,
+            "llm": 2,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Slovenia",
+            "player": "Leon Stergar",
+            "stat": "ft_made",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Slovenia",
+            "player": "Leon Stergar",
+            "stat": "ft_attempted",
+            "gt": 3,
+            "llm": 3,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Slovenia",
+            "player": "Luka Scuka",
+            "stat": "points",
+            "gt": 3,
+            "llm": 3,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Slovenia",
+            "player": "Luka Scuka",
+            "stat": "assists",
+            "gt": 0,
+            "llm": 2,
+            "correct": false,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 0.0,
+                "fractional_per_block": 0.0
+            },
+            "formula": {
+                "field": "0 * 1.000000",
+                "fractional_per_block": "0 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Slovenia",
+            "player": "Luka Scuka",
+            "stat": "rebounds",
+            "gt": 3,
+            "llm": 4,
+            "correct": false,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 0.0,
+                "fractional_per_block": 0.0
+            },
+            "formula": {
+                "field": "0 * 1.000000",
+                "fractional_per_block": "0 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Slovenia",
+            "player": "Luka Scuka",
+            "stat": "defensive_rebounds",
+            "gt": 2,
+            "llm": 2,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Slovenia",
+            "player": "Luka Scuka",
+            "stat": "offensive_rebounds",
+            "gt": 1,
+            "llm": 2,
+            "correct": false,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 0.0,
+                "fractional_per_block": 0.0
+            },
+            "formula": {
+                "field": "0 * 1.000000",
+                "fractional_per_block": "0 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Slovenia",
+            "player": "Luka Scuka",
+            "stat": "fouls",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Slovenia",
+            "player": "Luka Scuka",
+            "stat": "steals",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Slovenia",
+            "player": "Luka Scuka",
+            "stat": "blocks",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Slovenia",
+            "player": "Luka Scuka",
+            "stat": "turnovers",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Slovenia",
+            "player": "Luka Scuka",
+            "stat": "2pt_shots_made",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Slovenia",
+            "player": "Luka Scuka",
+            "stat": "2pt_shots_attempted",
+            "gt": 1,
+            "llm": 1,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Slovenia",
+            "player": "Luka Scuka",
+            "stat": "3pt_shots_made",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Slovenia",
+            "player": "Luka Scuka",
+            "stat": "3pt_shots_attempted",
+            "gt": 2,
+            "llm": 2,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Slovenia",
+            "player": "Luka Scuka",
+            "stat": "ft_made",
+            "gt": 3,
+            "llm": 3,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Slovenia",
+            "player": "Luka Scuka",
+            "stat": "ft_attempted",
+            "gt": 5,
+            "llm": 5,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Slovenia",
+            "player": "Robert Jurkovic",
+            "stat": "points",
+            "gt": 5,
+            "llm": 5,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Slovenia",
+            "player": "Robert Jurkovic",
+            "stat": "assists",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Slovenia",
+            "player": "Robert Jurkovic",
+            "stat": "rebounds",
+            "gt": 3,
+            "llm": 4,
+            "correct": false,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 0.0,
+                "fractional_per_block": 0.0
+            },
+            "formula": {
+                "field": "0 * 1.000000",
+                "fractional_per_block": "0 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Slovenia",
+            "player": "Robert Jurkovic",
+            "stat": "defensive_rebounds",
+            "gt": 2,
+            "llm": 2,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Slovenia",
+            "player": "Robert Jurkovic",
+            "stat": "offensive_rebounds",
+            "gt": 1,
+            "llm": 2,
+            "correct": false,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 0.0,
+                "fractional_per_block": 0.0
+            },
+            "formula": {
+                "field": "0 * 1.000000",
+                "fractional_per_block": "0 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Slovenia",
+            "player": "Robert Jurkovic",
+            "stat": "fouls",
+            "gt": 3,
+            "llm": 3,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Slovenia",
+            "player": "Robert Jurkovic",
+            "stat": "steals",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Slovenia",
+            "player": "Robert Jurkovic",
+            "stat": "blocks",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Slovenia",
+            "player": "Robert Jurkovic",
+            "stat": "turnovers",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Slovenia",
+            "player": "Robert Jurkovic",
+            "stat": "2pt_shots_made",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Slovenia",
+            "player": "Robert Jurkovic",
+            "stat": "2pt_shots_attempted",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Slovenia",
+            "player": "Robert Jurkovic",
+            "stat": "3pt_shots_made",
+            "gt": 0,
+            "llm": 0,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Slovenia",
+            "player": "Robert Jurkovic",
+            "stat": "3pt_shots_attempted",
+            "gt": 3,
+            "llm": 3,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Slovenia",
+            "player": "Robert Jurkovic",
+            "stat": "ft_made",
+            "gt": 5,
+            "llm": 5,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "player",
+            "team": "Slovenia",
+            "player": "Robert Jurkovic",
+            "stat": "ft_attempted",
+            "gt": 6,
+            "llm": 6,
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "player stat"
+        },
+        {
+            "scope": "non_participant",
+            "team": "Slovenia",
+            "player": "Martin Krampelj",
+            "stat": "all_zeros",
+            "gt": "all zeros expected",
+            "llm": {
+                "points": 0,
+                "assists": 0,
+                "rebounds": 0,
+                "defensive_rebounds": 0,
+                "offensive_rebounds": 0,
+                "fouls": 0,
+                "steals": 0,
+                "blocks": 0,
+                "turnovers": 0,
+                "2pt_shots_made": 0,
+                "2pt_shots_attempted": 0,
+                "3pt_shots_made": 0,
+                "3pt_shots_attempted": 0,
+                "ft_made": 0,
+                "ft_attempted": 0
+            },
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "non-participant all-zeros"
+        },
+        {
+            "scope": "non_participant",
+            "team": "Slovenia",
+            "player": "Mark Padjen",
+            "stat": "all_zeros",
+            "gt": "all zeros expected",
+            "llm": {
+                "points": 0,
+                "assists": 0,
+                "rebounds": 0,
+                "defensive_rebounds": 0,
+                "offensive_rebounds": 0,
+                "fouls": 0,
+                "steals": 0,
+                "blocks": 0,
+                "turnovers": 0,
+                "2pt_shots_made": 0,
+                "2pt_shots_attempted": 0,
+                "3pt_shots_made": 0,
+                "3pt_shots_attempted": 0,
+                "ft_made": 0,
+                "ft_attempted": 0
+            },
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "non-participant all-zeros"
+        },
+        {
+            "scope": "non_participant",
+            "team": "Slovenia",
+            "player": "Klemen Prepelic",
+            "stat": "all_zeros",
+            "gt": "all zeros expected",
+            "llm": {
+                "points": 0,
+                "assists": 0,
+                "rebounds": 0,
+                "defensive_rebounds": 0,
+                "offensive_rebounds": 0,
+                "fouls": 0,
+                "steals": 0,
+                "blocks": 0,
+                "turnovers": 0,
+                "2pt_shots_made": 0,
+                "2pt_shots_attempted": 0,
+                "3pt_shots_made": 0,
+                "3pt_shots_attempted": 0,
+                "ft_made": 0,
+                "ft_attempted": 0
+            },
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "non-participant all-zeros"
+        },
+        {
+            "scope": "non_participant",
+            "team": "Slovenia",
+            "player": "Rok Radovic",
+            "stat": "all_zeros",
+            "gt": "all zeros expected",
+            "llm": {
+                "points": 0,
+                "assists": 0,
+                "rebounds": 0,
+                "defensive_rebounds": 0,
+                "offensive_rebounds": 0,
+                "fouls": 0,
+                "steals": 0,
+                "blocks": 0,
+                "turnovers": 0,
+                "2pt_shots_made": 0,
+                "2pt_shots_attempted": 0,
+                "3pt_shots_made": 0,
+                "3pt_shots_attempted": 0,
+                "ft_made": 0,
+                "ft_attempted": 0
+            },
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "non-participant all-zeros"
+        },
+        {
+            "scope": "non_participant",
+            "team": "Slovenia",
+            "player": "Gregor Hrovat",
+            "stat": "all_zeros",
+            "gt": "all zeros expected",
+            "llm": {
+                "points": 0,
+                "assists": 0,
+                "rebounds": 0,
+                "defensive_rebounds": 0,
+                "offensive_rebounds": 0,
+                "fouls": 0,
+                "steals": 0,
+                "blocks": 0,
+                "turnovers": 0,
+                "2pt_shots_made": 0,
+                "2pt_shots_attempted": 0,
+                "3pt_shots_made": 0,
+                "3pt_shots_attempted": 0,
+                "ft_made": 0,
+                "ft_attempted": 0
+            },
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "non-participant all-zeros"
+        },
+        {
+            "scope": "non_participant",
+            "team": "Slovenia",
+            "player": "Alen Omic",
+            "stat": "all_zeros",
+            "gt": "all zeros expected",
+            "llm": {
+                "points": 0,
+                "assists": 0,
+                "rebounds": 0,
+                "defensive_rebounds": 0,
+                "offensive_rebounds": 0,
+                "fouls": 0,
+                "steals": 0,
+                "blocks": 0,
+                "turnovers": 0,
+                "2pt_shots_made": 0,
+                "2pt_shots_attempted": 0,
+                "3pt_shots_made": 0,
+                "3pt_shots_attempted": 0,
+                "ft_made": 0,
+                "ft_attempted": 0
+            },
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "non-participant all-zeros"
+        },
+        {
+            "scope": "non_participant",
+            "team": "Slovenia",
+            "player": "Luka Doncic",
+            "stat": "all_zeros",
+            "gt": "all zeros expected",
+            "llm": {
+                "points": 0,
+                "assists": 0,
+                "rebounds": 0,
+                "defensive_rebounds": 0,
+                "offensive_rebounds": 0,
+                "fouls": 0,
+                "steals": 0,
+                "blocks": 0,
+                "turnovers": 0,
+                "2pt_shots_made": 0,
+                "2pt_shots_attempted": 0,
+                "3pt_shots_made": 0,
+                "3pt_shots_attempted": 0,
+                "ft_made": 0,
+                "ft_attempted": 0
+            },
+            "correct": true,
+            "weights": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "contribution": {
+                "field": 1.0,
+                "fractional_per_block": 0.012195121951219513
+            },
+            "formula": {
+                "field": "1 * 1.000000",
+                "fractional_per_block": "1 * 0.012195"
+            },
+            "note": "non-participant all-zeros"
+        }
+    ],
+    "totals": {
+        "field": {
+            "accuracy_pct": 91.7948717948718,
+            "formula": "179.0/195.0 * 100",
+            "formula_vars": {
+                "correct_fields": 179.0,
+                "total_fields": 195.0,
+                "breakdown": {
+                    "final_score": {
+                        "correct": 1.0,
+                        "total": 1.0
+                    },
+                    "team_stats": {
+                        "correct": 26.0,
+                        "total": 30.0,
+                        "per_team": {
+                            "Poland": {
+                                "correct": 14.0,
+                                "total": 15.0
+                            },
+                            "Slovenia": {
+                                "correct": 12.0,
+                                "total": 15.0
+                            }
+                        }
+                    },
+                    "player_stats": {
+                        "correct": 138.0,
+                        "total": 150.0,
+                        "components": {
+                            "participants_total": 10,
+                            "participants_by_team": {
+                                "Poland": 5,
+                                "Slovenia": 5
+                            },
+                            "roster_total": 24,
+                            "non_participants_total": 14,
+                            "stats_per_participant_uniform": 15,
+                            "stats_per_participant_by_team": {
+                                "Poland": {
+                                    "unique_counts": [
+                                        15
+                                    ],
+                                    "avg_per_player": 15.0
+                                },
+                                "Slovenia": {
+                                    "unique_counts": [
+                                        15
+                                    ],
+                                    "avg_per_player": 15.0
+                                }
+                            },
+                            "participant_checks_expected_by_team": {
+                                "Poland": 75,
+                                "Slovenia": 75
+                            },
+                            "participant_checks_expected_total": 150
+                        }
+                    },
+                    "non_participants": {
+                        "correct": 14.0,
+                        "total": 14.0
+                    }
+                }
+            },
+            "weighted_sanity": {
+                "sum_weights": 195.0,
+                "sum_contributions": 179.0
+            }
+        },
+        "fractional_per_block": {
+            "accuracy_pct": 91.73983739837422,
+            "formula": "4.586991869918681/5.0 * 100",
+            "formula_vars": {
+                "weighted_correct_sum": 4.586991869918681,
+                "total_weight_sum": 5.0,
+                "blocks": {
+                    "final_score": {
+                        "weight": 1.0,
+                        "correct_weight": 1.0
+                    },
+                    "team_stats": {
+                        "Poland": {
+                            "weight": 1.0,
+                            "matched_stats": 14,
+                            "total_stats": 15,
+                            "block_fraction": 0.9333333333333333
+                        },
+                        "Slovenia": {
+                            "weight": 1.0,
+                            "matched_stats": 12,
+                            "total_stats": 15,
+                            "block_fraction": 0.8
+                        }
+                    },
+                    "players": {
+                        "Poland": {
+                            "weight": 1.0,
+                            "matched_checks": 79,
+                            "total_checks": 82,
+                            "block_fraction": 0.9634146341463414,
+                            "components": {
+                                "participants": 5,
+                                "non_participants": 7,
+                                "stats_per_participant_uniform": 15,
+                                "participant_checks_expected": 75,
+                                "non_participant_checks_expected": 7,
+                                "expected_total_checks": 82
+                            }
+                        },
+                        "Slovenia": {
+                            "weight": 1.0,
+                            "matched_checks": 73,
+                            "total_checks": 82,
+                            "block_fraction": 0.8902439024390244,
+                            "components": {
+                                "participants": 5,
+                                "non_participants": 7,
+                                "stats_per_participant_uniform": 15,
+                                "participant_checks_expected": 75,
+                                "non_participant_checks_expected": 7,
+                                "expected_total_checks": 82
+                            }
+                        }
+                    }
+                }
+            },
+            "weighted_sanity": {
+                "sum_weights": 4.999999999999968,
+                "sum_contributions": 4.586991869918681
+            }
+        }
+    }
+}

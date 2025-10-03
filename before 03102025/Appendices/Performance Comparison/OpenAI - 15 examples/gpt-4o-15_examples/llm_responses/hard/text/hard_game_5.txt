@@ -1,0 +1,92 @@
+{
+    "matchup": "Iceland vs France",
+    "final_score": "Iceland: 177, France: 192",
+    "final_stats": {
+        "Iceland": {
+            "stats": {
+                "points": 177, "assists": 69, "rebounds": 78, "defensive_rebounds": 59, "offensive_rebounds": 19, "fouls": 18, "steals": 9, "blocks": 13, "turnovers": 14, "2pt_shots_made": 34, "2pt_shots_attempted": 59, "3pt_shots_made": 28, "3pt_shots_attempted": 65, "ft_made": 21, "ft_attempted": 34
+            },
+            "players": {
+                "Elvar Fridriksson": {
+                    "points": 29, "assists": 8, "rebounds": 7, "defensive_rebounds": 5, "offensive_rebounds": 2, "fouls": 0, "steals": 1, "blocks": 4, "turnovers": 1, "2pt_shots_made": 4, "2pt_shots_attempted": 6, "3pt_shots_made": 5, "3pt_shots_attempted": 7, "ft_made": 0, "ft_attempted": 0
+                },
+                "Martin Hermannsson": {
+                    "points": 24, "assists": 8, "rebounds": 3, "defensive_rebounds": 1, "offensive_rebounds": 2, "fouls": 1, "steals": 0, "blocks": 0, "turnovers": 0, "2pt_shots_made": 4, "2pt_shots_attempted": 6, "3pt_shots_made": 3, "3pt_shots_attempted": 5, "ft_made": 5, "ft_attempted": 6
+                },
+                "Hilmar Henningsson": {
+                    "points": 17, "assists": 7, "rebounds": 7, "defensive_rebounds": 6, "offensive_rebounds": 1, "fouls": 1, "steals": 3, "blocks": 3, "turnovers": 0, "2pt_shots_made": 4, "2pt_shots_attempted": 9, "3pt_shots_made": 0, "3pt_shots_attempted": 4, "ft_made": 3, "ft_attempted": 3
+                },
+                "Jon Axel Gudmundsson": {
+                    "points": 14, "assists": 6, "rebounds": 6, "defensive_rebounds": 4, "offensive_rebounds": 2, "fouls": 1, "steals": 0, "blocks": 2, "turnovers": 2, "2pt_shots_made": 6, "2pt_shots_attempted": 14, "3pt_shots_made": 1, "3pt_shots_attempted": 2, "ft_made": 0, "ft_attempted": 1
+                },
+                "Styrmir Thrastarson": {
+                    "points": 13, "assists": 6, "rebounds": 8, "defensive_rebounds": 7, "offensive_rebounds": 1, "fouls": 2, "steals": 0, "blocks": 1, "turnovers": 2, "2pt_shots_made": 3, "2pt_shots_attempted": 4, "3pt_shots_made": 2, "3pt_shots_attempted": 3, "ft_made": 0, "ft_attempted": 3
+                },
+                "Aegir Steinarsson": {
+                    "points": 10, "assists": 3, "rebounds": 5, "defensive_rebounds": 3, "offensive_rebounds": 2, "fouls": 1, "steals": 3, "blocks": 1, "turnovers": 2, "2pt_shots_made": 4, "2pt_shots_attempted": 5, "3pt_shots_made": 0, "3pt_shots_attempted": 4, "ft_made": 0, "ft_attempted": 0
+                },
+                "Kristinn Palsson": {
+                    "points": 12, "assists": 4, "rebounds": 7, "defensive_rebounds": 5, "offensive_rebounds": 2, "fouls": 3, "steals": 0, "blocks": 3, "turnovers": 0, "2pt_shots_made": 3, "2pt_shots_attempted": 4, "3pt_shots_made": 1, "3pt_shots_attempted": 5, "ft_made": 1, "ft_attempted": 7
+                },
+                "Karl Jonsson": {
+                    "points": 11, "assists": 4, "rebounds": 4, "defensive_rebounds": 3, "offensive_rebounds": 1, "fouls": 2, "steals": 2, "blocks": 1, "turnovers": 3, "2pt_shots_made": 2, "2pt_shots_attempted": 4, "3pt_shots_made": 1, "3pt_shots_attempted": 4, "ft_made": 3, "ft_attempted": 6
+                },
+                "Orri Gunnarsson": {
+                    "points": 27, "assists": 7, "rebounds": 5, "defensive_rebounds": 3, "offensive_rebounds": 2, "fouls": 1, "steals": 1, "blocks": 3, "turnovers": 3, "2pt_shots_made": 7, "2pt_shots_attempted": 9, "3pt_shots_made": 4, "3pt_shots_attempted": 7, "ft_made": 0, "ft_attempted": 0
+                },
+                "Tryggvi Hlinason": {
+                    "points": 9, "assists": 5, "rebounds": 8, "defensive_rebounds": 6, "offensive_rebounds": 2, "fouls": 3, "steals": 1, "blocks": 3, "turnovers": 1, "2pt_shots_made": 3, "2pt_shots_attempted": 6, "3pt_shots_made": 0, "3pt_shots_attempted": 4, "ft_made": 0, "ft_attempted": 0
+                },
+                "Sigtryggur Bjornsson": {
+                    "points": 13, "assists": 3, "rebounds": 4, "defensive_rebounds": 3, "offensive_rebounds": 1, "fouls": 1, "steals": 0, "blocks": 0, "turnovers": 1, "2pt_shots_made": 3, "2pt_shots_attempted": 4, "3pt_shots_made": 2, "3pt_shots_attempted": 6, "ft_made": 0, "ft_attempted": 2
+                },
+                "Almar Orri Atlason": {
+                    "points": 9, "assists": 8, "rebounds": 4, "defensive_rebounds": 2, "offensive_rebounds": 2, "fouls": 2, "steals": 0, "blocks": 2, "turnovers": 4, "2pt_shots_made": 4, "2pt_shots_attempted": 10, "3pt_shots_made": 1, "3pt_shots_attempted": 4, "ft_made": 2, "ft_attempted": 2
+                }
+            }
+        },
+        "France": {
+            "stats": {
+                "points": 192, "assists": 81, "rebounds": 77, "defensive_rebounds": 66, "offensive_rebounds": 11, "fouls": 22, "steals": 18, "blocks": 20, "turnovers": 21, "2pt_shots_made": 50, "2pt_shots_attempted": 86, "3pt_shots_made": 28, "3pt_shots_attempted": 60, "ft_made": 12, "ft_attempted": 18
+            },
+            "players": {
+                "Mouhammadou Jaiteh": {
+                    "points": 19, "assists": 15, "rebounds": 11, "defensive_rebounds": 8, "offensive_rebounds": 3, "fouls": 1, "steals": 3, "blocks": 0, "turnovers": 1, "2pt_shots_made": 7, "2pt_shots_attempted": 12, "3pt_shots_made": 2, "3pt_shots_attempted": 4, "ft_made": 1, "ft_attempted": 2
+                },
+                "Isaia Cordinier": {
+                    "points": 0, "assists": 1, "rebounds": 1, "defensive_rebounds": 0, "offensive_rebounds": 1, "fouls": 1, "steals": 0, "blocks": 0, "turnovers": 1, "2pt_shots_made": 0, "2pt_shots_attempted": 0, "3pt_shots_made": 0, "3pt_shots_attempted": 0, "ft_made": 0, "ft_attempted": 0
+                },
+                "Nadir Hifi": {
+                    "points": 23, "assists": 17, "rebounds": 8, "defensive_rebounds": 6, "offensive_rebounds": 2, "fouls": 4, "steals": 2, "blocks": 3, "turnovers": 3, "2pt_shots_made": 8, "2pt_shots_attempted": 18, "3pt_shots_made": 3, "3pt_shots_attempted": 7, "ft_made": 2, "ft_attempted": 5
+                },
+                "Theo Maledon": {
+                    "points": 26, "assists": 16, "rebounds": 9, "defensive_rebounds": 7, "offensive_rebounds": 2, "fouls": 2, "steals": 3, "blocks": 0, "turnovers": 2, "2pt_shots_made": 11, "2pt_shots_attempted": 20, "3pt_shots_made": 3, "3pt_shots_attempted": 7, "ft_made": 2, "ft_attempted": 6
+                },
+                "Jaylen Hoard": {
+                    "points": 17, "assists": 11, "rebounds": 8, "defensive_rebounds": 6, "offensive_rebounds": 2, "fouls": 5, "steals": 1, "blocks": 0, "turnovers": 5, "2pt_shots_made": 3, "2pt_shots_attempted": 6, "3pt_shots_made": 2, "3pt_shots_attempted": 4, "ft_made": 5, "ft_attempted": 8
+                },
+                "Guerschon Yabusele": {
+                    "points": 13, "assists": 6, "rebounds": 6, "defensive_rebounds": 5, "offensive_rebounds": 1, "fouls": 2, "steals": 0, "blocks": 1, "turnovers": 0, "2pt_shots_made": 2, "2pt_shots_attempted": 2, "3pt_shots_made": 2, "3pt_shots_attempted": 4, "ft_made": 1, "ft_attempted": 1
+                },
+                "Zaccharie Risacher": {
+                    "points": 10, "assists": 10, "rebounds": 6, "defensive_rebounds": 3, "offensive_rebounds": 3, "fouls": 4, "steals": 0, "blocks": 2, "turnovers": 3, "2pt_shots_made": 1, "2pt_shots_attempted": 3, "3pt_shots_made": 2, "3pt_shots_attempted": 4, "ft_made": 3, "ft_attempted": 7
+                },
+                "Alexandre Sarr": {
+                    "points": 11, "assists": 2, "rebounds": 0, "defensive_rebounds": 0, "offensive_rebounds": 0, "fouls": 1, "steals": 0, "blocks": 1, "turnovers": 2, "2pt_shots_made": 3, "2pt_shots_attempted": 4, "3pt_shots_made": 1, "3pt_shots_attempted": 3, "ft_made": 3, "ft_attempted": 3
+                },
+                "Bilal Coulibaly": {
+                    "points": 15, "assists": 9, "rebounds": 7, "defensive_rebounds": 5, "offensive_rebounds": 2, "fouls": 3, "steals": 5, "blocks": 0, "turnovers": 3, "2pt_shots_made": 2, "2pt_shots_attempted": 5, "3pt_shots_made": 3, "3pt_shots_attempted": 4, "ft_made": 0, "ft_attempted": 0
+                },
+                "Elie Okobo": {
+                    "points": 3, "assists": 3, "rebounds": 2, "defensive_rebounds": 1, "offensive_rebounds": 1, "fouls": 0, "steals": 1, "blocks": 0, "turnovers": 1, "2pt_shots_made": 0, "2pt_shots_attempted": 1, "3pt_shots_made": 0, "3pt_shots_attempted": 0, "ft_made": 3, "ft_attempted": 3
+                },
+                "Sylvain Francisco": {
+                    "points": 20, "assists": 13, "rebounds": 9, "defensive_rebounds": 7, "offensive_rebounds": 2, "fouls": 1, "steals": 3, "blocks": 4, "turnovers": 2, "2pt_shots_made": 4, "2pt_shots_attempted": 8, "3pt_shots_made": 4, "3pt_shots_attempted": 6, "ft_made": 0, "ft_attempted": 0
+                },
+                "Timothe Luwawu-Cabarrot": {
+                    "points": 13, "assists": 7, "rebounds": 4, "defensive_rebounds": 3, "offensive_rebounds": 1, "fouls": 3, "steals": 5, "blocks": 2, "turnovers": 2, "2pt_shots_made": 5, "2pt_shots_attempted": 8, "3pt_shots_made": 1, "3pt_shots_attempted": 2, "ft_made": 0, "ft_attempted": 0
+                }
+            }
+        }
+    }
+}
