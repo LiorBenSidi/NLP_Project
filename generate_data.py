@@ -1417,7 +1417,7 @@ class BasketballReportGenerator:
 if __name__ == "__main__":
     # --- Configuration ---
     # Define the number of games to generate per difficulty level.
-    GAMES_PER_DIFFICULTY = 5  # Generates 5 games for each level (15 total)
+    GAMES_PER_DIFFICULTY = 50  # Generates 50 games for each level (150 total)
     DIFFICULTY_LEVELS = ["basic", "medium", "hard"]
 
     # --- Initialization ---
